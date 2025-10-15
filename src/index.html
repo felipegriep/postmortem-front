@@ -6,8 +6,73 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Optional: inject client id via global if not using app.config.ts hardcoded value -->
+  <script>
+    // Configure your client id here or via deployment environment
+    window.NG_GOOGLE_CLIENT_ID = window.NG_GOOGLE_CLIENT_ID || '';
+    window.handleGoogleCredential = function(resp) {
+      try {
+        const jwt = resp && resp.credential;
+        if (!jwt) return;
+        localStorage.setItem('auth_token', jwt);
+        // Dispatch a custom event so app can react if needed
+        window.dispatchEvent(new CustomEvent('auth_token_received', { detail: { provider: 'Google' } }));
+
+        // Backend login POST (parametrized)
+        const loginUrl = window.NG_LOGIN_URL || 'http://localhost:8080/auth/login';
+        const body = { idToken: jwt, provider: 'Google' };
+        fetch(loginUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          credentials: 'include',
+        }).then(function(res) {
+          if (!res.ok) {
+            return res.text().then(function(t){ console.warn('Login API returned non-OK status', res.status, t); });
+          }
+          // Parse JSON response and store backend token if provided
+          return res.json().then(function(data){
+            var backendToken = data && data.token;
+            if (backendToken) {
+              try {
+                localStorage.setItem('token', backendToken);
+              } catch (e) {
+                try { sessionStorage.setItem('token', backendToken); } catch (e2) {}
+              }
+            }
+          }).catch(function(){ /* ignore non-JSON */ });
+        }).catch(function(err){
+          console.error('Login API request failed', err);
+        });
+      } catch (e) {
+        console.error('Failed to store auth token', e);
+      }
+    }
+  </script>
 </head>
 <body>
+  <!-- Auto prompt and standard button as fallback -->
+  <div id="g_id_onload"
+       data-client_id="585748395907-a7vn1014fncm3mgnra5gmtoo04rf01d5.apps.googleusercontent.com"
+       data-context="signin"
+       data-callback="handleGoogleCredential"
+       data-auto_prompt="true">
+  </div>
+  <div class="g_id_signin" data-type="standard" data-size="large"></div>
+
   <app-root></app-root>
+
+  <script>
+    // Populate the client_id attribute if provided via NG_GOOGLE_CLIENT_ID
+    (function() {
+      const cid = window.NG_GOOGLE_CLIENT_ID;
+      if (cid) {
+        const onloadEl = document.getElementById('g_id_onload');
+        if (onloadEl) onloadEl.setAttribute('data-client_id', cid);
+      }
+    })();
+  </script>
 </body>
 </html>

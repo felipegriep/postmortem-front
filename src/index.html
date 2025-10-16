@@ -21,7 +21,7 @@
         window.dispatchEvent(new CustomEvent('auth_token_received', { detail: { provider: 'Google' } }));
 
         // Backend login POST (parametrized)
-        const loginUrl = window.NG_LOGIN_URL || 'http://localhost:8080/auth/login';
+        const loginUrl = window.NG_LOGIN_URL || 'http://localhost:8081/auth/login';
         const body = { idToken: jwt, provider: 'Google' };
         fetch(loginUrl, {
           method: 'POST',

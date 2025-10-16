@@ -18,6 +18,6 @@ export const appConfig: ApplicationConfig = {
         storage: 'localStorage',
       },
     },
-    { provide: LOGIN_URL, useValue: (window as any)['NG_LOGIN_URL'] ?? 'http://localhost:8080/auth/login' },
+    { provide: LOGIN_URL, useValue: (window as any)['NG_LOGIN_URL'] ?? 'http://localhost:8081/auth/login' },
   ]
 };

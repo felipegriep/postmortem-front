@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SeverityEnum } from '../domain/enums/severity-enum';
 import { StatusEnum } from '../domain/enums/status-enum';
+import { IncidentResponseInterface } from '../domain/interfaces/response/incident-response-interface';
 
 export interface GetIncidentsParams {
   page?: number;
@@ -20,7 +21,7 @@ export class IncidentService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getIncidents(params?: GetIncidentsParams): Observable<any> {
+  getIncidents(params?: GetIncidentsParams): Observable<IncidentResponseInterface[]> {
     let httpParams = new HttpParams();
     if (params) {
       if (params.page !== undefined && params.page !== null) {
@@ -44,6 +45,6 @@ export class IncidentService {
     const headers = new HttpHeaders({ Authorization: token });
 
     const url = `${this.baseUrl}/api/incidents`;
-    return this.http.get(url, { params: httpParams, headers });
+    return this.http.get<IncidentResponseInterface[]>(url, { params: httpParams, headers });
   }
 }

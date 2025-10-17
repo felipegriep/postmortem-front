@@ -15,11 +15,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: GOOGLE_AUTH_CONFIG,
       useValue: {
-        clientId: (window as any)['NG_GOOGLE_CLIENT_ID'] ?? '585748395907-a7vn1014fncm3mgnra5gmtoo04rf01d5.apps.googleusercontent.com',
+        clientId: (window as any)['NG_GOOGLE_CLIENT_ID'],
         autoSelect: false,
         storage: 'localStorage',
       },
     },
-    { provide: LOGIN_URL, useValue: (window as any)['NG_LOGIN_URL'] ?? 'http://localhost:8081/auth/login' },
+    { provide: LOGIN_URL, useValue: (window as any)['NG_LOGIN_URL'] },
   ]
 };

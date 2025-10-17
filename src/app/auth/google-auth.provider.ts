@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@angular/core';
-import { GOOGLE_AUTH_CONFIG, LOGIN_URL } from './auth.tokens';
+import {Inject, Injectable} from '@angular/core';
+import {GOOGLE_AUTH_CONFIG, LOGIN_URL} from './auth.tokens';
 
 // Type definitions for Google Identity Services
 declare global {

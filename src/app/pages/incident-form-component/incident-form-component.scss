@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #f7fafc; // bg-gray-100
+  min-height: 100vh;
+  width: 100%;
+}
+
+// Agrupamento de estilos para os campos do formulário
+.form-group {
+  @apply flex flex-col;
+}
+
+.form-label {
+  @apply mb-2 text-sm font-bold text-gray-700 dark:text-gray-300;
+}
+
+.form-input {
+  @apply
+  w-full
+  px-4
+  py-2
+  bg-gray-50
+  dark:bg-gray-700
+  border
+  border-gray-300
+  dark:border-gray-600
+  rounded-lg
+  text-gray-800
+  dark:text-gray-200
+  focus:outline-none
+  focus:ring-2
+  focus:ring-blue-500
+  focus:border-transparent
+  transition-shadow;
+}
+
+// Garante que o texto do placeholder seja visível no modo escuro
+.form-input::placeholder {
+  @apply text-gray-400 dark:text-gray-500;
+}
+

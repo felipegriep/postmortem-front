@@ -5,6 +5,7 @@ import {SeverityEnum} from '../domain/enums/severity-enum';
 import {StatusEnum} from '../domain/enums/status-enum';
 import {IncidentResponseInterface} from '../domain/interfaces/response/incident-response-interface';
 import {IncidentInterface} from '../domain/interfaces/request/incident-interface';
+import {PageResponse} from '../domain/interfaces/response/page-response';
 
 export interface GetIncidentsParams {
   page?: number;
@@ -22,7 +23,7 @@ export class IncidentService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getIncidents(params?: GetIncidentsParams): Observable<IncidentResponseInterface[]> {
+  getIncidents(params?: GetIncidentsParams): Observable<PageResponse<IncidentResponseInterface>> {
     let httpParams = new HttpParams();
     if (params) {
       if (params.page !== undefined && params.page !== null) {
@@ -42,36 +43,41 @@ export class IncidentService {
       }
     }
 
-    const token = localStorage.getItem('token') || '';
+    const rawToken = localStorage.getItem('token') || '';
+    const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
     const headers = new HttpHeaders({ Authorization: token });
 
     const url = `${this.baseUrl}/api/incidents`;
-    return this.http.get<IncidentResponseInterface[]>(url, { params: httpParams, headers });
+    return this.http.get<PageResponse<IncidentResponseInterface>>(url, { params: httpParams, headers });
   }
 
-  getIncidentById(id: string): Observable<IncidentResponseInterface> {
-    const token = localStorage.getItem('token') || '';
+  getIncidentById(id: number): Observable<IncidentResponseInterface> {
+    const rawToken = localStorage.getItem('token') || '';
+    const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
     const headers = new HttpHeaders({ Authorization: token });
     const url = `${this.baseUrl}/api/incidents/${id}`;
     return this.http.get<IncidentResponseInterface>(url, { headers });
   }
 
   createIncident(incident: IncidentInterface): Observable<number> {
-    const token = localStorage.getItem('token') || '';
+    const rawToken = localStorage.getItem('token') || '';
+    const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
     const headers = new HttpHeaders({ Authorization: token });
     const url = `${this.baseUrl}/api/incidents`;
     return this.http.post<number>(url, incident, { headers });
   }
 
   updateIncident(id: string, incident: IncidentInterface): Observable<IncidentResponseInterface> {
-    const token = localStorage.getItem('token') || '';
+    const rawToken = localStorage.getItem('token') || '';
+    const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
     const headers = new HttpHeaders({ Authorization: token });
     const url = `${this.baseUrl}/api/incidents/${id}`;
     return this.http.put<IncidentResponseInterface>(url, incident, { headers });
   }
 
   deleteIncident(id: string): Observable<void> {
-    const token = localStorage.getItem('token') || '';
+    const rawToken = localStorage.getItem('token') || '';
+    const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
     const headers = new HttpHeaders({ Authorization: token });
     const url = `${this.baseUrl}/api/incidents/${id}`;
     return this.http.delete<void>(url, { headers });

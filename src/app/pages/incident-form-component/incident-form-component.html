@@ -1,0 +1,106 @@
+<div class="container mx-auto p-4 md:p-8 max-w-3xl">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8">
+    <header class="mb-8 border-b pb-4 dark:border-gray-600">
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+        {{ isEditMode ? 'Editar Incidente #' + incident.id : 'Registrar Novo Incidente' }}
+      </h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Preencha os detalhes do incidente abaixo.</p>
+    </header>
+
+    <form #incidentForm="ngForm" (ngSubmit)="onSubmit()">
+      <div class="space-y-6">
+        <!-- Título -->
+        <div class="form-group">
+          <label for="title" class="form-label">Título do Incidente</label>
+          <input type="text" id="title" name="title" required
+                 class="form-input"
+                 placeholder="Ex: Indisponibilidade da API de Pagamentos"
+                 [(ngModel)]="incident.title" #title="ngModel">
+          <div *ngIf="title.invalid && (title.dirty || title.touched)" class="text-red-500 text-xs mt-1">
+            O título é obrigatório.
+          </div>
+        </div>
+
+        <!-- Serviço e Severidade (lado a lado) -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="form-group">
+            <label for="service" class="form-label">Serviço Afetado</label>
+            <input type="text" id="service" name="service" required
+                   class="form-input"
+                   placeholder="Ex: billing, checkout, auth"
+                   [(ngModel)]="incident.service" #service="ngModel">
+            <div *ngIf="service.invalid && (service.dirty || service.touched)" class="text-red-500 text-xs mt-1">
+              O serviço é obrigatório.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="severity" class="form-label">Severidade</label>
+            <select id="severity" name="severity" required
+                    class="form-input"
+                    [(ngModel)]="incident.severity" #severity="ngModel">
+              <option value="SEV-1">SEV-1 (Crítico)</option>
+              <option value="SEV-2">SEV-2 (Alto)</option>
+              <option value="SEV-3">SEV-3 (Médio)</option>
+              <option value="SEV-4">SEV-4 (Baixo)</option>
+            </select>
+            <div *ngIf="severity.invalid && (severity.dirty || severity.touched)" class="text-red-500 text-xs mt-1">
+              A severidade é obrigatória.
+            </div>
+          </div>
+        </div>
+
+        <!-- Início e Fim (lado a lado) -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="form-group">
+            <label for="startedAt" class="form-label">Início do Incidente</label>
+            <input type="datetime-local" id="startedAt" name="startedAt" required
+                   class="form-input"
+                   [(ngModel)]="incident.startedAt" #startedAt="ngModel">
+            <div *ngIf="startedAt.invalid && (startedAt.dirty || startedAt.touched)" class="text-red-500 text-xs mt-1">
+              A data de início é obrigatória.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="endedAt" class="form-label">Fim do Incidente (Opcional)</label>
+            <input type="datetime-local" id="endedAt" name="endedAt"
+                   class="form-input"
+                   [(ngModel)]="incident.endedAt">
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group" *ngIf="isEditMode">
+          <label for="status" class="form-label">Status</label>
+          <select id="status" name="status" required
+                  class="form-input"
+                  [(ngModel)]="incident.status" #status="ngModel">
+            <option value="Open">Aberto</option>
+            <option value="In Analysis">Em Análise</option>
+            <option value="Closed">Resolvido</option>
+          </select>
+        </div>
+
+        <!-- Resumo do Impacto -->
+        <div class="form-group">
+          <label for="impactShort" class="form-label">Breve Resumo do Impacto</label>
+          <textarea id="impactShort" name="impactShort" rows="4"
+                    class="form-input"
+                    placeholder="Descreva o impacto de forma concisa. O que foi afetado, quantos clientes, por quanto tempo?"
+                    [(ngModel)]="incident.impactShort"></textarea>
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="mt-8 pt-6 border-t dark:border-gray-600 flex justify-end gap-4">
+        <button type="button" (click)="onCancel()"
+                class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition-colors dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">
+          Cancelar
+        </button>
+        <button type="submit" [disabled]="incidentForm.invalid"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed">
+          {{ isEditMode ? 'Salvar Alterações' : 'Criar Incidente' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

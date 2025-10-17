@@ -59,7 +59,6 @@ export class IncidentFormComponent  implements OnInit {
   getEmptyIncident(): IncidentInterface {
     // Retorna um objeto limpo para o formulário de criação
     return {
-      id: 0, // ID temporário, será definido pelo serviço
       title: '',
       service: '',
       severity: SeverityEnum.SEV_3, // Valor padrão
@@ -71,10 +70,18 @@ export class IncidentFormComponent  implements OnInit {
   }
 
   onSubmit(): void {
-    this.incidentService.createIncident(this.incident).subscribe(() => {
-      // Após salvar, navega de volta para a lista de incidentes
-      this.router.navigate(['/incidents']);
-    });
+    if (this.isEditMode && this.incident.id != null) {
+      // Atualização de incidente existente
+      this.incidentService.updateIncident(String(this.incident.id), this.incident).subscribe(() => {
+        this.router.navigate(['/incidents']);
+      });
+    } else {
+      // Criação de novo incidente (sem id no payload)
+      const { id, ...payload } = this.incident as any;
+      this.incidentService.createIncident(payload).subscribe(() => {
+        this.router.navigate(['/incidents']);
+      });
+    }
   }
 
   onCancel(): void {

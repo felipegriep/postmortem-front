@@ -1,0 +1,11 @@
+{
+  "NG_API_DNS": "http://localhost:8081",
+  "NG_LOGIN_URL": "http://localhost:8081/auth/login",
+  "NG_GOOGLE_CLIENT_ID": "585748395907-a7vn1014fncm3mgnra5gmtoo04rf01d5.apps.googleusercontent.com",
+  "APP_NAME": "Postmortem Hub",
+  "SENTRY_DSN": "",
+  "FEATURE_FLAGS": {
+    "enableExperimental": false
+  }
+}
+

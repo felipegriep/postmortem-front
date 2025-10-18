@@ -1,18 +1,17 @@
-import {Component, OnInit} from '@angular/core';
-import {IncidentResponseInterface} from '../../domain/interfaces/response/incident-response-interface';
-import {IncidentService} from '../../services/incident-service';
-import {Router} from '@angular/router';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { IncidentResponseInterface } from '../../domain/interfaces/response/incident-response-interface';
+import { IncidentService } from '../../services/incident-service';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-incident-list-component',
     imports: [CommonModule, FormsModule],
     templateUrl: './incident-list-component.html',
-    styleUrls: ['./incident-list-component.scss']
+    styleUrls: ['./incident-list-component.scss'],
 })
 export class IncidentListComponent implements OnInit {
-
     allIncidents: IncidentResponseInterface[] = [];
     filteredIncidents: IncidentResponseInterface[] = [];
 
@@ -24,14 +23,10 @@ export class IncidentListComponent implements OnInit {
     filters = {
         service: '',
         severity: '',
-        status: ''
+        status: '',
     };
 
-    constructor(
-        private incidentService: IncidentService,
-        private router: Router
-    ) {
-    }
+    constructor(private incidentService: IncidentService, private router: Router) {}
 
     ngOnInit(): void {
         this.loadIncidents();
@@ -42,7 +37,7 @@ export class IncidentListComponent implements OnInit {
             const pageAny: any = resp as any;
             const data: IncidentResponseInterface[] = Array.isArray(pageAny)
                 ? pageAny
-                : (pageAny?.content ?? []);
+                : pageAny?.content ?? [];
 
             // Ordenação resiliente: tenta numérica por id; se não der, usa createdAt desc e, por fim, lexicográfica
             this.allIncidents = [...data].sort((a, b) => {
@@ -66,7 +61,7 @@ export class IncidentListComponent implements OnInit {
     }
 
     populateFilterOptions(): void {
-        const services = this.allIncidents.map(inc => inc.service);
+        const services = this.allIncidents.map((inc) => inc.service);
         this.availableServices = [...new Set(services)]; // Pega serviços únicos
     }
 
@@ -74,20 +69,20 @@ export class IncidentListComponent implements OnInit {
         let incidents = [...this.allIncidents];
 
         if (this.filters.service) {
-            incidents = incidents.filter(inc => inc.service === this.filters.service);
+            incidents = incidents.filter((inc) => inc.service === this.filters.service);
         }
         if (this.filters.severity) {
-            incidents = incidents.filter(inc => inc.severity === this.filters.severity);
+            incidents = incidents.filter((inc) => inc.severity === this.filters.severity);
         }
         if (this.filters.status) {
-            incidents = incidents.filter(inc => inc.status === this.filters.status);
+            incidents = incidents.filter((inc) => inc.status === this.filters.status);
         }
 
         this.filteredIncidents = incidents;
     }
 
     resetFilters(): void {
-        this.filters = {service: '', severity: '', status: ''};
+        this.filters = { service: '', severity: '', status: '' };
         this.applyFilters();
     }
 

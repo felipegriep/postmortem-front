@@ -1,6 +1,6 @@
-import {SeverityEnum} from '../../enums/severity-enum';
-import {StatusEnum} from '../../enums/status-enum';
-import {UserAccountResponseInterface} from './user-account-response-interface';
+import { SeverityEnum } from '../../enums/severity-enum';
+import { StatusEnum } from '../../enums/status-enum';
+import { UserAccountResponseInterface } from './user-account-response-interface';
 
 export interface IncidentResponseInterface {
     id: string;

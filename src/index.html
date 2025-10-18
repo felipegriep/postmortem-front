@@ -5,7 +5,7 @@
     <title>PostmortemFront</title>
     <base href="/">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <link href="favicon.ico" rel="icon" type="image/x-icon">
+    <link href="public/favicon.ico" rel="icon" type="image/x-icon">
     <style>
         /* Hide Google Sign-In UI when authenticated (robust against re-render) */
         html.auth #g_id_onload,
@@ -15,8 +15,7 @@
     </style>
     <!-- Runtime config (set window.NG_API_DNS here without rebuilding) -->
     <script src="assets/runtime-config.js"></script>
-    <!-- Google Identity Services -->
-    <script async defer src="https://accounts.google.com/gsi/client"></script>
+    <!-- Google Identity Services will be loaded dynamically by the Angular GoogleLoaderService -->
     <!-- Optional: inject client id via global if not using app.config.ts hardcoded value -->
     <script>
         // Configure your client id here or via deployment environment
@@ -133,55 +132,34 @@
                 // Dispatch a custom event so app can react if needed
                 window.dispatchEvent(new CustomEvent('auth_token_received', {detail: {provider: 'Google'}}));
 
-                // Backend login POST (parametrized)
+                // Backend login POST (parametrized) - delegate to centralized helper if available
                 const loginUrl = window.NG_LOGIN_URL || 'http://localhost:8081/auth/login';
                 const body = {idToken: jwt, provider: 'Google'};
-                fetch(loginUrl, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body),
-                    credentials: 'include',
-                }).then(function (res) {
-                    if (!res.ok) {
-                        return res.text().then(function (t) {
-                            console.warn('Login API returned non-OK status', res.status, t);
-                        });
-                    }
-                    // Parse JSON response and store backend token if provided
-                    return res.json().then(function (data) {
-                        var backendToken = data && data.token;
-                        if (backendToken) {
-                            try {
-                                localStorage.setItem('token', backendToken);
-                            } catch (e) {
-                                try {
-                                    sessionStorage.setItem('token', backendToken);
-                                } catch (e2) {
-                                }
-                            }
+                const storage = 'localStorage';
+                // Delegate to the global performLogin stub/implementation (Angular will replace stub on bootstrap)
+                // performLogin returns a Promise; after it resolves/rejects we hide the GIS UI and reload the page.
+                try {
+                    window.performLogin(loginUrl, body, storage).finally(function () {
+                        try {
+                            window.__setGisVisible(false);
+                        } catch {
                         }
-                    }).catch(function () { /* ignore non-JSON */
+                        try {
+                            window.location.href = '/';
+                            setTimeout(function () {
+                                location.reload();
+                            }, 0);
+                        } catch {
+                        }
                     });
-                }).catch(function (err) {
-                    console.error('Login API request failed', err);
-                }).finally(function () {
-                    // Hide GIS UI and reload layout
-                    try {
-                        window.__setGisVisible(false);
-                    } catch {
-                    }
-                    try {
-                        window.location.href = '/';
-                        setTimeout(function () {
-                            location.reload();
-                        }, 0);
-                    } catch {
-                    }
-                });
-            } catch (e) {
-                console.error('Failed to store auth token', e);
-            }
-        };
+                } catch (e) {
+                    // If performLogin is missing for any reason, log and continue (no further fallback)
+                    console.error('performLogin not available', e);
+                }
+             } catch (e) {
+                 console.error('Failed to store auth token', e);
+             }
+         };
 
         // Initial UI state based on token/auth_token
         (function () {

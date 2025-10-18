@@ -1,13 +1,13 @@
-import {Component} from '@angular/core';
-import {RouterModule} from '@angular/router';
-import {CommonModule} from '@angular/common';
+import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-home-component',
     imports: [RouterModule, CommonModule],
     standalone: true,
     templateUrl: './home-component.html',
-    styleUrl: './home-component.scss'
+    styleUrl: './home-component.scss',
 })
 export class HomeComponent {
     get isLoggedIn(): boolean {

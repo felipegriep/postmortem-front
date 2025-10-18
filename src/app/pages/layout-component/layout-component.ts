@@ -1,18 +1,40 @@
-import {Component} from '@angular/core';
-import {Router, RouterModule} from '@angular/router';
-import {CommonModule} from '@angular/common';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-layout-component',
     standalone: true,
     imports: [RouterModule, CommonModule],
     templateUrl: './layout-component.html',
-    styleUrl: './layout-component.scss'
+    styleUrls: ['./layout-component.scss'],
 })
-export class LayoutComponent {
+export class LayoutComponent implements OnInit, OnDestroy {
     isMenuOpen = false;
+    private _authListener = () => {
+        try {
+            this.cdr.detectChanges();
+        } catch {
+            // ignore
+        }
+    };
 
-    constructor(private router: Router) {
+    constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+
+    ngOnInit(): void {
+        try {
+            window.addEventListener('auth_token_received', this._authListener);
+        } catch {
+            // ignore
+        }
+    }
+
+    ngOnDestroy(): void {
+        try {
+            window.removeEventListener('auth_token_received', this._authListener);
+        } catch {
+            // ignore
+        }
     }
 
     get isLoggedIn(): boolean {
@@ -40,36 +62,31 @@ export class LayoutComponent {
         if (typeof w.googleLogout === 'function') {
             try {
                 w.googleLogout();
-            } catch {
-            }
+            } catch {}
         }
 
         // Fallback: clear local/session tokens
         try {
             localStorage.removeItem('token');
-        } catch {
-        }
+        } catch {}
         try {
             localStorage.removeItem('auth_token');
-        } catch {
-        }
+        } catch {}
         try {
             sessionStorage.removeItem('token');
-        } catch {
-        }
+        } catch {}
         try {
             sessionStorage.removeItem('auth_token');
-        } catch {
-        }
+        } catch {}
 
         // Notify any listeners (index.html toggles GIS UI)
         try {
             window.dispatchEvent(new CustomEvent('app_logout'));
-        } catch {
-        }
+        } catch {}
 
         // Navigate home and reload layout
-        this.router.navigateByUrl('/')
+        this.router
+            .navigateByUrl('/')
             .then(() => {
                 location.reload();
             })

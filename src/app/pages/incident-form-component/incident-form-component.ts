@@ -1,23 +1,19 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {IncidentService} from '../../services/incident-service';
-import {IncidentInterface} from '../../domain/interfaces/request/incident-interface';
-import {SeverityEnum} from '../../domain/enums/severity-enum';
-import {StatusEnum} from '../../domain/enums/status-enum';
-import {NgIf} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { IncidentService } from '../../services/incident-service';
+import { IncidentInterface } from '../../domain/interfaces/request/incident-interface';
+import { SeverityEnum } from '../../domain/enums/severity-enum';
+import { StatusEnum } from '../../domain/enums/status-enum';
+import { NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-incident-form-component',
-    imports: [
-        NgIf,
-        FormsModule
-    ],
+    imports: [NgIf, FormsModule],
     templateUrl: './incident-form-component.html',
-    styleUrls: ['./incident-form-component.scss']
+    styleUrls: ['./incident-form-component.scss'],
 })
 export class IncidentFormComponent implements OnInit {
-
     incident: IncidentInterface = this.getEmptyIncident();
     isEditMode = false;
 
@@ -25,15 +21,14 @@ export class IncidentFormComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         private incidentService: IncidentService
-    ) {
-    }
+    ) {}
 
     ngOnInit(): void {
         const idParam = this.route.snapshot.paramMap.get('id');
         if (idParam) {
             this.isEditMode = true;
             const incidentId = +idParam;
-            this.incidentService.getIncidentById(incidentId).subscribe(incident => {
+            this.incidentService.getIncidentById(incidentId).subscribe((incident) => {
                 if (incident) {
                     // Mapear IncidentResponseInterface -> IncidentInterface para o formulário
                     this.incident = {
@@ -42,7 +37,9 @@ export class IncidentFormComponent implements OnInit {
                         service: incident.service,
                         severity: incident.severity,
                         status: incident.status,
-                        startedAt: this.formatForInput(incident.startedAt) || this.toLocalDatetimeInputValue(new Date())!,
+                        startedAt:
+                            this.formatForInput(incident.startedAt) ||
+                            this.toLocalDatetimeInputValue(new Date())!,
                         endedAt: this.toLocalDatetimeInputValue(incident.endedAt) || '',
                         impactShort: incident.impactShort,
                     };
@@ -66,7 +63,7 @@ export class IncidentFormComponent implements OnInit {
             status: StatusEnum.OPEN,
             startedAt: this.toLocalDatetimeInputValue(new Date())!, // Data e hora atual (local, formato input)
             endedAt: '',
-            impactShort: ''
+            impactShort: '',
         };
     }
 
@@ -79,12 +76,15 @@ export class IncidentFormComponent implements OnInit {
     onSubmit(): void {
         if (this.isEditMode && this.incident.id != null) {
             // Atualização de incidente existente
-            this.incidentService.updateIncident(String(this.incident.id), this.incident).subscribe(() => {
-                this.router.navigate(['/incidents']);
-            });
+            this.incidentService
+                .updateIncident(String(this.incident.id), this.incident)
+                .subscribe(() => {
+                    this.router.navigate(['/incidents']);
+                });
         } else {
             // Criação de novo incidente (sem id no payload)
-            const {id, ...payload} = this.incident as any;
+            // prefix discarded var with _ to satisfy no-unused-vars rule
+            const { id: _id, ...payload } = this.incident as any;
             this.incidentService.createIncident(payload).subscribe(() => {
                 this.router.navigate(['/incidents']);
             });

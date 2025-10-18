@@ -1,14 +1,13 @@
-import {Inject, Injectable} from '@angular/core';
-import {AUTH_PROVIDER, AuthProviderName} from './auth.tokens';
-import {GoogleAuthProviderService} from './google-auth.provider';
+import { Inject, Injectable } from '@angular/core';
+import { AUTH_PROVIDER, AuthProviderName } from './auth.tokens';
+import { GoogleAuthProviderService } from './google-auth.provider';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
     constructor(
         @Inject(AUTH_PROVIDER) private providerName: AuthProviderName,
-        private google: GoogleAuthProviderService,
-    ) {
-    }
+        private google: GoogleAuthProviderService
+    ) {}
 
     init(): void {
         switch (this.providerName) {

@@ -1,6 +1,8 @@
-import {InjectionToken} from '@angular/core';
+import { InjectionToken } from '@angular/core';
+import { ProviderEnum } from '../domain/enums/provider-enum';
 
-export type AuthProviderName = 'google' | 'Google';
+// Use the ProviderEnum to keep provider values consistent across the app
+export type AuthProviderName = ProviderEnum;
 
 export interface GoogleAuthConfig {
     clientId: string;

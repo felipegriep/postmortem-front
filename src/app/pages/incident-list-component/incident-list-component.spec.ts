@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {IncidentListComponent} from './incident-list-component';
+import { IncidentListComponent } from './incident-list-component';
 
 describe('IncidentListComponent', () => {
     let component: IncidentListComponent;
@@ -8,9 +8,8 @@ describe('IncidentListComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [IncidentListComponent]
-        })
-            .compileComponents();
+            imports: [IncidentListComponent],
+        }).compileComponents();
 
         fixture = TestBed.createComponent(IncidentListComponent);
         component = fixture.componentInstance;

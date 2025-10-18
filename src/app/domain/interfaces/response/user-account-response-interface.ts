@@ -1,4 +1,4 @@
-import {ProviderEnum} from '../../enums/provider-enum';
+import { ProviderEnum } from '../../enums/provider-enum';
 
 export interface UserAccountResponseInterface {
     id: string;

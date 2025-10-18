@@ -1,5 +1,5 @@
-import {SeverityEnum} from '../../enums/severity-enum';
-import {StatusEnum} from '../../enums/status-enum';
+import { SeverityEnum } from '../../enums/severity-enum';
+import { StatusEnum } from '../../enums/status-enum';
 
 export interface IncidentInterface {
     id?: number;

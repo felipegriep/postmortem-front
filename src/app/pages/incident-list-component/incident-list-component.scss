@@ -1,34 +1,34 @@
 :host {
-  display: block;
-  background: #f7fafc; // bg-gray-100
-  min-height: 100vh;
+    display: block;
+    background: #f7fafc; // bg-gray-100
+    min-height: 100vh;
 }
 
 // Campos de filtro (usa a mesma base visual do formulário)
 .form-input {
-  @apply w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition;
+    @apply w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition;
 }
 
 // Cartões de incidente mais destacados e separados
 .border.rounded-lg {
-  @apply rounded-2xl border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-shadow bg-white/90 dark:bg-gray-800/90 backdrop-blur;
+    @apply rounded-2xl border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-shadow bg-white/90 dark:bg-gray-800/90 backdrop-blur;
 }
 
 header {
-  @apply mb-8;
+    @apply mb-8;
 }
 
 section + section {
-  @apply mt-8;
+    @apply mt-8;
 }
 
 // Badges
 span.rounded {
-  @apply rounded-full px-3 py-1;
+    @apply rounded-full px-3 py-1;
 }
 
 // Botão de ação (editar)
 button {
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
 }
 

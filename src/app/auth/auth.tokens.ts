@@ -3,10 +3,10 @@ import {InjectionToken} from '@angular/core';
 export type AuthProviderName = 'google' | 'Google';
 
 export interface GoogleAuthConfig {
-  clientId: string;
-  autoSelect?: boolean;
-  promptParentId?: string; // element id to render prompt button (optional)
-  storage?: 'localStorage' | 'sessionStorage';
+    clientId: string;
+    autoSelect?: boolean;
+    promptParentId?: string; // element id to render prompt button (optional)
+    storage?: 'localStorage' | 'sessionStorage';
 }
 
 export const AUTH_PROVIDER = new InjectionToken<AuthProviderName>('AUTH_PROVIDER');

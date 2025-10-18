@@ -1,67 +1,69 @@
 <div class="min-h-screen flex flex-col">
-  <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10">
-    <div class="container mx-auto px-4">
-      <div class="flex items-center justify-between h-16">
-        <a routerLink="/" class="flex items-center gap-2 text-xl font-bold text-gray-800 dark:text-white">
-          <svg class="w-8 h-8 text-blue-600"
-               viewBox="0 0 24 24"
-               fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-            <path d="M12 12L22 7"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-            <path d="M12 12V22"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-            <path d="M12 12L2 7"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-            <path d="M7 4.5L17 9.5"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-          </svg>
-          <span>Postmortem Hub</span>
-        </a>
-        <div class="hidden md:flex items-center space-x-4" *ngIf="isLoggedIn">
-          <a routerLink="/incidents" class="nav-link">Incidentes</a>
-          <a href="#" class="nav-link" (click)="logout($event)">Logout</a>
-        </div>
-        <div class="md:hidden" *ngIf="isLoggedIn">
-          <button (click)="toggleMenu()" class="text-gray-600 dark:text-gray-300 focus:outline-none">
-            <svg class="w-6 h-6"
-                 fill="none"
-                 stroke="currentColor"
-                 viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 12h16m-7 6h7">
+    <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center gap-2 text-xl font-bold text-gray-800 dark:text-white" routerLink="/">
+                    <svg class="w-8 h-8 text-blue-600"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"/>
+                        <path d="M12 12L22 7"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"/>
+                        <path d="M12 12V22"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"/>
+                        <path d="M12 12L2 7"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"/>
+                        <path d="M7 4.5L17 9.5"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"/>
+                    </svg>
+                    <span>Postmortem Hub</span>
+                </a>
+                <div *ngIf="isLoggedIn" class="hidden md:flex items-center space-x-4">
+                    <a class="nav-link" routerLink="/incidents">Incidentes</a>
+                    <a (click)="logout($event)" class="nav-link" href="#">Logout</a>
+                </div>
+                <div *ngIf="isLoggedIn" class="md:hidden">
+                    <button (click)="toggleMenu()" class="text-gray-600 dark:text-gray-300 focus:outline-none">
+                        <svg class="w-6 h-6"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 6h16M4 12h16m-7 6h7"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2">
 
-              </path>
-            </svg>
-          </button>
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <!-- Menu Mobile -->
-    <div *ngIf="isMenuOpen && isLoggedIn" class="md:hidden bg-white dark:bg-gray-800">
-      <a routerLink="/incidents" (click)="closeMenu()" class="block py-2 px-4 text-sm nav-link">Incidentes</a>
-      <a href="#" (click)="logout($event)" class="block py-2 px-4 text-sm nav-link">Logout</a>
-    </div>
-  </header>
-  <main class="flex-grow container mx-auto p-4"><router-outlet></router-outlet></main>
+        <!-- Menu Mobile -->
+        <div *ngIf="isMenuOpen && isLoggedIn" class="md:hidden bg-white dark:bg-gray-800">
+            <a (click)="closeMenu()" class="block py-2 px-4 text-sm nav-link" routerLink="/incidents">Incidentes</a>
+            <a (click)="logout($event)" class="block py-2 px-4 text-sm nav-link" href="#">Logout</a>
+        </div>
+    </header>
+    <main class="flex-grow container mx-auto p-4">
+        <router-outlet></router-outlet>
+    </main>
 </div>

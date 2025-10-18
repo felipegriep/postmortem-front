@@ -1,43 +1,43 @@
 :host {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  background: #f7fafc; // bg-gray-100
-  min-height: 100vh;
-  width: 100%;
-  padding-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background: #f7fafc; // bg-gray-100
+    min-height: 100vh;
+    width: 100%;
+    padding-bottom: 2rem;
 }
 
 // Agrupamento de estilos para os campos do formulário
 .form-group {
-  @apply flex flex-col gap-3;
+    @apply flex flex-col gap-3;
 }
 
 .form-label {
-  @apply mb-2 text-sm font-bold text-gray-700 dark:text-gray-300;
+    @apply mb-2 text-sm font-bold text-gray-700 dark:text-gray-300;
 }
 
 .form-input {
-  @apply w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-2xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm;
+    @apply w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-2xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm;
 }
 
 // Garante que o texto do placeholder seja visível no modo escuro
 .form-input::placeholder {
-  @apply text-gray-400 dark:text-gray-500;
+    @apply text-gray-400 dark:text-gray-500;
 }
 
 // Área de ações
 form .border-t {
-  @apply border-gray-200 dark:border-gray-600;
+    @apply border-gray-200 dark:border-gray-600;
 }
 
 button {
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded-xl;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded-xl;
 }
 
 
 // Specific tweaks for larger impactShort area
 textarea#impactShort.form-input,
 textarea.form-input[name="impactShort"] {
-  min-height: 10rem; // make the impact summary visibly larger (~160px)
+    min-height: 10rem; // make the impact summary visibly larger (~160px)
 }

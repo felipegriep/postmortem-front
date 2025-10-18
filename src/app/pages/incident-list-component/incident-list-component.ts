@@ -6,148 +6,154 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 
 @Component({
-  selector: 'app-incident-list-component',
-  imports: [CommonModule, FormsModule],
-  templateUrl: './incident-list-component.html',
-  styleUrls: ['./incident-list-component.scss']
+    selector: 'app-incident-list-component',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './incident-list-component.html',
+    styleUrls: ['./incident-list-component.scss']
 })
 export class IncidentListComponent implements OnInit {
 
-  allIncidents: IncidentResponseInterface[] = [];
-  filteredIncidents: IncidentResponseInterface[] = [];
+    allIncidents: IncidentResponseInterface[] = [];
+    filteredIncidents: IncidentResponseInterface[] = [];
 
-  // Opções para os filtros
-  availableServices: string[] = [];
-  // availableSeverities: Incident['severity'][] = ['SEV-1', 'SEV-2', 'SEV-3', 'SEV-4'];
-  // availableStatus: Incident['status'][] = ['OPEN', 'IN_ANALYSIS', 'CLOSED'];
+    // Opções para os filtros
+    availableServices: string[] = [];
+    // availableSeverities: Incident['severity'][] = ['SEV-1', 'SEV-2', 'SEV-3', 'SEV-4'];
+    // availableStatus: Incident['status'][] = ['OPEN', 'IN_ANALYSIS', 'CLOSED'];
 
-  filters = {
-    service: '',
-    severity: '',
-    status: ''
-  };
+    filters = {
+        service: '',
+        severity: '',
+        status: ''
+    };
 
-  constructor(
-    private incidentService: IncidentService,
-    private router: Router
-  ) {}
-
-  ngOnInit(): void {
-    this.loadIncidents();
-  }
-
-  loadIncidents(): void {
-    this.incidentService.getIncidents().subscribe((resp) => {
-      const pageAny: any = resp as any;
-      const data: IncidentResponseInterface[] = Array.isArray(pageAny)
-        ? pageAny
-        : (pageAny?.content ?? []);
-
-      // Ordenação resiliente: tenta numérica por id; se não der, usa createdAt desc e, por fim, lexicográfica
-      this.allIncidents = [...data].sort((a, b) => {
-        const aNum = Number(a.id);
-        const bNum = Number(b.id);
-        const aNumOk = !Number.isNaN(aNum);
-        const bNumOk = !Number.isNaN(bNum);
-        if (aNumOk && bNumOk) return bNum - aNum;
-
-        const aTime = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const bTime = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
-        if (bTime !== aTime) return bTime - aTime;
-
-        return String(b.id).localeCompare(String(a.id));
-      });
-
-      this.filteredIncidents = this.allIncidents;
-      this.populateFilterOptions();
-      this.applyFilters();
-    });
-  }
-
-  populateFilterOptions(): void {
-    const services = this.allIncidents.map(inc => inc.service);
-    this.availableServices = [...new Set(services)]; // Pega serviços únicos
-  }
-
-  applyFilters(): void {
-    let incidents = [...this.allIncidents];
-
-    if (this.filters.service) {
-      incidents = incidents.filter(inc => inc.service === this.filters.service);
-    }
-    if (this.filters.severity) {
-      incidents = incidents.filter(inc => inc.severity === this.filters.severity);
-    }
-    if (this.filters.status) {
-      incidents = incidents.filter(inc => inc.status === this.filters.status);
+    constructor(
+        private incidentService: IncidentService,
+        private router: Router
+    ) {
     }
 
-    this.filteredIncidents = incidents;
-  }
-
-  resetFilters(): void {
-    this.filters = { service: '', severity: '', status: '' };
-    this.applyFilters();
-  }
-
-  createNewIncident(): void {
-    this.router.navigate(['/incidents/new']);
-  }
-
-  editIncident(id: number): void {
-    this.router.navigate(['/incidents/edit', id]);
-  }
-
-  /**
-   * Calcula o MTTR (Mean Time To Recovery) em um formato legível.
-   */
-  calculateMttr(incident: IncidentResponseInterface): string {
-    if (!incident.endedAt) {
-      return 'Em andamento';
+    ngOnInit(): void {
+        this.loadIncidents();
     }
-    const start = new Date(incident.startedAt).getTime();
-    const end = new Date(incident.endedAt).getTime();
-    const diffMs = end - start;
 
-    if (diffMs < 0) return 'N/A';
+    loadIncidents(): void {
+        this.incidentService.getIncidents().subscribe((resp) => {
+            const pageAny: any = resp as any;
+            const data: IncidentResponseInterface[] = Array.isArray(pageAny)
+                ? pageAny
+                : (pageAny?.content ?? []);
 
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const remainingMins = diffMins % 60;
+            // Ordenação resiliente: tenta numérica por id; se não der, usa createdAt desc e, por fim, lexicográfica
+            this.allIncidents = [...data].sort((a, b) => {
+                const aNum = Number(a.id);
+                const bNum = Number(b.id);
+                const aNumOk = !Number.isNaN(aNum);
+                const bNumOk = !Number.isNaN(bNum);
+                if (aNumOk && bNumOk) return bNum - aNum;
 
-    if (diffHours > 0) {
-      return `${diffHours}h ${remainingMins}m`;
+                const aTime = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const bTime = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+                if (bTime !== aTime) return bTime - aTime;
+
+                return String(b.id).localeCompare(String(a.id));
+            });
+
+            this.filteredIncidents = this.allIncidents;
+            this.populateFilterOptions();
+            this.applyFilters();
+        });
     }
-    return `${remainingMins}m`;
-  }
 
-  // Funções para classes de estilo dinâmicas
-  getSeverityClass(severity: IncidentResponseInterface['severity']): string {
-    let color = '';
-    switch (severity) {
-      case 'SEV-1':
-        color = 'bg-red-500 text-white';
-        break;
-      case 'SEV-2':
-        color = 'bg-yellow-400 text-white';
-        break;
-      case 'SEV-3':
-        color = 'bg-green-500 text-gray-800';
-        break;
-      case 'SEV-4':
-        color = 'bg-blue-400 text-white';
-        break;
-      default: color = 'bg-gray-400 text-white';
+    populateFilterOptions(): void {
+        const services = this.allIncidents.map(inc => inc.service);
+        this.availableServices = [...new Set(services)]; // Pega serviços únicos
     }
-    return color;
-  }
 
-  getStatusClass(status: IncidentResponseInterface['status']): string {
-    switch (status) {
-      case 'Open': return 'bg-red-200 text-red-800 animate-pulse';
-      case 'In Analysis': return 'bg-yellow-200 text-yellow-800';
-      case 'Closed': return 'bg-green-200 text-green-800';
-      default: return 'bg-gray-200 text-gray-800';
+    applyFilters(): void {
+        let incidents = [...this.allIncidents];
+
+        if (this.filters.service) {
+            incidents = incidents.filter(inc => inc.service === this.filters.service);
+        }
+        if (this.filters.severity) {
+            incidents = incidents.filter(inc => inc.severity === this.filters.severity);
+        }
+        if (this.filters.status) {
+            incidents = incidents.filter(inc => inc.status === this.filters.status);
+        }
+
+        this.filteredIncidents = incidents;
     }
-  }
+
+    resetFilters(): void {
+        this.filters = {service: '', severity: '', status: ''};
+        this.applyFilters();
+    }
+
+    createNewIncident(): void {
+        this.router.navigate(['/incidents/new']);
+    }
+
+    editIncident(id: number): void {
+        this.router.navigate(['/incidents/edit', id]);
+    }
+
+    /**
+     * Calcula o MTTR (Mean Time To Recovery) em um formato legível.
+     */
+    calculateMttr(incident: IncidentResponseInterface): string {
+        if (!incident.endedAt) {
+            return 'Em andamento';
+        }
+        const start = new Date(incident.startedAt).getTime();
+        const end = new Date(incident.endedAt).getTime();
+        const diffMs = end - start;
+
+        if (diffMs < 0) return 'N/A';
+
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+        const remainingMins = diffMins % 60;
+
+        if (diffHours > 0) {
+            return `${diffHours}h ${remainingMins}m`;
+        }
+        return `${remainingMins}m`;
+    }
+
+    // Funções para classes de estilo dinâmicas
+    getSeverityClass(severity: IncidentResponseInterface['severity']): string {
+        let color = '';
+        switch (severity) {
+            case 'SEV-1':
+                color = 'bg-red-500 text-white';
+                break;
+            case 'SEV-2':
+                color = 'bg-yellow-400 text-white';
+                break;
+            case 'SEV-3':
+                color = 'bg-green-500 text-gray-800';
+                break;
+            case 'SEV-4':
+                color = 'bg-blue-400 text-white';
+                break;
+            default:
+                color = 'bg-gray-400 text-white';
+        }
+        return color;
+    }
+
+    getStatusClass(status: IncidentResponseInterface['status']): string {
+        switch (status) {
+            case 'Open':
+                return 'bg-red-200 text-red-800 animate-pulse';
+            case 'In Analysis':
+                return 'bg-yellow-200 text-yellow-800';
+            case 'Closed':
+                return 'bg-green-200 text-green-800';
+            default:
+                return 'bg-gray-200 text-gray-800';
+        }
+    }
 }

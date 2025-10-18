@@ -1,23 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IncidentFormComponent } from './incident-form-component';
+import {IncidentFormComponent} from './incident-form-component';
 
 describe('IncidentFormComponent', () => {
-  let component: IncidentFormComponent;
-  let fixture: ComponentFixture<IncidentFormComponent>;
+    let component: IncidentFormComponent;
+    let fixture: ComponentFixture<IncidentFormComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [IncidentFormComponent]
-    })
-    .compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [IncidentFormComponent]
+        })
+            .compileComponents();
 
-    fixture = TestBed.createComponent(IncidentFormComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(IncidentFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

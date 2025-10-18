@@ -41,8 +41,8 @@ export class IncidentFormComponent  implements OnInit {
             service: incident.service,
             severity: incident.severity,
             status: incident.status,
-            startedAt: incident.startedAt ? new Date(incident.startedAt).toISOString() : new Date().toISOString(),
-            endedAt: incident.endedAt ? new Date(incident.endedAt).toISOString() : null,
+            startedAt: this.formatForInput(incident.startedAt) || this.toLocalDatetimeInputValue(new Date())!,
+            endedAt: this.toLocalDatetimeInputValue(incident.endedAt) || '',
             impactShort: incident.impactShort,
           };
         } else {
@@ -63,10 +63,25 @@ export class IncidentFormComponent  implements OnInit {
       service: '',
       severity: SeverityEnum.SEV_3, // Valor padrão
       status: StatusEnum.OPEN,
-      startedAt: new Date().toISOString(), // Data e hora atual
-      endedAt: null,
+      startedAt: this.toLocalDatetimeInputValue(new Date())!, // Data e hora atual (local, formato input)
+      endedAt: '',
       impactShort: ''
     };
+  }
+
+  private toLocalDatetimeInputValue(dateLike: Date | string | null | undefined): string | null {
+    if (!dateLike) return null;
+    const d = new Date(dateLike);
+    if (isNaN(d.getTime())) return null;
+    const tzOffset = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - tzOffset * 60000);
+    return local.toISOString().slice(0, 16);
+  }
+
+  // Garantir que o input datetime-local sempre receba uma string no formato correto
+  formatForInput(value: string | Date | null | undefined): string {
+    const v = this.toLocalDatetimeInputValue(value);
+    return v ?? '';
   }
 
   onSubmit(): void {

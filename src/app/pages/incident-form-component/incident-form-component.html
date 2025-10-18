@@ -55,7 +55,7 @@
             <label for="startedAt" class="form-label">Início do Incidente</label>
             <input type="datetime-local" id="startedAt" name="startedAt" required
                    class="form-input"
-                   [(ngModel)]="incident.startedAt" #startedAt="ngModel">
+                   [ngModel]="formatForInput(incident.startedAt)" (ngModelChange)="incident.startedAt = $event" #startedAt="ngModel">
             <div *ngIf="startedAt.invalid && (startedAt.dirty || startedAt.touched)" class="text-red-500 text-xs mt-1">
               A data de início é obrigatória.
             </div>
@@ -64,7 +64,7 @@
             <label for="endedAt" class="form-label">Fim do Incidente (Opcional)</label>
             <input type="datetime-local" id="endedAt" name="endedAt"
                    class="form-input"
-                   [(ngModel)]="incident.endedAt">
+                   [ngModel]="formatForInput(incident.endedAt)" (ngModelChange)="incident.endedAt = $event">
           </div>
         </div>
 

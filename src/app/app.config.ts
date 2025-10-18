@@ -6,12 +6,14 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { AUTH_PROVIDER, GOOGLE_AUTH_CONFIG, LOGIN_URL } from './auth/auth.tokens';
 import { ProviderEnum } from './domain/enums/provider-enum';
 import { AuthLoginService } from './services/auth-login.service';
 import { AuthService } from './auth/auth.service';
+import { LoadingInterceptor } from './shared/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -63,5 +65,7 @@ export const appConfig: ApplicationConfig = {
             deps: [AuthService],
             multi: true,
         },
+        // Register global loading interceptor to show overlay during HTTP requests
+        { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
     ],
 };

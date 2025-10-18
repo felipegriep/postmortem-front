@@ -123,13 +123,23 @@ export class IncidentListComponent implements OnInit {
 
   // Funções para classes de estilo dinâmicas
   getSeverityClass(severity: IncidentResponseInterface['severity']): string {
+    let color = '';
     switch (severity) {
-      case 'SEV-1': return 'bg-red-500 text-white';
-      case 'SEV-2': return 'bg-orange-500 text-white';
-      case 'SEV-3': return 'bg-yellow-400 text-gray-800';
-      case 'SEV-4': return 'bg-blue-400 text-white';
-      default: return 'bg-gray-400 text-white';
+      case 'SEV-1':
+        color = 'bg-red-500 text-white';
+        break;
+      case 'SEV-2':
+        color = 'bg-yellow-400 text-white';
+        break;
+      case 'SEV-3':
+        color = 'bg-green-500 text-gray-800';
+        break;
+      case 'SEV-4':
+        color = 'bg-blue-400 text-white';
+        break;
+      default: color = 'bg-gray-400 text-white';
     }
+    return color;
   }
 
   getStatusClass(status: IncidentResponseInterface['status']): string {

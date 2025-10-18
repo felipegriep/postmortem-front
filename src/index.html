@@ -6,6 +6,11 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    /* Hide Google Sign-In UI when authenticated (robust against re-render) */
+    html.auth #g_id_onload,
+    html.auth .g_id_signin { display: none !important; }
+  </style>
   <!-- Runtime config (set window.NG_API_DNS here without rebuilding) -->
   <script src="assets/runtime-config.js"></script>
   <!-- Google Identity Services -->
@@ -14,6 +19,69 @@
   <script>
     // Configure your client id here or via deployment environment
     window.NG_GOOGLE_CLIENT_ID = window.NG_GOOGLE_CLIENT_ID || '';
+
+    // Helper: toggle Google Sign-In UI visibility and persist via CSS class on <html>
+    window.__setGisVisible = function(visible) {
+      try {
+        var root = document.documentElement;
+        if (!visible) { root.classList.add('auth'); } else { root.classList.remove('auth'); }
+        var onloadEl = document.getElementById('g_id_onload');
+        var btnEls = document.getElementsByClassName('g_id_signin');
+        var disp = visible ? '' : 'none';
+        if (onloadEl) { onloadEl.style.display = disp; onloadEl.setAttribute('aria-hidden', visible ? 'false' : 'true'); }
+        for (var i = 0; i < btnEls.length; i++) {
+          btnEls[i].style.display = disp;
+          btnEls[i].setAttribute('aria-hidden', visible ? 'false' : 'true');
+        }
+      } catch(e) {}
+    };
+
+    // Decode JWT payload (to get email for revoke)
+    function decodeJwtPayload(token) {
+      try {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) { return null; }
+    }
+
+    // Expose Google logout that revokes and disables auto prompt
+    window.googleLogout = function() {
+      try {
+        var gis = window.google && window.google.accounts && window.google.accounts.id;
+        if (gis && typeof gis.disableAutoSelect === 'function') {
+          gis.disableAutoSelect();
+        }
+        var authToken = null;
+        try { authToken = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token'); } catch(e) {}
+        var email = null;
+        if (authToken) {
+          var payload = decodeJwtPayload(authToken);
+          email = payload && (payload.email || payload.sub || null);
+        }
+        if (gis && typeof gis.revoke === 'function' && email) {
+          try { gis.revoke(email, function(){ /* revoked */ }); } catch(e) {}
+        }
+      } catch (e) {
+        console.warn('googleLogout encountered an issue', e);
+      }
+
+      // Clear tokens on our side
+      try { localStorage.removeItem('token'); } catch {}
+      try { localStorage.removeItem('auth_token'); } catch {}
+      try { sessionStorage.removeItem('token'); } catch {}
+      try { sessionStorage.removeItem('auth_token'); } catch {}
+
+      // Show GIS again, notify app, and reload
+      try { window.__setGisVisible(true); } catch {}
+      try { window.dispatchEvent(new CustomEvent('app_logout')); } catch {}
+      try { window.location.href = '/'; setTimeout(function(){ location.reload(); }, 0); } catch {}
+    };
+
+    // Called by GIS after successful credential
     window.handleGoogleCredential = function(resp) {
       try {
         const jwt = resp && resp.credential;
@@ -47,11 +115,49 @@
           }).catch(function(){ /* ignore non-JSON */ });
         }).catch(function(err){
           console.error('Login API request failed', err);
+        }).finally(function(){
+          // Hide GIS UI and reload layout
+          try { window.__setGisVisible(false); } catch {}
+          try { window.location.href = '/'; setTimeout(function(){ location.reload(); }, 0); } catch {}
         });
       } catch (e) {
         console.error('Failed to store auth token', e);
       }
-    }
+    };
+
+    // Initial UI state based on token/auth_token
+    (function(){
+      var hasAnyToken = false;
+      try {
+        hasAnyToken = !!(
+          localStorage.getItem('token') || sessionStorage.getItem('token') ||
+          localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+        );
+      } catch {}
+      if (hasAnyToken) { window.__setGisVisible(false); }
+    })();
+
+    // Hide GIS immediately when auth token event fires
+    window.addEventListener('auth_token_received', function(){
+      try { window.__setGisVisible(false); } catch {}
+    });
+
+    // Also react to storage changes (multi-tab or async writes)
+    window.addEventListener('storage', function(ev){
+      try {
+        if (!ev) return;
+        if (ev.key === 'token' || ev.key === 'auth_token') {
+          var val = ev.newValue;
+          if (val && val.length > 0) { window.__setGisVisible(false); }
+          else { window.__setGisVisible(true); }
+        }
+      } catch {}
+    });
+
+    // Listen to app logout to toggle UI
+    window.addEventListener('app_logout', function(){
+      try { window.__setGisVisible(true); } catch {}
+    });
   </script>
 </head>
 <body>

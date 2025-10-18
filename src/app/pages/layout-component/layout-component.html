@@ -35,9 +35,18 @@
                     </svg>
                     <span>Postmortem Hub</span>
                 </a>
+                <!-- Show navigation when logged in -->
                 <div *ngIf="isLoggedIn" class="hidden md:flex items-center space-x-4">
                     <a class="nav-link" routerLink="/incidents">Incidentes</a>
                     <a (click)="logout($event)" class="nav-link" href="#">Logout</a>
+                </div>
+
+                <!-- Highlighted Google sign-in wrapper (visible when NOT logged in) -->
+                <div *ngIf="!isLoggedIn" class="hidden md:flex items-center">
+                    <div class="google-signin-wrapper">
+                        <!-- Placeholder rendered by GoogleLoaderService -->
+                        <div class="g_id_signin" data-size="large" data-type="standard"></div>
+                    </div>
                 </div>
                 <div *ngIf="isLoggedIn" class="md:hidden">
                     <button (click)="toggleMenu()" class="text-gray-600 dark:text-gray-300 focus:outline-none">
@@ -61,6 +70,14 @@
         <div *ngIf="isMenuOpen && isLoggedIn" class="md:hidden bg-white dark:bg-gray-800">
             <a (click)="closeMenu()" class="block py-2 px-4 text-sm nav-link" routerLink="/incidents">Incidentes</a>
             <a (click)="logout($event)" class="block py-2 px-4 text-sm nav-link" href="#">Logout</a>
+        </div>
+        <!-- Mobile: show Google sign-in if not logged in (prominent) -->
+        <div *ngIf="!isLoggedIn" class="md:hidden bg-white dark:bg-gray-800">
+            <div class="p-4">
+                <div class="google-signin-wrapper block">
+                    <div class="g_id_signin" data-size="large" data-type="standard"></div>
+                </div>
+            </div>
         </div>
     </header>
     <main class="flex-grow container mx-auto p-4">

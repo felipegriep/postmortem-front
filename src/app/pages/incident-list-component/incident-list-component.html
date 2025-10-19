@@ -16,11 +16,8 @@
             <div class="grid md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">Serviço</label>
-                    <select (ngModelChange)="applyFilters()" [(ngModel)]="filters.service" class="form-input w-full"
-                            name="filterService">
-                        <option value="">Todos</option>
-                        <option *ngFor="let svc of availableServices" [value]="svc">{{ svc }}</option>
-                    </select>
+                    <input (input)="onServiceInput($event.target.value)" [(ngModel)]="filters.service" class="form-input w-full"
+                           name="filterService" type="text" placeholder="Digite o serviço (ex: billing)">
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Severidade</label>
@@ -91,4 +88,3 @@
         </section>
     </div>
 </div>
-

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { IncidentListComponent } from './pages/incident-list-component/incident-list-component';
-import { IncidentFormComponent } from './pages/incident-form-component/incident-form-component';
+// Incident components will be lazy-loaded via `loadComponent` to keep initial bundle small
+// (they import Angular Material and other heavier libs).
 import { LayoutComponent } from './pages/layout-component/layout-component';
 import { HomeComponent } from './pages/home-component/home-component';
 
@@ -10,9 +10,18 @@ export const routes: Routes = [
         component: LayoutComponent,
         children: [
             { path: '', component: HomeComponent, pathMatch: 'full' },
-            { path: 'incidents', component: IncidentListComponent },
-            { path: 'incidents/new', component: IncidentFormComponent },
-            { path: 'incidents/edit/:id', component: IncidentFormComponent },
+            {
+                path: 'incidents',
+                loadComponent: () => import('./pages/incident-list-component/incident-list-component').then((m) => m.IncidentListComponent),
+            },
+            {
+                path: 'incidents/new',
+                loadComponent: () => import('./pages/incident-form-component/incident-form-component').then((m) => m.IncidentFormComponent),
+            },
+            {
+                path: 'incidents/edit/:id',
+                loadComponent: () => import('./pages/incident-form-component/incident-form-component').then((m) => m.IncidentFormComponent),
+            },
         ],
     },
     { path: '**', redirectTo: '' }, // Redireciona qualquer outra rota para a home

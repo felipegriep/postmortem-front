@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IncidentResponseInterface } from '../../domain/interfaces/response/incident-response-interface';
 import { IncidentService } from '../../services/incident-service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
     selector: 'app-incident-list-component',
@@ -11,7 +13,7 @@ import { FormsModule } from '@angular/forms';
     templateUrl: './incident-list-component.html',
     styleUrls: ['./incident-list-component.scss'],
 })
-export class IncidentListComponent implements OnInit {
+export class IncidentListComponent implements OnInit, OnDestroy {
     allIncidents: IncidentResponseInterface[] = [];
     filteredIncidents: IncidentResponseInterface[] = [];
 
@@ -26,9 +28,18 @@ export class IncidentListComponent implements OnInit {
         status: '',
     };
 
+    // Subject to debounce user input on service filter
+    private serviceInput$ = new Subject<string>();
+    private serviceSub?: Subscription;
+
     constructor(private incidentService: IncidentService, private router: Router) {}
 
     ngOnInit(): void {
+        // subscribe with debounce so filtering happens as user types (not on every keystroke)
+        this.serviceSub = this.serviceInput$.pipe(debounceTime(150)).subscribe((val) => {
+            this.filters.service = (val || '').trim();
+            this.applyFilters();
+        });
         this.loadIncidents();
     }
 
@@ -65,11 +76,18 @@ export class IncidentListComponent implements OnInit {
         this.availableServices = [...new Set(services)]; // Pega serviços únicos
     }
 
+    // Called from template on input event
+    onServiceInput(value: string): void {
+        // push to subject (debounced), keep the input visible via ngModel
+        this.serviceInput$.next(value || '');
+    }
+
     applyFilters(): void {
         let incidents = [...this.allIncidents];
 
         if (this.filters.service) {
-            incidents = incidents.filter((inc) => inc.service === this.filters.service);
+            const f = this.filters.service.toString().toLowerCase().trim();
+            incidents = incidents.filter((inc) => (inc.service || '').toString().toLowerCase().includes(f));
         }
         if (this.filters.severity) {
             incidents = incidents.filter((inc) => inc.severity === this.filters.severity);
@@ -150,5 +168,11 @@ export class IncidentListComponent implements OnInit {
             default:
                 return 'bg-gray-200 text-gray-800';
         }
+    }
+
+    ngOnDestroy(): void {
+        try {
+            this.serviceSub?.unsubscribe();
+        } catch {}
     }
 }

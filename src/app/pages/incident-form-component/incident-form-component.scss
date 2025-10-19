@@ -1,3 +1,5 @@
+// theme moved to public/material-indigo-pink.css and will be loaded dynamically by the component
+
 :host {
     display: flex;
     justify-content: center;
@@ -17,13 +19,34 @@
     @apply mb-2 text-sm font-bold text-gray-700 dark:text-gray-300;
 }
 
+// Forçar bordas visíveis em todos os inputs (visuais locais, sem shadows pesados)
 .form-input {
-    @apply w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-2xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm;
+    @apply w-full px-4 py-3 rounded-2xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm;
+    background: transparent;
+    border: 1px solid rgba(148,163,184,0.12);
 }
 
 // Garante que o texto do placeholder seja visível no modo escuro
 .form-input::placeholder {
     @apply text-gray-400 dark:text-gray-500;
+}
+
+// label-top: alinhar label ao topo do campo grande (textarea)
+.label-top {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.label-top .form-label {
+  margin-bottom: 0.5rem;
+}
+
+// flatpickr alt input fallback: regra minimal para manter aparência
+.flatpickr-alt-input {
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: 1px solid rgba(148,163,184,0.12);
 }
 
 // Área de ações
@@ -41,3 +64,74 @@ textarea#impactShort.form-input,
 textarea.form-input[name="impactShort"] {
     min-height: 10rem; // make the impact summary visibly larger (~160px)
 }
+
+// At larger screens we want labels and controls to be split in two columns
+@media (min-width: 768px) {
+  .form-group {
+    display: grid;
+    grid-template-columns: 200px 1fr; /* label column / control column */
+    align-items: center;
+    column-gap: 1.25rem; /* espaço maior entre label e campo */
+    row-gap: 0.5rem;
+  }
+
+  .form-label {
+    margin-bottom: 0; /* remove o gap vertical quando em linha */
+    text-align: right; /* alinha o texto do label à direita para ficar junto ao campo */
+    padding-right: 0.5rem;
+  }
+
+  /* Ensure label-top sections align label to the top of the control column */
+  .label-top {
+    display: grid; /* keep grid behavior */
+    grid-template-columns: 200px 1fr; /* same split as .form-group */
+    align-items: start; /* align label to the top */
+    column-gap: 1.25rem;
+  }
+  .label-top .form-label {
+    text-align: right;
+    padding-right: 0.5rem;
+    align-self: start;
+    margin-bottom: 0;
+  }
+  .label-top textarea.form-input {
+    grid-column: 2 / 3;
+  }
+}
+
+/* datetime-input tweaks: adicionar espaço para ícone; icon backgrounds moved to global styles */
+.datetime-input {
+  padding-right: 3rem; /* espaço para o ícone */
+  font-family: inherit;
+}
+
+/* Ensure helper text uses new format and is visible */
+.datetime-helper {
+  display: none;
+}
+@media (min-width: 768px) {
+  .datetime-helper {
+    display: block;
+  }
+}
+
+/* Improve spacing for helper/error texts near inputs */
+.form-group .text-xs {
+  margin-left: 0; /* helper texts should align under the control column on md+ */
+}
+
+@media (min-width: 768px) {
+  .form-group .text-xs {
+    grid-column: 2 / 3; /* helper text sits under the input column */
+    margin-top: 0.25rem;
+  }
+}
+
+/* small responsive tweak: place helper text nicely on small screens */
+@media (max-width: 767px) {
+  .form-group {
+    gap: 0.75rem;
+  }
+}
+
+/* ...end of component-specific styles... */

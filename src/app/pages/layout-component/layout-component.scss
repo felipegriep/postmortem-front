@@ -119,6 +119,28 @@
   background: rgba(59,130,246,0.06);
 }
 
+/* Avatar placeholder (iniciais) */
+.avatar-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #4f46e5; /* indigo-600 */
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1;
+  text-transform: uppercase;
+  border: 2px solid rgba(255,255,255,0.06);
+}
+
+.dark .avatar-placeholder {
+  background: #6366f1; /* slightly lighter indigo in dark */
+  color: #fff;
+}
+
 /* Ensure sidebar doesn't push content under header */
 main {
   position: relative;

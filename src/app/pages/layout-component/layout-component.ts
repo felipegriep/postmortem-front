@@ -55,7 +55,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
         }
     };
 
-    constructor(private router: Router, private cdr: ChangeDetectorRef, private hostRef?: ElementRef) {}
+    constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         try {
@@ -254,6 +254,29 @@ export class LayoutComponent implements OnInit, OnDestroy {
             }
         } catch {
             // ignore
+        }
+    }
+
+    // Return initials (1–2 letters) from a full name or email fallback.
+    getInitials(nameOrEmail?: string | null): string {
+        try {
+            if (!nameOrEmail) return '';
+            const s = nameOrEmail.trim();
+            if (!s) return '';
+            // If it looks like an email use the part before '@'
+            const beforeAt = s.includes('@') ? s.split('@')[0] : s;
+            const parts = beforeAt.split(/\s+/).filter(Boolean);
+            if (parts.length === 0) return '';
+            if (parts.length === 1) {
+                // single word: take first two letters
+                return parts[0].substring(0, 2).toUpperCase();
+            }
+            // multiple words: take first letter of first and last
+            const first = parts[0][0] || '';
+            const last = parts[parts.length - 1][0] || '';
+            return (first + last).slice(0, 2).toUpperCase();
+        } catch {
+            return '';
         }
     }
 }

@@ -61,7 +61,12 @@
                         </button>
 
                         <!-- avatar to the right of hamburger -->
-                        <img *ngIf="user?.picture" [src]="user?.picture" alt="Usuário" class="user-avatar"/>
+                        <ng-container *ngIf="user">
+                            <img *ngIf="user.picture" [src]="user.picture" alt="Usuário" class="user-avatar"/>
+                            <div *ngIf="!user.picture" class="user-avatar avatar-placeholder" [attr.aria-label]="user.name || user.email">
+                                {{ getInitials(user.name || user.email) }}
+                            </div>
+                        </ng-container>
                     </div>
                 </div>
             </div>
@@ -86,6 +91,7 @@
             </button>
             <div *ngIf="user" class="flex items-center gap-3">
                 <img *ngIf="user.picture" [src]="user.picture" alt="Avatar" class="user-avatar" />
+                <div *ngIf="!user.picture" class="user-avatar avatar-placeholder">{{ getInitials(user.name || user.email) }}</div>
                 <div>
                     <div class="font-semibold text-gray-800 dark:text-gray-100">{{user.name || user.email}}</div>
                     <div class="text-xs text-gray-500">{{user.email}}</div>

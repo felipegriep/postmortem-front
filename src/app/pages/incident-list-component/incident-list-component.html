@@ -16,28 +16,23 @@
             <div class="grid md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">Serviço</label>
-                    <input (input)="onServiceInput($event.target.value)" [(ngModel)]="filters.service" class="form-input w-full"
-                           name="filterService" type="text" placeholder="Digite o serviço (ex: billing)">
+                    <input [(ngModel)]="filters.service" (ngModelChange)="onServiceChange($event)" class="form-input w-full"
+                            name="filterService" type="text" placeholder="Digite o serviço (ex: billing)">
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Severidade</label>
-                    <select (ngModelChange)="applyFilters()" [(ngModel)]="filters.severity" class="form-input w-full"
+                    <select (ngModelChange)="onSeverityChange($event)" [(ngModel)]="filters.severity" class="form-input w-full"
                             name="filterSeverity">
                         <option value="">Todas</option>
-                        <option value="SEV-1">SEV-1</option>
-                        <option value="SEV-2">SEV-2</option>
-                        <option value="SEV-3">SEV-3</option>
-                        <option value="SEV-4">SEV-4</option>
+                        <option *ngFor="let s of availableSeverities" [value]="s">{{ s }}</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Status</label>
-                    <select (ngModelChange)="applyFilters()" [(ngModel)]="filters.status" class="form-input w-full"
+                    <select (ngModelChange)="onStatusChange($event)" [(ngModel)]="filters.status" class="form-input w-full"
                             name="filterStatus">
                         <option value="">Todos</option>
-                        <option value="OPEN">OPEN</option>
-                        <option value="IN_ANALYSIS">IN_ANALYSIS</option>
-                        <option value="CLOSED">CLOSED</option>
+                        <option *ngFor="let s of availableStatus" [value]="s">{{ s }}</option>
                     </select>
                 </div>
             </div>

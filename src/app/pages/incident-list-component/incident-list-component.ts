@@ -4,8 +4,6 @@ import { IncidentService } from '../../services/incident-service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
 
 @Component({
     selector: 'app-incident-list-component',
@@ -19,8 +17,8 @@ export class IncidentListComponent implements OnInit, OnDestroy {
 
     // Opções para os filtros
     availableServices: string[] = [];
-    // availableSeverities: Incident['severity'][] = ['SEV-1', 'SEV-2', 'SEV-3', 'SEV-4'];
-    // availableStatus: Incident['status'][] = ['OPEN', 'IN_ANALYSIS', 'CLOSED'];
+    availableSeverities: string[] = [];
+    availableStatus: string[] = [];
 
     filters = {
         service: '',
@@ -28,18 +26,9 @@ export class IncidentListComponent implements OnInit, OnDestroy {
         status: '',
     };
 
-    // Subject to debounce user input on service filter
-    private serviceInput$ = new Subject<string>();
-    private serviceSub?: Subscription;
-
     constructor(private incidentService: IncidentService, private router: Router) {}
 
     ngOnInit(): void {
-        // subscribe with debounce so filtering happens as user types (not on every keystroke)
-        this.serviceSub = this.serviceInput$.pipe(debounceTime(150)).subscribe((val) => {
-            this.filters.service = (val || '').trim();
-            this.applyFilters();
-        });
         this.loadIncidents();
     }
 
@@ -50,8 +39,37 @@ export class IncidentListComponent implements OnInit, OnDestroy {
                 ? pageAny
                 : pageAny?.content ?? [];
 
+            // Normalize incoming data: map common variants to canonical strings
+            const normalizeSeverityIncoming = (v: any): string => {
+                if (v === undefined || v === null || String(v).trim() === '') return '';
+                const s = String(v).toUpperCase().trim();
+                if (s.includes('SEV1') || s.includes('SEV-1') || s.includes('SEV_1')) return 'SEV-1';
+                if (s.includes('SEV2') || s.includes('SEV-2') || s.includes('SEV_2')) return 'SEV-2';
+                if (s.includes('SEV3') || s.includes('SEV-3') || s.includes('SEV_3')) return 'SEV-3';
+                if (s.includes('SEV4') || s.includes('SEV-4') || s.includes('SEV_4')) return 'SEV-4';
+                return String(v);
+            };
+
+            const normalizeStatusIncoming = (v: any): string => {
+                if (v === undefined || v === null || String(v).trim() === '') return '';
+                const s = String(v).toUpperCase().trim();
+                if (s === 'OPEN' || s === 'OPENED') return 'Open';
+                if (s === 'IN_ANALYSIS' || s === 'IN ANALYSIS' || s === 'INANALYSIS' || s === 'IN-ANALYSIS') return 'In Analysis';
+                if (s === 'CLOSED' || s === 'CLOSE') return 'Closed';
+                if (s.includes('OPEN')) return 'Open';
+                if (s.includes('CLOSED') || s.includes('CLOSE')) return 'Closed';
+                if (s.includes('ANALYS')) return 'In Analysis';
+                return String(v);
+            };
+
+            const mapped = data.map((inc: any) => ({
+                ...inc,
+                severity: normalizeSeverityIncoming(inc.severity),
+                status: normalizeStatusIncoming(inc.status),
+            }));
+
             // Ordenação resiliente: tenta numérica por id; se não der, usa createdAt desc e, por fim, lexicográfica
-            this.allIncidents = [...data].sort((a, b) => {
+            this.allIncidents = [...mapped].sort((a, b) => {
                 const aNum = Number(a.id);
                 const bNum = Number(b.id);
                 const aNumOk = !Number.isNaN(aNum);
@@ -72,28 +90,52 @@ export class IncidentListComponent implements OnInit, OnDestroy {
     }
 
     populateFilterOptions(): void {
-        const services = this.allIncidents.map((inc) => inc.service);
-        this.availableServices = [...new Set(services)]; // Pega serviços únicos
+         const services = this.allIncidents.map((inc) => inc.service);
+         this.availableServices = [...new Set(services)]; // Pega serviços únicos
+         const sevs = this.allIncidents.map((inc) => inc.severity).filter((s) => s !== undefined && s !== null && String(s).trim() !== '');
+         this.availableSeverities = [...new Set(sevs)].sort();
+         const stats = this.allIncidents.map((inc) => inc.status).filter((s) => s !== undefined && s !== null && String(s).trim() !== '');
+         this.availableStatus = [...new Set(stats)].sort();
+     }
+
+    // Handlers that receive the new value from (ngModelChange) and update filters before applying
+    onServiceChange(newValue: string): void {
+        this.filters.service = (newValue || '').toString();
+        this.applyFilters();
     }
 
-    // Called from template on input event
-    onServiceInput(value: string): void {
-        // push to subject (debounced), keep the input visible via ngModel
-        this.serviceInput$.next(value || '');
+    onSeverityChange(newValue: string): void {
+        this.filters.severity = (newValue || '').toString();
+        this.applyFilters();
+    }
+
+    onStatusChange(newValue: string): void {
+        this.filters.status = (newValue || '').toString();
+        this.applyFilters();
     }
 
     applyFilters(): void {
         let incidents = [...this.allIncidents];
 
-        if (this.filters.service) {
+        // Service: contains, case-insensitive
+        if (this.filters.service && this.filters.service.toString().trim() !== '') {
             const f = this.filters.service.toString().toLowerCase().trim();
             incidents = incidents.filter((inc) => (inc.service || '').toString().toLowerCase().includes(f));
         }
-        if (this.filters.severity) {
-            incidents = incidents.filter((inc) => inc.severity === this.filters.severity);
+
+        // helper: normalize to alphanumeric uppercase compact form for stable equality
+        const normalizeKey = (v: any) => String(v || '').toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
+
+        // Severity: normalize and compare by equality of normalized key
+        if (this.filters.severity && this.filters.severity.toString().trim() !== '') {
+            const sevNorm = normalizeKey(this.filters.severity);
+            incidents = incidents.filter((inc) => normalizeKey(inc.severity) === sevNorm);
         }
-        if (this.filters.status) {
-            incidents = incidents.filter((inc) => inc.status === this.filters.status);
+
+        // Status: normalize and compare by equality
+        if (this.filters.status && this.filters.status.toString().trim() !== '') {
+            const statNorm = normalizeKey(this.filters.status);
+            incidents = incidents.filter((inc) => normalizeKey(inc.status) === statNorm);
         }
 
         this.filteredIncidents = incidents;
@@ -137,7 +179,7 @@ export class IncidentListComponent implements OnInit, OnDestroy {
 
     // Funções para classes de estilo dinâmicas
     getSeverityClass(severity: IncidentResponseInterface['severity']): string {
-        let color = '';
+        let color: string;
         switch (severity) {
             case 'SEV-1':
                 color = 'bg-red-500 text-white';
@@ -171,8 +213,6 @@ export class IncidentListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        try {
-            this.serviceSub?.unsubscribe();
-        } catch {}
+        // nothing to cleanup now (no subscriptions kept)
     }
 }

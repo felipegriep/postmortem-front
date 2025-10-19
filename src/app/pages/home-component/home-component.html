@@ -35,8 +35,19 @@
             Hub</h1>
         <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">Sua ferramenta centralizada para análise e documentação
             de incidentes. Transforme falhas em aprendizado.</p>
+
+        <!-- If logged in show panel link -->
         <div *ngIf="isLoggedIn" class="mt-8">
             <a class="btn-primary text-lg shadow-lg" routerLink="/incidents">Ver Painel de Incidentes</a>
         </div>
+
+        <!-- If NOT logged in show a single centered, highlighted Google sign-in button -->
+        <div *ngIf="!isLoggedIn" class="home-google-cta mt-8">
+            <div class="google-signin-wrapper" role="button" aria-label="Entrar com Google">
+                <!-- Google renders its button inside this element -->
+                <div class="g_id_signin" data-size="large" data-type="standard"></div>
+            </div>
+        </div>
+
     </div>
 </div>

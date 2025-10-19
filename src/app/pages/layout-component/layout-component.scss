@@ -1,46 +1,45 @@
 // ...existing code...
-+.google-signin-wrapper {
-+    display: inline-flex;
-+    align-items: center;
-+    justify-content: center;
-+    padding: 8px 12px;
-+    border-radius: 10px;
-+    /* Indigo stronger tone (indigo-600) */
-+    border: 1px solid rgba(79, 70, 229, 0.22);
-+    background: rgba(79, 70, 229, 0.10);
-+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
-+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
-+}
-+.google-signin-wrapper:hover {
-+    transform: translateY(-2px);
-+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
-+    background: rgba(79, 70, 229, 0.14);
-+}
-+
-+/* Ensure the rendered button inherits accessible sizing */
-+.google-signin-wrapper .g_id_signin {
-+    display: inline-block;
-+}
-+
-+/* Mobile wrapper adjustments */
-+.google-signin-wrapper.block {
-+    width: 100%;
-+    display: block;
-+}
-+
-+/* Dark mode tweaks */
-+:root .dark .google-signin-wrapper,
-+.dark .google-signin-wrapper {
-+    border: 1px solid rgba(99, 102, 241, 0.26); /* slightly stronger indigo in dark */
-+    background: rgba(99, 102, 241, 0.08);
-+}
-+
-+/* Keep a minimum touch target */
-+.google-signin-wrapper .g_id_signin > * {
-+    min-height: 44px;
-+}
-+
-+/* Small spacing for header alignment */
-+.google-signin-wrapper { margin-left: 10px; }
-// ...existing code...
+.google-signin-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 10px;
+    /* Indigo stronger tone (indigo-600) */
+    border: 1px solid rgba(79, 70, 229, 0.22);
+    background: rgba(79, 70, 229, 0.10);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+.google-signin-wrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
+    background: rgba(79, 70, 229, 0.14);
+}
 
+/* Ensure the rendered button inherits accessible sizing */
+.google-signin-wrapper .g_id_signin {
+    display: inline-block;
+}
+
+/* Mobile wrapper adjustments */
+.google-signin-wrapper.block {
+    width: 100%;
+    display: block;
+}
+
+/* Dark mode tweaks */
+:root .dark .google-signin-wrapper,
+.dark .google-signin-wrapper {
+    border: 1px solid rgba(99, 102, 241, 0.26); /* slightly stronger indigo in dark */
+    background: rgba(99, 102, 241, 0.08);
+}
+
+/* Keep a minimum touch target */
+.google-signin-wrapper .g_id_signin > * {
+    min-height: 44px;
+}
+
+/* Small spacing for header alignment */
+.google-signin-wrapper { margin-left: 10px; }
+// ...existing code...

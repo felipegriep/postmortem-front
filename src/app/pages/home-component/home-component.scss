@@ -1,0 +1,41 @@
+/* Base styles for the Google sign-in button */
+.google-signin-wrapper {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+  padding: 10px 14px;
+  margin: 0 auto;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(79,70,229,0.10), rgba(59,130,246,0.04));
+  box-shadow: 0 6px 18px rgba(15,23,42,0.08);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.google-signin-wrapper:hover {
+  transform: translateY(-2px);
+}
+
+/* Centering the Google sign-in CTA on the home page */
+.home-google-cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-google-cta .google-signin-wrapper {
+  width: 100%;
+  max-width: 360px; /* keep the button contained */
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(79,70,229,0.10), rgba(59,130,246,0.04));
+  box-shadow: 0 6px 18px rgba(15,23,42,0.08);
+}
+
+@media (min-width: 768px) {
+  .home-google-cta .google-signin-wrapper {
+    width: auto;
+  }
+}

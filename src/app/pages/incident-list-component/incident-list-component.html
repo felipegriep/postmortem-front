@@ -104,11 +104,15 @@
                     <ng-container matColumnDef="actions">
                         <th mat-header-cell *matHeaderCellDef></th>
                         <td mat-cell *matCellDef="let row" class="text-right">
-                            <button type="button" aria-label="Editar incidente" class="btn-primary btn-icon" (click)="editIncident(+row.id)"
-                                    [matTooltip]="'Editar incidente #' + row.id + '\nTítulo: ' + (row.title || '-') + '\nServiço: ' + (row.service || '-') + '\nSeveridade: ' + (row.severity || '-')"
-                                    matTooltipPosition="above" matTooltipShowDelay="200">
-                                <!-- Font Awesome pencil icon (registered as `pencil` in component) -->
-                                <fa-icon [icon]="pencil" class="w-4 h-4" aria-hidden="true"></fa-icon>
+                            <button
+                                type="button"
+                                aria-label="Editar incidente"
+                                class="btn-icon edit-icon"
+                                (click)="editIncident(+row.id)"
+                                [matTooltip]="'Editar incidente #' + row.id + '\nTítulo: ' + (row.title || '-') + '\nServiço: ' + (row.service || '-') + '\nSeveridade: ' + (row.severity || '-')"
+                                matTooltipPosition="above"
+                                matTooltipShowDelay="200">
+                                <fa-icon [icon]="pencil" aria-hidden="true"></fa-icon>
                             </button>
                         </td>
                     </ng-container>

@@ -31,3 +31,27 @@ span.rounded {
 button {
     @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
 }
+
+// Action-icon style for icon buttons that combine with .btn-primary
+button.btn-icon {
+    @apply inline-flex items-center justify-center w-10 h-10 p-0 rounded-full text-white shadow-md transition-transform transform hover:scale-105;
+    /* Ensure icon inside centers and doesn't overflow */
+    line-height: 0;
+}
+
+/* If combined with btn-primary, inherit its background and text color */
+button.btn-primary.btn-icon {
+    @apply bg-blue-600 hover:bg-blue-700 text-white; /* fallback in case btn-primary isn't present */
+    padding: 0;
+}
+
+/* Adjust fa-icon inside to a comfortable size */
+button.btn-icon fa-icon, button.btn-icon svg {
+    width: 1rem; /* 16px */
+    height: 1rem;
+}
+
+/* Make mat-tooltip respect newlines in the bound string (pre-line). Use ::ng-deep because tooltip is rendered in overlay container. */
+::ng-deep .mat-tooltip {
+  white-space: pre-line;
+}

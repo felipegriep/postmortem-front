@@ -13,12 +13,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+// Font Awesome
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
 
 import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
     selector: 'app-incident-list-component',
-    // add material modules to the component imports so the template can use them
+    // add material & fontawesome modules to the component imports so the template can use them
     imports: [
         CommonModule,
         FormsModule,
@@ -29,6 +34,8 @@ import { MatTableDataSource } from '@angular/material/table';
         MatSelectModule,
         MatInputModule,
         MatButtonModule,
+        MatTooltipModule,
+        FontAwesomeModule,
     ],
     templateUrl: './incident-list-component.html',
     styleUrls: ['./incident-list-component.scss'],
@@ -55,7 +62,17 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
         status: '',
     };
 
-    constructor(private incidentService: IncidentService, private router: Router) {}
+    constructor(private incidentService: IncidentService, private router: Router, private faLibrary: FaIconLibrary) {
+        // register pencil icon
+        try {
+            this.faLibrary.addIcons(faPencil);
+        } catch (e) {
+            // ignore if library not available
+        }
+    }
+
+    // expose the icon to the template to use <fa-icon [icon]="pencil"></fa-icon>
+    public pencil = faPencil;
 
     ngOnInit(): void {
         this.loadIncidents();

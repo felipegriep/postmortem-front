@@ -1,19 +1,48 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { IncidentResponseInterface } from '../../domain/interfaces/response/incident-response-interface';
 import { IncidentService } from '../../services/incident-service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+// Angular Material imports
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+
+import { MatTableDataSource } from '@angular/material/table';
+
 @Component({
     selector: 'app-incident-list-component',
-    imports: [CommonModule, FormsModule],
+    // add material modules to the component imports so the template can use them
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatInputModule,
+        MatButtonModule,
+    ],
     templateUrl: './incident-list-component.html',
     styleUrls: ['./incident-list-component.scss'],
 })
-export class IncidentListComponent implements OnInit, OnDestroy {
+export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
     allIncidents: IncidentResponseInterface[] = [];
     filteredIncidents: IncidentResponseInterface[] = [];
+
+    // Material table data source
+    dataSource = new MatTableDataSource<IncidentResponseInterface>([]);
+    displayedColumns: string[] = ['id', 'title', 'service', 'severity', 'status', 'startedAt', 'endedAt', 'mttr', 'actions'];
+
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild(MatSort) sort!: MatSort;
 
     // Opções para os filtros
     availableServices: string[] = [];
@@ -32,12 +61,17 @@ export class IncidentListComponent implements OnInit, OnDestroy {
         this.loadIncidents();
     }
 
+    ngAfterViewInit(): void {
+        try {
+            if (this.paginator) this.dataSource.paginator = this.paginator;
+            if (this.sort) this.dataSource.sort = this.sort;
+        } catch (e) {}
+    }
+
     loadIncidents(): void {
         this.incidentService.getIncidents().subscribe((resp) => {
             const pageAny: any = resp as any;
-            const data: IncidentResponseInterface[] = Array.isArray(pageAny)
-                ? pageAny
-                : pageAny?.content ?? [];
+            const data: IncidentResponseInterface[] = Array.isArray(pageAny) ? pageAny : pageAny?.content ?? [];
 
             // Normalize incoming data: map common variants to canonical strings
             const normalizeSeverityIncoming = (v: any): string => {
@@ -68,7 +102,7 @@ export class IncidentListComponent implements OnInit, OnDestroy {
                 status: normalizeStatusIncoming(inc.status),
             }));
 
-            // Ordenação resiliente: tenta numérica por id; se não der, usa createdAt desc e, por fim, lexicográfica
+            // Ordenação resiliente
             this.allIncidents = [...mapped].sort((a, b) => {
                 const aNum = Number(a.id);
                 const bNum = Number(b.id);
@@ -86,17 +120,28 @@ export class IncidentListComponent implements OnInit, OnDestroy {
             this.filteredIncidents = this.allIncidents;
             this.populateFilterOptions();
             this.applyFilters();
+
+            // update material table source
+            this.dataSource.data = this.filteredIncidents;
+            try {
+                if (this.paginator) this.dataSource.paginator = this.paginator;
+                if (this.sort) this.dataSource.sort = this.sort;
+            } catch (e) {}
         });
     }
 
     populateFilterOptions(): void {
-         const services = this.allIncidents.map((inc) => inc.service);
-         this.availableServices = [...new Set(services)]; // Pega serviços únicos
-         const sevs = this.allIncidents.map((inc) => inc.severity).filter((s) => s !== undefined && s !== null && String(s).trim() !== '');
-         this.availableSeverities = [...new Set(sevs)].sort();
-         const stats = this.allIncidents.map((inc) => inc.status).filter((s) => s !== undefined && s !== null && String(s).trim() !== '');
-         this.availableStatus = [...new Set(stats)].sort();
-     }
+        const services = this.allIncidents.map((inc) => inc.service);
+        this.availableServices = [...new Set(services)];
+        const sevs = this.allIncidents
+            .map((inc) => inc.severity)
+            .filter((s) => s !== undefined && s !== null && String(s).trim() !== '');
+        this.availableSeverities = [...new Set(sevs)].sort();
+        const stats = this.allIncidents
+            .map((inc) => inc.status)
+            .filter((s) => s !== undefined && s !== null && String(s).trim() !== '');
+        this.availableStatus = [...new Set(stats)].sort();
+    }
 
     // Handlers that receive the new value from (ngModelChange) and update filters before applying
     onServiceChange(newValue: string): void {
@@ -117,28 +162,26 @@ export class IncidentListComponent implements OnInit, OnDestroy {
     applyFilters(): void {
         let incidents = [...this.allIncidents];
 
-        // Service: contains, case-insensitive
         if (this.filters.service && this.filters.service.toString().trim() !== '') {
             const f = this.filters.service.toString().toLowerCase().trim();
             incidents = incidents.filter((inc) => (inc.service || '').toString().toLowerCase().includes(f));
         }
 
-        // helper: normalize to alphanumeric uppercase compact form for stable equality
         const normalizeKey = (v: any) => String(v || '').toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
-        // Severity: normalize and compare by equality of normalized key
         if (this.filters.severity && this.filters.severity.toString().trim() !== '') {
             const sevNorm = normalizeKey(this.filters.severity);
             incidents = incidents.filter((inc) => normalizeKey(inc.severity) === sevNorm);
         }
 
-        // Status: normalize and compare by equality
         if (this.filters.status && this.filters.status.toString().trim() !== '') {
             const statNorm = normalizeKey(this.filters.status);
             incidents = incidents.filter((inc) => normalizeKey(inc.status) === statNorm);
         }
 
         this.filteredIncidents = incidents;
+        // update table datasource
+        this.dataSource.data = this.filteredIncidents;
     }
 
     resetFilters(): void {
@@ -154,9 +197,6 @@ export class IncidentListComponent implements OnInit, OnDestroy {
         this.router.navigate(['/incidents/edit', id]);
     }
 
-    /**
-     * Calcula o MTTR (Mean Time To Recovery) em um formato legível.
-     */
     calculateMttr(incident: IncidentResponseInterface): string {
         if (!incident.endedAt) {
             return 'Em andamento';
@@ -213,6 +253,6 @@ export class IncidentListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        // nothing to cleanup now (no subscriptions kept)
+        // nothing to cleanup now
     }
 }

@@ -216,26 +216,6 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.router.navigate(['/incidents/edit', id]);
     }
 
-    calculateMttr(incident: IncidentResponseInterface): string {
-        if (!incident.endedAt) {
-            return 'Em andamento';
-        }
-        const start = new Date(incident.startedAt).getTime();
-        const end = new Date(incident.endedAt).getTime();
-        const diffMs = end - start;
-
-        if (diffMs < 0) return 'N/A';
-
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMins / 60);
-        const remainingMins = diffMins % 60;
-
-        if (diffHours > 0) {
-            return `${diffHours}h ${remainingMins}m`;
-        }
-        return `${remainingMins}m`;
-    }
-
     // Funções para classes de estilo dinâmicas
     getSeverityClass(severity: IncidentResponseInterface['severity']): string {
         let color: string;

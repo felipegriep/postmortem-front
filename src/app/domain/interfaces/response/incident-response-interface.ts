@@ -14,4 +14,6 @@ export interface IncidentResponseInterface {
     reporter: UserAccountResponseInterface;
     createdAt: Date;
     updatedAt: Date;
+    mttrMinutes: number;
+    mttaMinutes: number;
 }

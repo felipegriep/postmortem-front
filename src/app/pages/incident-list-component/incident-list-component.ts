@@ -90,6 +90,8 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
             const pageAny: any = resp as any;
             const data: IncidentResponseInterface[] = Array.isArray(pageAny) ? pageAny : pageAny?.content ?? [];
 
+            console.log('Incidents loaded:', data);
+
             // Normalize incoming data: map common variants to canonical strings
             const normalizeSeverityIncoming = (v: any): string => {
                 if (v === undefined || v === null || String(v).trim() === '') return '';

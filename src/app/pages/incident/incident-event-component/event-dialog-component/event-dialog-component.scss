@@ -1,6 +1,7 @@
 /* Styles to harmonize the dialog with the global form/card style */
 :host {
   display: block;
+  border-style: none !important;
 }
 
 /* Make the Material dialog surface look like a card with rounded corners */

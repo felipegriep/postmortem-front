@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* You can add global styles to this file, and also import other style files */
 
 /* Global styles and shared theme moved out from component SCSS to keep component bundles small */
@@ -177,4 +181,8 @@ button.edit-icon fa-icon {
     width: 1rem;
     height: 1rem;
     color: #3b82f6; /* azul padrão */
+}
+
+.mat-mdc-form-field-flex {
+  border-style: none !important;
 }

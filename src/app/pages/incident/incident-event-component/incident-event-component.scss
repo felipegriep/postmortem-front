@@ -18,7 +18,7 @@
     border-radius: 0.5rem;
 }
 
-:host button.btn-primary mat-icon {
+:host button.btn-primary fa-icon {
     font-size: 1.125rem; /* garante o ícone em tamanho adequado */
     line-height: 0;
 }
@@ -26,4 +26,41 @@
 /* small safeguard: ensure icon + text do not wrap/overlap */
 :host button.btn-primary span {
     white-space: nowrap;
+}
+
+:host button.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: 9999px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background-color: transparent;
+    color: var(--app-primary);
+    box-shadow: none;
+    transition: color 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+:host button.btn-icon fa-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+:host button.btn-icon:hover,
+:host button.btn-icon:focus-visible {
+    border-color: rgba(14, 165, 233, 0.45);
+    color: color-mix(in srgb, var(--app-primary) 85%, black 15%);
+    transform: scale(1.05);
+}
+
+:host button.btn-icon.delete-icon {
+    color: #ef4444;
+}
+
+:host button.btn-icon.delete-icon:hover,
+:host button.btn-icon.delete-icon:focus-visible {
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #dc2626;
 }

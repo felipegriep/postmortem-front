@@ -1,0 +1,197 @@
+/* Styles to harmonize the dialog with the global form/card style */
+:host {
+  display: block;
+}
+
+/* Make the Material dialog surface look like a card with rounded corners */
+:host ::ng-deep .mat-mdc-dialog-surface {
+  border-radius: 0.75rem; /* rounded like other cards */
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 8px 24px rgba(2,6,23,0.12);
+  overflow: hidden;
+  background: var(--fp-bg, #fff);
+}
+
+/* Limit dialog width so it visually matches other cards/forms */
+:host ::ng-deep .mat-mdc-dialog-surface {
+  max-width: 48rem; /* 768px - slightly larger for forms */
+  width: 100%;
+}
+
+/* Header: ensure padding and a clear bottom separator */
+:host ::ng-deep header {
+  padding: 1rem 1.25rem;
+  background: transparent;
+  border-bottom: 1px solid rgba(15,23,42,0.08); /* slightly stronger */
+}
+:host ::ng-deep header h2 {
+  margin: 0;
+  font-weight: 700;
+}
+:host ::ng-deep header p {
+  margin: 0.25rem 0 0 0;
+  color: var(--fp-muted, #6b7280);
+  font-size: 0.9375rem;
+}
+
+/* Dialog content spacing */
+:host ::ng-deep .mat-mdc-dialog-content {
+  padding: 0.75rem 1.25rem 1rem 1.25rem;
+}
+
+/* Ensure primary button inside dialog aligns icon + text like elsewhere */
+:host ::ng-deep .mat-mdc-dialog-surface .btn-primary,
+:host ::ng-deep .btn-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+:host ::ng-deep .btn-primary mat-icon {
+  font-size: 1rem;
+  line-height: 0;
+}
+
+/* Match global .form-input exactly: bg gray-50, padding, rounded-lg */
+:host ::ng-deep input[matInput],
+:host ::ng-deep textarea[matInput],
+:host ::ng-deep .mat-mdc-select-trigger,
+:host ::ng-deep .mat-mdc-text-field-outlined .mat-mdc-text-field__input {
+  padding: 0.5rem 1rem !important; /* px-4 py-2 -> approx 0.5rem 1rem */
+  border-radius: 0.5rem !important; /* rounded-lg like .form-input */
+  background: #f8fafc !important; /* gray-50 to match global inputs */
+  border: 1px solid rgba(209,213,219,1) !important; /* gray-300 */
+  box-shadow: none !important;
+  font-family: inherit;
+  color: var(--fp-text, #0f172a);
+}
+
+/* Improve native datetime-local control visuals across browsers */
+:host ::ng-deep input[type="datetime-local"].form-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 2.25rem !important; /* leave room for picker icon */
+}
+:host ::ng-deep input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  opacity: 0.7;
+  margin-left: 0.35rem;
+  filter: none;
+}
+
+/* Ensure textarea autosize min-height and comfortable padding */
+:host ::ng-deep textarea[matInput] {
+  min-height: 3.25rem;
+  resize: vertical;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+/* Mat-form-field outlined shape radius */
+:host ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-outlined-shape {
+  border-radius: 0.5rem !important;
+}
+
+/* Floating label: give the label the same background as inputs so the notch looks natural */
+:host ::ng-deep .mat-mdc-floating-label {
+  background: #f8fafc;
+  padding: 0 0.35rem;
+  border-radius: 0.25rem;
+  color: var(--fp-muted, #6b7280);
+  transform-origin: left top;
+}
+
+/* Outline stroke color consistent */
+:host ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-notched-outline .mat-mdc-notched-outline__stroke {
+  stroke: rgba(209,213,219,1) !important; /* gray-300 */
+}
+
+/* Focus state: subtle ring matching global focus */
+:host ::ng-deep .mat-mdc-form-field-appearance-outline.mat-mdc-focused .mat-mdc-outlined-shape {
+  box-shadow: 0 0 0 4px rgba(14,165,233,0.08);
+  border-color: rgba(37,99,235,1);
+}
+
+/* Make mat-select trigger mimic the input height and alignment */
+:host ::ng-deep .mat-mdc-select-trigger {
+  padding: 0.5rem 1rem !important;
+  border-radius: 0.5rem !important;
+  background: #f8fafc !important;
+  border: 1px solid rgba(209,213,219,1) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+}
+:host ::ng-deep .mat-mdc-select-arrow {
+  color: rgba(55,65,81,1) !important; /* gray-700 */
+}
+
+/* Select panel style */
+:host ::ng-deep .mat-mdc-select-panel {
+  border-radius: 0.5rem !important;
+  box-shadow: 0 8px 24px rgba(2,6,23,0.12) !important;
+  border: 1px solid rgba(15,23,42,0.06) !important;
+  background: var(--fp-bg, #fff) !important;
+}
+
+/* Floating label size */
+:host ::ng-deep .mat-mdc-floating-label {
+  font-size: 0.9rem;
+}
+
+/* Dialog actions: ensure spacing consistent with other forms */
+:host ::ng-deep .mat-mdc-dialog-actions {
+  padding: 1rem 1.25rem 1.25rem 1.25rem;
+  background: transparent;
+  border-top: 1px solid rgba(15,23,42,0.04);
+}
+
+/* Make sure icons inside inputs/buttons align nicely */
+:host ::ng-deep .mat-icon {
+  vertical-align: middle;
+}
+
+/* Close button: ensure it sits above header and isn't clipped */
+:host ::ng-deep button.close-icon {
+  z-index: 10;
+  top: 0.75rem !important;
+  right: 0.75rem !important;
+}
+
+/* Small visual polish for header when close button is present */
+:host ::ng-deep header.relative {
+  padding-right: 3.25rem; /* reserve space for close button */
+}
+
+/* Prevent very long option text from overflowing the select */
+:host ::ng-deep select.form-input option {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Prevent interactions overflow inside dialog */
+:host ::ng-deep .mat-mdc-dialog-surface * {
+  box-sizing: border-box;
+}
+
+/* small screens adjustments: make dialog full width on tiny devices */
+@media (max-width: 420px) {
+  :host ::ng-deep .mat-mdc-dialog-surface {
+    width: calc(100% - 1rem) !important;
+    margin: 0.5rem !important;
+  }
+  :host ::ng-deep .form-input {
+    min-height: 2rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+}
+
+/* Keep small screens tidy */
+@media (max-width: 480px) {
+  :host ::ng-deep .mat-mdc-dialog-surface {
+    margin: 0.5rem;
+    width: calc(100% - 1rem) !important;
+  }
+}

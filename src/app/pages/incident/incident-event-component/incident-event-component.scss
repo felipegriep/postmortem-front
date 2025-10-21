@@ -6,3 +6,24 @@
     color: #374151; /* gray-700 */
     font-weight: bold;
 }
+
+/* Fix para o botão 'Novo Evento' dentro deste componente */
+:host button.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    min-height: 2.5rem;
+    border-radius: 0.5rem;
+}
+
+:host button.btn-primary mat-icon {
+    font-size: 1.125rem; /* garante o ícone em tamanho adequado */
+    line-height: 0;
+}
+
+/* small safeguard: ensure icon + text do not wrap/overlap */
+:host button.btn-primary span {
+    white-space: nowrap;
+}

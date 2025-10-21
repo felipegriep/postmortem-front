@@ -1,29 +1,50 @@
-<h1 mat-dialog-title class="text-2xl font-bold text-gray-800">{{ data.isEdit ? 'Editar Evento' : 'Adicionar Novo Evento' }}</h1>
-<div mat-dialog-content class="space-y-4 py-4">
-    <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Data e Hora do Evento</mat-label>
-        <input matInput type="datetime-local" [(ngModel)]="event.eventAt" name="eventAt" required>
-    </mat-form-field>
+<header class="mb-4 border-b pb-4 dark:border-gray-600 relative">
+    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ data.isEdit ? 'Editar Evento' : 'Adicionar Novo Evento' }}</h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Preencha os detalhes do evento. Campos com * são obrigatórios.</p>
 
-    <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Tipo de Evento</mat-label>
-        <mat-select [(ngModel)]="event.type" name="type" required>
-            <mat-option *ngFor="let type of eventTypes" [value]="type.id">{{ type.name }}</mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Descrição</mat-label>
-        <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="3"
-                  [(ngModel)]="event.description" name="description" required></textarea>
-    </mat-form-field>
-</div>
-<div mat-dialog-actions align="end" class="space-x-2">
-    <button mat-stroked-button (click)="onCancel()">Cancelar</button>
-    <!-- Close with serialized payload and include isEdit + original id so caller can create or update accordingly -->
-    <button mat-flat-button color="primary"
-            [mat-dialog-close]="{ event: serializeEvent(), isEdit: data.isEdit, id: $any(data.event)?.id }"
-            [disabled]="!isFormValid()">
-        {{ data.isEdit ? 'Salvar Alterações' : 'Adicionar Evento' }}
+    <!-- Close button top-right -->
+    <button type="button" aria-label="Fechar" (click)="onCancel()" class="btn-icon close-icon absolute top-3 right-3">
+        <mat-icon>close</mat-icon>
     </button>
-</div>
+</header>
+
+<form #eventForm="ngForm">
+    <div mat-dialog-content class="space-y-4 py-2">
+
+        <div class="form-group">
+            <label class="form-label" for="eventAt">Data e Hora do Evento</label>
+            <input id="eventAt" name="eventAt" [(ngModel)]="event.eventAt" type="datetime-local" class="form-input datetime-input"
+                   required />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="type">Tipo de Evento</label>
+            <select id="type" name="type" [(ngModel)]="event.type" class="form-input" required>
+                <option value="">Selecione</option>
+                <option *ngFor="let type of eventTypes" [value]="type.id">{{ type.name }}</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="description">Descrição</label>
+            <textarea id="description" name="description" [(ngModel)]="event.description" rows="3" class="form-input"
+                      required></textarea>
+        </div>
+
+    </div>
+
+    <div mat-dialog-actions align="end" class="mt-6 pt-6 border-t dark:border-gray-600 flex justify-end gap-4">
+        <button type="button" (click)="onCancel()"
+                class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition-colors dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">
+            Cancelar
+        </button>
+
+        <!-- Mantém o payload de fechamento para o caller; desabilita se o formulário for inválido -->
+        <button type="button"
+                [mat-dialog-close]="{ event: serializeEvent(), isEdit: data.isEdit, id: $any(data.event)?.id }"
+                [disabled]="!isFormValid() || eventForm.invalid"
+                class="btn-primary">
+            {{ data.isEdit ? 'Salvar Alterações' : 'Adicionar Evento' }}
+        </button>
+    </div>
+</form>

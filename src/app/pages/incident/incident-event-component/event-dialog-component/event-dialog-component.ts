@@ -10,6 +10,7 @@ import {TextFieldModule} from '@angular/cdk/text-field';
 import {EventTypeEnum} from '../../../../domain/enums/event-type-enum';
 import {IncidentEventInterface} from '../../../../domain/interfaces/request/incident-event-interface';
 import {IncidentEventResponseInterface} from '../../../../domain/interfaces/response/incident-event-response-interface';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
     selector: 'app-event-dialog-component',
@@ -18,6 +19,7 @@ import {IncidentEventResponseInterface} from '../../../../domain/interfaces/resp
         CommonModule, FormsModule, MatDialogModule, MatFormFieldModule,
         MatInputModule, MatSelectModule, MatButtonModule
         , TextFieldModule
+        , MatIconModule
     ],
     templateUrl: './event-dialog-component.html',
     styleUrls: ['./event-dialog-component.scss']

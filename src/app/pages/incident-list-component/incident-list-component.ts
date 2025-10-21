@@ -86,7 +86,7 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     loadIncidents(): void {
-        this.incidentService.getIncidents().subscribe((resp) => {
+        this.incidentService.list().subscribe((resp) => {
             const pageAny: any = resp as any;
             const data: IncidentResponseInterface[] = Array.isArray(pageAny) ? pageAny : pageAny?.content ?? [];
 

@@ -1,0 +1,7 @@
+export enum EventTypeEnum {
+    ALERT = 'ALERT',
+    DIAGNOSIS = 'DIAGNOSIS',
+    MITIGATION = 'MITIGATION',
+    FIX = 'FIX',
+    COMMUNICATION = 'COMMUNICATION'
+}

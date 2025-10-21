@@ -1,0 +1,29 @@
+<h1 mat-dialog-title class="text-2xl font-bold text-gray-800">{{ data.isEdit ? 'Editar Evento' : 'Adicionar Novo Evento' }}</h1>
+<div mat-dialog-content class="space-y-4 py-4">
+    <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Data e Hora do Evento</mat-label>
+        <input matInput type="datetime-local" [(ngModel)]="event.eventAt" name="eventAt" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Tipo de Evento</mat-label>
+        <mat-select [(ngModel)]="event.type" name="type" required>
+            <mat-option *ngFor="let type of eventTypes" [value]="type.id">{{ type.name }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Descrição</mat-label>
+        <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="3"
+                  [(ngModel)]="event.description" name="description" required></textarea>
+    </mat-form-field>
+</div>
+<div mat-dialog-actions align="end" class="space-x-2">
+    <button mat-stroked-button (click)="onCancel()">Cancelar</button>
+    <!-- Close with serialized payload and include isEdit + original id so caller can create or update accordingly -->
+    <button mat-flat-button color="primary"
+            [mat-dialog-close]="{ event: serializeEvent(), isEdit: data.isEdit, id: $any(data.event)?.id }"
+            [disabled]="!isFormValid()">
+        {{ data.isEdit ? 'Salvar Alterações' : 'Adicionar Evento' }}
+    </button>
+</div>

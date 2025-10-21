@@ -23,7 +23,7 @@ export class IncidentService {
 
     constructor(private readonly http: HttpClient) {}
 
-    getIncidents(params?: GetIncidentsParams): Observable<PageResponse<IncidentResponseInterface>> {
+    list(params?: GetIncidentsParams): Observable<PageResponse<IncidentResponseInterface>> {
         let httpParams = new HttpParams();
         if (params) {
             if (params.page !== undefined && params.page !== null) {
@@ -54,7 +54,7 @@ export class IncidentService {
         });
     }
 
-    getIncidentById(id: number): Observable<IncidentResponseInterface> {
+    get(id: number): Observable<IncidentResponseInterface> {
         const rawToken = localStorage.getItem('token') || '';
         const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
         const headers = new HttpHeaders({ Authorization: token });
@@ -62,7 +62,7 @@ export class IncidentService {
         return this.http.get<IncidentResponseInterface>(url, { headers });
     }
 
-    createIncident(incident: IncidentInterface): Observable<number> {
+    create(incident: IncidentInterface): Observable<number> {
         const rawToken = localStorage.getItem('token') || '';
         const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
         const headers = new HttpHeaders({ Authorization: token });
@@ -70,7 +70,7 @@ export class IncidentService {
         return this.http.post<number>(url, incident, { headers });
     }
 
-    updateIncident(id: string, incident: IncidentInterface): Observable<IncidentResponseInterface> {
+    update(id: string, incident: IncidentInterface): Observable<IncidentResponseInterface> {
         const rawToken = localStorage.getItem('token') || '';
         const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
         const headers = new HttpHeaders({ Authorization: token });
@@ -78,7 +78,7 @@ export class IncidentService {
         return this.http.put<IncidentResponseInterface>(url, incident, { headers });
     }
 
-    deleteIncident(id: string): Observable<void> {
+    delete(id: string): Observable<void> {
         const rawToken = localStorage.getItem('token') || '';
         const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
         const headers = new HttpHeaders({ Authorization: token });

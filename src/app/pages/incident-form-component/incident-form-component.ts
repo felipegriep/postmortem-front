@@ -9,10 +9,11 @@ import { FormsModule, NgForm } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
 import 'flatpickr/dist/flatpickr.min.css';
+import {IncidentEventComponent} from '../incident/incident-event-component/incident-event-component';
 
 @Component({
     selector: 'app-incident-form-component',
-    imports: [NgIf, FormsModule],
+    imports: [NgIf, FormsModule, IncidentEventComponent],
     templateUrl: './incident-form-component.html',
     styleUrls: ['./incident-form-component.scss'],
 })
@@ -41,7 +42,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         if (idParam) {
             this.isEditMode = true;
             const incidentId = +idParam;
-            this.incidentService.getIncidentById(incidentId).subscribe((incident) => {
+            this.incidentService.get(incidentId).subscribe((incident) => {
                 if (incident) {
                     // Mapear IncidentResponseInterface -> IncidentInterface para o formulário
                     this.incident = {
@@ -455,13 +456,13 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.isEditMode && this.incident.id != null) {
             // Atualização de incidente existente
             this.incidentService
-                .updateIncident(String(this.incident.id), payload)
+                .update(String(this.incident.id), payload)
                 .subscribe(() => {
                     this.router.navigate(['/incidents']);
                 });
         } else {
             // Criação de novo incidente (sem id no payload)
-            this.incidentService.createIncident(payload).subscribe(() => {
+            this.incidentService.create(payload).subscribe(() => {
                 this.router.navigate(['/incidents']);
             });
         }

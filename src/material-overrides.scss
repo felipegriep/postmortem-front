@@ -1,0 +1,21 @@
+/* Aumente a especificidade usando o seletor do componente ou uma classe global */
+
+/* Exemplo para remover o backdrop-filter de um mat-dialog */
+.mat-mdc-dialog-container {
+    // Use !important para garantir a sobrescrita
+    backdrop-filter: none !important;
+}
+
+/* Exemplo para remover o backdrop-filter de uma mat-menu */
+.mat-mdc-menu-panel {
+    backdrop-filter: none !important;
+}
+
+/* Exemplo para remover o backdrop-filter de um mat-tooltip */
+.mat-mdc-tooltip {
+    backdrop-filter: none !important;
+}
+
+.mat-dialog-content {
+    backdrop-filter: none !important;
+}

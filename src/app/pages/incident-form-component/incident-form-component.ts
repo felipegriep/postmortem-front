@@ -4,22 +4,41 @@ import { IncidentService } from '../../services/incident-service';
 import { IncidentInterface } from '../../domain/interfaces/request/incident-interface';
 import { SeverityEnum } from '../../domain/enums/severity-enum';
 import { StatusEnum } from '../../domain/enums/status-enum';
-import { NgIf } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
 import 'flatpickr/dist/flatpickr.min.css';
 import {IncidentEventComponent} from '../incident/incident-event-component/incident-event-component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {FontAwesomeModule, FaIconLibrary} from '@fortawesome/angular-fontawesome';
+import {faCalendarDay} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-incident-form-component',
-    imports: [NgIf, FormsModule, IncidentEventComponent],
+    imports: [
+        CommonModule,
+        NgIf,
+        FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatIconModule,
+        FontAwesomeModule,
+        IncidentEventComponent
+    ],
     templateUrl: './incident-form-component.html',
     styleUrls: ['./incident-form-component.scss'],
 })
 export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     incident: IncidentInterface = this.getEmptyIncident();
     isEditMode = false;
+    public readonly calendarDay = faCalendarDay;
 
     @ViewChild('startedAtInput', { static: false }) startedAtInput?: ElementRef<HTMLInputElement>;
     @ViewChild('endedAtInput', { static: false }) endedAtInput?: ElementRef<HTMLInputElement>;
@@ -32,8 +51,15 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private incidentService: IncidentService,
-        private cdr: ChangeDetectorRef
-    ) {}
+        private cdr: ChangeDetectorRef,
+        private readonly faLibrary: FaIconLibrary
+    ) {
+        try {
+            this.faLibrary.addIcons(faCalendarDay);
+        } catch (e) {
+            // noop - biblioteca pode não estar disponível em testes
+        }
+    }
 
     ngOnInit(): void {
         // ensure Material theme is loaded when this lazy component initializes
@@ -95,7 +121,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     dateFormat: 'Y-m-d H:i',
                     altInput: true,
                     altFormat: 'd/m/Y H:i',
-                    altInputClass: 'form-input flatpickr-alt-input',
+                    altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
                     locale: Portuguese,
                     defaultDate: this.incident?.startedAt ? new Date(this.incident.startedAt) : undefined,
                     allowInput: true,
@@ -105,7 +131,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             if (instance && instance.altInput) {
                                 instance.altInput.setAttribute('placeholder', 'DD/MM/YYYY HH:mm');
                                 // ensure it has our visual class
-                                instance.altInput.classList.add('form-input');
+                                instance.altInput.classList.add('mat-mdc-input-element', 'flatpickr-alt-input');
                             }
                         } catch {}
                     },
@@ -179,7 +205,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     dateFormat: 'Y-m-d H:i',
                     altInput: true,
                     altFormat: 'd/m/Y H:i',
-                    altInputClass: 'form-input flatpickr-alt-input',
+                    altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
                     locale: Portuguese,
                     defaultDate: this.incident?.endedAt ? new Date(this.incident.endedAt) : undefined,
                     // set minDate initially from incident.startedAt if available
@@ -190,7 +216,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         try {
                             if (instance && instance.altInput) {
                                 instance.altInput.setAttribute('placeholder', 'DD/MM/YYYY HH:mm');
-                                instance.altInput.classList.add('form-input');
+                                instance.altInput.classList.add('mat-mdc-input-element', 'flatpickr-alt-input');
                             }
                         } catch {}
                     },

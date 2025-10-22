@@ -1,137 +1,200 @@
-// theme moved to public/material-indigo-pink.css and will be loaded dynamically by the component
-
 :host {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    background: #f7fafc; // bg-gray-100
+    background: #f7fafc;
     min-height: 100vh;
     width: 100%;
     padding-bottom: 2rem;
 }
 
-// Agrupamento de estilos para os campos do formulário
-.form-group {
-    @apply flex flex-col gap-3;
+:host-context(.dark) {
+    background: #0f172a;
 }
 
-.form-label {
-    @apply mb-2 text-sm font-bold text-gray-700 dark:text-gray-300;
+:host ::ng-deep .mat-mdc-form-field {
+    width: 100%;
+    --mdc-filled-text-field-container-shape: 0.75rem;
+    --mdc-filled-text-field-container-color: #ffffff;
+    --mdc-filled-text-field-label-text-color: rgba(71,85,105,0.95);
+    --mdc-filled-text-field-focus-label-text-color: var(--app-primary, #0ea5e9);
+    --mdc-filled-text-field-hover-label-text-color: var(--app-primary, #0ea5e9);
+    --mdc-filled-text-field-input-text-color: #0f172a;
+    --mdc-filled-text-field-focus-input-text-color: #0f172a;
+    --mdc-filled-text-field-active-indicator-color: transparent;
+    --mdc-filled-text-field-focus-active-indicator-color: transparent;
+    --mdc-filled-text-field-disabled-active-indicator-color: transparent;
 }
 
-// Forçar bordas visíveis em todos os inputs (visuais locais, sem shadows pesados)
-.form-input {
-    @apply w-full px-4 py-3 rounded-2xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm;
-    background: transparent;
-    border: 1px solid rgba(148,163,184,0.12);
+:host ::ng-deep .mat-mdc-text-field-wrapper {
+    border-radius: 0.75rem;
+    box-shadow: inset 0 0 0 1px rgba(148,163,184,0.25);
+    transition: box-shadow 180ms ease, background-color 180ms ease;
+    background-color: #ffffff;
 }
 
-// Garante que o texto do placeholder seja visível no modo escuro
-.form-input::placeholder {
-    @apply text-gray-400 dark:text-gray-500;
+:host ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--app-primary, #0ea5e9) 30%, white 70%);
+    background-color: #ffffff;
 }
 
-// label-top: alinhar label ao topo do campo grande (textarea)
-.label-top {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-.label-top .form-label {
-  margin-bottom: 0.5rem;
+:host ::ng-deep .mat-mdc-form-field.mat-mdc-form-field-type-mat-select .mat-mdc-text-field-wrapper {
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    box-shadow: inset 0 0 0 1px rgba(148,163,184,0.35);
 }
 
-// flatpickr alt input fallback: regra minimal para manter aparência
-.flatpickr-alt-input {
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
-  background: transparent;
-  border: 1px solid rgba(148,163,184,0.12);
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    box-shadow: inset 0 0 0 2px var(--app-primary, #0ea5e9);
+    background-color: #ffffff;
 }
 
-// Área de ações
-form .border-t {
-    @apply border-gray-200 dark:border-gray-600;
+:host ::ng-deep .mat-mdc-form-field.has-error .mat-mdc-text-field-wrapper {
+    box-shadow: inset 0 0 0 2px rgba(248,113,113,0.95);
+    background-color: #ffffff;
 }
 
-button {
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded-xl;
+:host ::ng-deep .mat-mdc-form-field.has-error .mdc-floating-label,
+:host ::ng-deep .mat-mdc-form-field.has-error.mat-focused .mdc-floating-label {
+    color: rgba(220,38,38,0.95);
 }
 
-
-// Specific tweaks for larger impactShort area
-textarea#impactShort.form-input,
-textarea.form-input[name="impactShort"] {
-    min-height: 10rem; // make the impact summary visibly larger (~160px)
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    margin: 0;
+    padding: 0 0.75rem 0.25rem;
 }
 
-// At larger screens we want labels and controls to be split in two columns
-@media (min-width: 768px) {
-  .form-group {
-    display: grid;
-    grid-template-columns: 200px 1fr; /* label column / control column */
+:host ::ng-deep textarea.mat-mdc-input-element {
+    min-height: 8rem;
+}
+
+:host ::ng-deep textarea.impact-textarea {
+    min-height: 350px !important;
+    height: 350px !important;
+}
+
+:host ::ng-deep .mat-mdc-select-trigger {
     align-items: center;
-    column-gap: 1.25rem; /* espaço maior entre label e campo */
-    row-gap: 0.5rem;
-  }
-
-  .form-label {
-    margin-bottom: 0; /* remove o gap vertical quando em linha */
-    text-align: right; /* alinha o texto do label à direita para ficar junto ao campo */
-    padding-right: 0.5rem;
-  }
-
-  /* Ensure label-top sections align label to the top of the control column */
-  .label-top {
-    display: grid; /* keep grid behavior */
-    grid-template-columns: 200px 1fr; /* same split as .form-group */
-    align-items: start; /* align label to the top */
-    column-gap: 1.25rem;
-  }
-  .label-top .form-label {
-    text-align: right;
-    padding-right: 0.5rem;
-    align-self: start;
-    margin-bottom: 0;
-  }
-  .label-top textarea.form-input {
-    grid-column: 2 / 3;
-  }
 }
 
-/* datetime-input tweaks: adicionar espaço para ícone; icon backgrounds moved to global styles */
-.datetime-input {
-  padding-right: 3rem; /* espaço para o ícone */
-  font-family: inherit;
+:host ::ng-deep .mat-mdc-select-panel {
+    border-radius: 0.75rem !important;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.15) !important;
+    border: 1px solid rgba(148,163,184,0.25) !important;
+    background: #ffffff !important;
+    color: #1f2937 !important;
 }
 
-/* Ensure helper text uses new format and is visible */
-.datetime-helper {
-  display: none;
-}
-@media (min-width: 768px) {
-  .datetime-helper {
-    display: block;
-  }
+:host ::ng-deep .mat-mdc-option.mat-mdc-option-active,
+:host ::ng-deep .mat-mdc-option.mat-mdc-option-highlighted:not(.mat-mdc-option-disabled) {
+    background: rgba(14,165,233,0.12) !important;
+    color: #0f172a !important;
 }
 
-/* Improve spacing for helper/error texts near inputs */
-.form-group .text-xs {
-  margin-left: 0; /* helper texts should align under the control column on md+ */
+:host-context(.dark) ::ng-deep .mat-mdc-form-field {
+    --mdc-filled-text-field-container-color: #ffffff;
+    --mdc-filled-text-field-label-text-color: rgba(30,41,59,0.85);
+    --mdc-filled-text-field-input-text-color: #0f172a;
+    --mdc-filled-text-field-focus-input-text-color: #0f172a;
 }
 
-@media (min-width: 768px) {
-  .form-group .text-xs {
-    grid-column: 2 / 3; /* helper text sits under the input column */
-    margin-top: 0.25rem;
-  }
+:host-context(.dark) ::ng-deep .mat-mdc-text-field-wrapper {
+    box-shadow: inset 0 0 0 1px rgba(148,163,184,0.25);
+    background-color: #ffffff;
 }
 
-/* small responsive tweak: place helper text nicely on small screens */
-@media (max-width: 767px) {
-  .form-group {
-    gap: 0.75rem;
-  }
+:host-context(.dark) ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    background-color: #ffffff;
 }
 
-/* ...end of component-specific styles... */
+:host-context(.dark) ::ng-deep .mat-mdc-form-field.has-error .mat-mdc-text-field-wrapper {
+    background-color: #ffffff;
+}
+
+:host-context(.dark) ::ng-deep .mat-mdc-select-panel {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border: 1px solid rgba(148,163,184,0.25) !important;
+    box-shadow: 0 12px 28px rgba(15,23,42,0.28) !important;
+}
+
+:host-context(.dark) ::ng-deep .mat-mdc-option {
+    color: #1f2937 !important;
+}
+
+:host-context(.dark) ::ng-deep .mat-mdc-option.mat-mdc-option-active,
+:host-context(.dark) ::ng-deep .mat-mdc-option.mat-mdc-option-highlighted:not(.mat-mdc-option-disabled) {
+    background: rgba(14,165,233,0.12) !important;
+    color: #0f172a !important;
+}
+
+:host ::ng-deep button[mat-flat-button],
+:host ::ng-deep button[mat-stroked-button] {
+    border-radius: 0.75rem;
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+}
+
+:host ::ng-deep button[mat-flat-button] {
+    box-shadow: 0 4px 12px rgba(14,165,233,0.35);
+}
+
+:host ::ng-deep button[mat-flat-button]:disabled {
+    box-shadow: none;
+}
+
+:host-context(.dark) ::ng-deep button[mat-stroked-button] {
+    border-color: rgba(148,163,184,0.6);
+    color: rgba(226,232,240,0.85);
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-hint-wrapper,
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-error-wrapper {
+    padding: 0 0.5rem;
+}
+
+:host ::ng-deep .mat-mdc-form-field-hint.mat-mdc-form-field-hint-end {
+    background: #ffffff;
+    color: #0f172a;
+    padding: 0.1rem 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+
+:host ::ng-deep .flatpickr-input[matinput] {
+    position: absolute !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    height: 0 !important;
+}
+
+:host ::ng-deep .flatpickr-alt-input {
+    width: 100%;
+    cursor: text;
+    color: inherit;
+    background: #ffffff;
+    border-radius: 0.75rem;
+}
+
+:host ::ng-deep button.mat-mdc-icon-button {
+    color: rgba(71,85,105,0.85);
+}
+
+:host ::ng-deep button.mat-mdc-icon-button fa-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+:host-context(.dark) ::ng-deep button.mat-mdc-icon-button {
+    color: rgba(71,85,105,0.85);
+}
+
+:host ::ng-deep .mat-mdc-form-field.has-error button.mat-mdc-icon-button,
+:host ::ng-deep .mat-mdc-form-field.has-error .mat-icon {
+    color: rgba(248,113,113,0.95);
+}
+
+:host-context(.dark) ::ng-deep .flatpickr-alt-input {
+    background: #ffffff;
+    color: #0f172a;
+}

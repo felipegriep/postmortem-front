@@ -186,3 +186,13 @@ button.edit-icon fa-icon {
 .mat-mdc-form-field-flex {
   border-style: none !important;
 }
+
+/* Sobrescreve o backdrop-filter para a barra de ferramentas do Material */
+.mat-select {
+  backdrop-filter: none !important;
+}
+
+/* Opcional: Adiciona uma cor de fundo sólida para a barra de ferramentas */
+.mat-select.mat-primary {
+  background-color: theme('colors.purple.500') !important;
+}

@@ -1,34 +1,48 @@
-<header class="mb-4 border-b pb-4 dark:border-gray-600 relative">
-    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ data.isEdit ? 'Editar Evento' : 'Adicionar Novo Evento' }}</h2>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Preencha os detalhes do evento. Campos com * são obrigatórios.</p>
+<header class="mb-4 border-b border-gray-700 pb-4 relative">
+    <h2 class="text-2xl font-bold text-white">{{ data.isEdit ? 'Editar Evento' : 'Adicionar Novo Evento' }}</h2>
+    <p class="text-sm text-slate-300 mt-1">Preencha os detalhes do evento. Campos com * são obrigatórios.</p>
 
     <!-- Close button top-right -->
-    <button type="button" mat-icon-button aria-label="Fechar" (click)="onCancel()" class="close-icon absolute top-3 right-3">
-        <mat-icon>close</mat-icon>
+    <button type="button" aria-label="Fechar" (click)="onCancel()" class="close-icon absolute top-3 right-3">
+        <fa-icon [icon]="xmark" aria-hidden="true"></fa-icon>
     </button>
 </header>
 
 <form #eventForm="ngForm">
     <div mat-dialog-content class="dialog-body py-2">
 
-        <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+        <mat-form-field appearance="fill" floatLabel="always" class="w-full"
+                        [ngClass]="{ 'has-error': eventAtModel.invalid && (eventAtModel.dirty || eventAtModel.touched) }">
             <mat-label>Data e Hora do Evento</mat-label>
             <input matInput id="eventAt" name="eventAt" [(ngModel)]="event.eventAt" type="datetime-local"
-                   required>
+                   #eventAtModel="ngModel" required>
+            <fa-icon matSuffix [icon]="calendarDay" aria-hidden="true" class="input-icon"></fa-icon>
+            <mat-error *ngIf="eventAtModel.invalid && (eventAtModel.dirty || eventAtModel.touched)">
+                A data e hora do evento é obrigatória.
+            </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+        <mat-form-field appearance="fill" floatLabel="always" class="w-full"
+                        [ngClass]="{ 'has-error': typeModel.invalid && (typeModel.dirty || typeModel.touched) }">
             <mat-label>Tipo de Evento</mat-label>
-            <mat-select id="type" name="type" [(ngModel)]="event.type" required>
+            <mat-select id="type" name="type" [(ngModel)]="event.type" #typeModel="ngModel" required>
                 <mat-option value="">Selecione</mat-option>
                 <mat-option *ngFor="let type of eventTypes" [value]="type.id">{{ type.name }}</mat-option>
             </mat-select>
+            <mat-error *ngIf="typeModel.invalid && (typeModel.dirty || typeModel.touched)">
+                O tipo de evento é obrigatório.
+            </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+        <mat-form-field appearance="fill" floatLabel="always" class="w-full"
+                        [ngClass]="{ 'has-error': descriptionModel.invalid && (descriptionModel.dirty || descriptionModel.touched) }">
             <mat-label>Descrição</mat-label>
-            <textarea matInput id="description" name="description" [(ngModel)]="event.description" required
+            <textarea matInput id="description" name="description" [(ngModel)]="event.description"
+                      #descriptionModel="ngModel" required
                       cdkTextareaAutosize cdkAutosizeMinRows="3" cdkAutosizeMaxRows="6"></textarea>
+            <mat-error *ngIf="descriptionModel.invalid && (descriptionModel.dirty || descriptionModel.touched)">
+                A descrição é obrigatória.
+            </mat-error>
         </mat-form-field>
 
     </div>

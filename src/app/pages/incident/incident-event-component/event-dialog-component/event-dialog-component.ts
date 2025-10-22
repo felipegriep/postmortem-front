@@ -10,16 +10,16 @@ import {TextFieldModule} from '@angular/cdk/text-field';
 import {EventTypeEnum} from '../../../../domain/enums/event-type-enum';
 import {IncidentEventInterface} from '../../../../domain/interfaces/request/incident-event-interface';
 import {IncidentEventResponseInterface} from '../../../../domain/interfaces/response/incident-event-response-interface';
-import {MatIconModule} from '@angular/material/icon';
+import {FontAwesomeModule, FaIconLibrary} from '@fortawesome/angular-fontawesome';
+import {faCalendarDay, faXmark} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-event-dialog-component',
     standalone: true,
     imports: [
         CommonModule, FormsModule, MatDialogModule, MatFormFieldModule,
-        MatInputModule, MatSelectModule, MatButtonModule
-        , TextFieldModule
-        , MatIconModule
+        MatInputModule, MatSelectModule, MatButtonModule,
+        TextFieldModule, FontAwesomeModule
     ],
     templateUrl: './event-dialog-component.html',
     styleUrls: ['./event-dialog-component.scss']
@@ -33,10 +33,13 @@ export class EventDialogComponent {
         { id: EventTypeEnum.FIX, name: 'Correção (Fix)' },
         { id: EventTypeEnum.COMMUNICATION, name: 'Comunicação' },
     ];
+    public readonly xmark = faXmark;
+    public readonly calendarDay = faCalendarDay;
 
     constructor(
         public dialogRef: MatDialogRef<EventDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { event?: IncidentEventResponseInterface | IncidentEventInterface, isEdit: boolean, incidentId?: number }
+        @Inject(MAT_DIALOG_DATA) public data: { event?: IncidentEventResponseInterface | IncidentEventInterface, isEdit: boolean, incidentId?: number },
+        private readonly faLibrary: FaIconLibrary,
     ) {
         // Inicializa de forma segura: se veio um evento, clona; senão cria um objeto padrão
         // Se veio um evento do backend, convertê-lo para o formato do <input type="datetime-local"> (yyyy-MM-ddTHH:mm)
@@ -49,6 +52,12 @@ export class EventDialogComponent {
                 type: EventTypeEnum.ALERT,
                 description: ''
             } as IncidentEventInterface;
+        }
+
+        try {
+            this.faLibrary.addIcons(faXmark, faCalendarDay);
+        } catch (e) {
+            // noop - library unavailable
         }
     }
 

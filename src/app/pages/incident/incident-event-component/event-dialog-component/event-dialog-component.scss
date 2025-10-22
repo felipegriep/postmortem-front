@@ -7,10 +7,12 @@
 /* Make the Material dialog surface look like a card with rounded corners */
 :host ::ng-deep .mat-mdc-dialog-surface {
   border-radius: 0.75rem; /* rounded like other cards */
-  border: 1px solid rgba(15,23,42,0.06);
-  box-shadow: 0 8px 24px rgba(2,6,23,0.12);
+  border: none;
+  box-shadow: 0 12px 36px rgba(15,23,42,0.35);
   overflow: hidden;
-  background: var(--fp-bg, #fff);
+  --mdc-dialog-container-color: #1f2937;
+  background: #1f2937 !important; /* gray-800 */
+  color: #e2e8f0;
   max-width: 48rem;
   width: 100%;
 }
@@ -18,22 +20,24 @@
 /* Header: ensure padding and a clear bottom separator */
 :host ::ng-deep header {
   padding: 1rem 1.25rem;
-  background: transparent;
-  border-bottom: 1px solid rgba(15,23,42,0.08);
+  background: rgba(15,23,42,0.35);
+  border-bottom: 1px solid rgba(148,163,184,0.25);
 }
 :host ::ng-deep header h2 {
   margin: 0;
   font-weight: 700;
+  color: #ffffff;
 }
 :host ::ng-deep header p {
   margin: 0.25rem 0 0 0;
-  color: var(--fp-muted, #6b7280);
+  color: rgba(226,232,240,0.85);
   font-size: 0.9375rem;
 }
 
 /* Dialog content spacing */
 :host ::ng-deep .mat-mdc-dialog-content {
   padding: 0.75rem 1.25rem 1.25rem 1.25rem;
+  background: rgba(15,23,42,0.15);
 }
 
 :host ::ng-deep .dialog-body {
@@ -46,20 +50,47 @@
 :host ::ng-deep .mat-mdc-form-field {
   width: 100%;
   --mdc-outlined-text-field-container-shape: 0.75rem;
-  --mdc-outlined-text-field-container-color: #f8fafc;
-  --mdc-outlined-text-field-outline-color: rgba(209,213,219,1);
-  --mdc-outlined-text-field-hover-outline-color: color-mix(in srgb, var(--app-primary, #0ea5e9) 40%, white 60%);
-  --mdc-outlined-text-field-focus-outline-color: var(--app-primary, #0ea5e9);
-  --mdc-outlined-text-field-label-text-color: var(--fp-muted, #6b7280);
-  --mdc-outlined-text-field-hover-label-text-color: var(--app-primary, #0ea5e9);
-  --mdc-outlined-text-field-focus-label-text-color: var(--app-primary, #0ea5e9);
-  --mdc-outlined-text-field-input-text-color: var(--fp-text, #0f172a);
-  --mdc-outlined-text-field-focus-input-text-color: var(--fp-text, #0f172a);
+  --mdc-filled-text-field-container-shape: 0.75rem;
+  --mdc-filled-text-field-container-color: rgba(30,41,59,0.7);
+  --mdc-filled-text-field-hover-label-text-color: #38bdf8;
+  --mdc-filled-text-field-focus-label-text-color: #38bdf8;
+  --mdc-filled-text-field-label-text-color: #ffffff;
+  --mdc-filled-text-field-input-text-color: #f8fafc;
+  --mdc-filled-text-field-focus-input-text-color: #f8fafc;
+  --mdc-filled-text-field-active-indicator-color: transparent;
+  --mdc-filled-text-field-focus-active-indicator-color: transparent;
+  --mdc-filled-text-field-disabled-active-indicator-color: transparent;
 }
 
 :host ::ng-deep .mat-mdc-form-field-infix {
   min-height: auto;
   padding: 0.75rem 1rem !important;
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper {
+  border-radius: 0.75rem;
+  transition: box-shadow 160ms ease, background-color 160ms ease;
+  box-shadow: inset 0 0 0 1px rgba(148,163,184,0.2);
+  background-color: rgba(15,23,42,0.55);
+}
+
+:host ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+  box-shadow: inset 0 0 0 1px rgba(56,189,248,0.7);
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  box-shadow: inset 0 0 0 2px rgba(56,189,248,0.95);
+  background-color: rgba(56,189,248,0.08);
+}
+
+:host ::ng-deep .mat-mdc-form-field.has-error .mat-mdc-text-field-wrapper {
+  box-shadow: inset 0 0 0 2px rgba(248,113,113,0.95);
+  background-color: rgba(254,226,226,0.08);
+}
+
+:host ::ng-deep .mat-mdc-form-field.has-error .mdc-floating-label,
+:host ::ng-deep .mat-mdc-form-field.has-error.mat-focused .mdc-floating-label {
+  color: rgba(248,113,113,0.95);
 }
 
 :host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
@@ -70,28 +101,47 @@
   min-height: 6rem;
 }
 
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-hint-wrapper,
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-error-wrapper {
+  padding: 0 1rem;
+}
+
 :host ::ng-deep .mat-mdc-select-trigger {
   display: flex;
   align-items: center;
+  color: #f8fafc;
 }
 
 :host ::ng-deep .mat-mdc-select-panel {
   border-radius: 0.75rem !important;
   box-shadow: 0 8px 24px rgba(2,6,23,0.12) !important;
-  border: 1px solid rgba(15,23,42,0.06) !important;
-  background: var(--fp-bg, #fff) !important;
+  border: 1px solid rgba(148,163,184,0.25) !important;
+  background: #111827 !important;
+  color: #f8fafc !important;
+}
+
+:host ::ng-deep .mat-mdc-option {
+  color: #e2e8f0 !important;
+}
+
+:host ::ng-deep .mat-mdc-option.mat-mdc-option-active,
+:host ::ng-deep .mat-mdc-option.mat-mdc-option-highlighted:not(.mat-mdc-option-disabled) {
+  background: rgba(56,189,248,0.15) !important;
+  color: #f8fafc !important;
 }
 
 /* Dialog actions: ensure spacing consistent with other forms */
 :host ::ng-deep .mat-mdc-dialog-actions {
   padding: 1rem 1.25rem 1.25rem 1.25rem;
-  background: transparent;
-  border-top: 1px solid rgba(15,23,42,0.04);
+  background: rgba(15,23,42,0.25);
+  border-top: 1px solid rgba(148,163,184,0.2);
 }
 
 /* Make sure icons inside inputs/buttons align nicely */
-:host ::ng-deep .mat-icon {
+:host ::ng-deep .mat-icon,
+:host ::ng-deep fa-icon {
   vertical-align: middle;
+  color: rgba(226,232,240,0.9);
 }
 
 /* Close button styling */
@@ -99,18 +149,46 @@
   z-index: 10;
   top: 0.75rem !important;
   right: 0.75rem !important;
-  color: rgba(15,23,42,0.6);
-  transition: color 120ms ease;
+  background: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: rgba(226,232,240,0.7);
+  border-radius: 9999px;
+  transition: color 120ms ease, background-color 120ms ease, transform 120ms ease;
+  cursor: pointer;
 }
 
 :host ::ng-deep button.close-icon:hover,
 :host ::ng-deep button.close-icon:focus-visible {
-  color: rgba(15,23,42,0.85);
+  color: #ffffff;
+  background-color: rgba(56,189,248,0.15);
+  transform: scale(1.05);
 }
 
 /* Small visual polish for header when close button is present */
 :host ::ng-deep header.relative {
   padding-right: 3.25rem;
+}
+
+:host ::ng-deep .input-icon {
+  color: rgba(226,232,240,0.8);
+  font-size: 0.95rem;
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .input-icon {
+  color: #38bdf8;
+}
+
+:host ::ng-deep .mat-mdc-form-field.has-error .input-icon {
+  color: rgba(248,113,113,0.95);
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-error {
+  color: rgba(248,113,113,0.95);
 }
 
 /* Prevent interactions overflow inside dialog */

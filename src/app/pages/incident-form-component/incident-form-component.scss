@@ -152,13 +152,17 @@
     background-color: #fee2e2;
     border-color: #fee2e2;
     color: #991b1b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
 }
 
 :host ::ng-deep button[mat-stroked-button].cancel-button:hover,
 :host ::ng-deep button[mat-stroked-button].cancel-button:focus-visible {
     background-color: #fca5a5;
     border-color: #fca5a5;
-    color: #991b1b;
+    color: #7f1d1d;
 }
 
 :host ::ng-deep button[mat-stroked-button].cancel-button:disabled {
@@ -177,6 +181,10 @@
     --mdc-filled-button-container-shape: 0.75rem;
     background-color: #0ea5e9;
     color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
 }
 
 :host ::ng-deep .incident-primary-button.mat-mdc-unelevated-button:not(.mat-mdc-button-disabled):hover,

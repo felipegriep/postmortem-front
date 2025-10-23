@@ -64,12 +64,12 @@
         </div>
 
         <div class="drawer-actions">
-            <button type="button" (click)="onCancel()" class="btn-secondary">
+            <button type="button" (click)="onCancel()" class="btn-secondary drawer-cancel-button">
                 Cancelar
             </button>
             <button type="submit"
                     [disabled]="!isFormValid() || eventForm.invalid"
-                    class="btn-primary">
+                    class="btn-primary drawer-primary-button">
                 {{ isEdit ? 'Salvar Alterações' : 'Adicionar Evento' }}
             </button>
         </div>

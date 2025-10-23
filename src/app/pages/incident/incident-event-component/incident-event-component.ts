@@ -121,4 +121,11 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         } as Record<EventTypeEnum | string, string>;
         return classes[type] ?? 'bg-gray-100 text-gray-800';
     }
+
+    formatDescription(description: string, limit = 50): string {
+        if (!description) return '';
+        const trimmed = description.trim();
+        if (trimmed.length <= limit) return trimmed;
+        return trimmed.slice(0, limit).concat('…');
+    }
 }

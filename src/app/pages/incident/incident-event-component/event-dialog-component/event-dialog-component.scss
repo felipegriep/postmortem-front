@@ -207,6 +207,62 @@
   color: rgba(248, 113, 113, 0.95);
 }
 
+.drawer-actions .drawer-cancel-button {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.5rem;
+  font-weight: 600;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.drawer-actions .drawer-cancel-button:hover,
+.drawer-actions .drawer-cancel-button:focus-visible {
+  background-color: #fca5a5;
+  color: #7f1d1d;
+  transform: translateY(-1px);
+}
+
+.drawer-actions .drawer-cancel-button:disabled {
+  background-color: rgba(254, 226, 226, 0.6);
+  color: rgba(255, 255, 255, 0.75);
+  transform: none;
+}
+
+.drawer-actions .drawer-primary-button {
+  background-color: #0ea5e9;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.75rem;
+  font-weight: 700;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.drawer-actions .drawer-primary-button:hover,
+.drawer-actions .drawer-primary-button:focus-visible {
+  background-color: #0284c7;
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+  transform: translateY(-1px);
+}
+
+.drawer-actions .drawer-primary-button:disabled {
+  background-color: rgba(14, 165, 233, 0.35);
+  color: rgba(255, 255, 255, 0.75);
+  box-shadow: none;
+  transform: none;
+}
+
 @media (max-width: 480px) {
   .drawer-wrapper {
     box-shadow: none;

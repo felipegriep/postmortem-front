@@ -1,18 +1,17 @@
 <div class="incident-form-wrapper">
-  <div class="mx-auto p-4 md:p-8 max-w-5xl">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8">
-      <header class="mb-8 border-b pb-4 dark:border-gray-600">
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
-          {{ isEditMode ? 'Editar Incidente #' + incident.id : 'Registrar Novo Incidente' }}
-        </h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Preencha os detalhes do incidente abaixo.
-        </p>
-      </header>
+  <div class="w-full p-4 md:p-8 dark:bg-gray-800">
+    <header class="mb-8 border-b pb-4 dark:border-gray-600">
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+        {{ isEditMode ? 'Editar Incidente #' + incident.id : 'Registrar Novo Incidente' }}
+      </h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        Preencha os detalhes do incidente abaixo.
+      </p>
+    </header>
 
-      <form #incidentForm="ngForm" (ngSubmit)="onSubmit()">
-        <div class="grid gap-6 md:grid-cols-2">
-          <div class="md:col-span-2">
+    <form #incidentForm="ngForm" (ngSubmit)="onSubmit()">
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="md:col-span-2">
             <mat-form-field
               appearance="fill"
               floatLabel="always"
@@ -206,24 +205,23 @@
             </mat-form-field>
           </div>
 
-          <div class="md:col-span-2 mt-2">
-            <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 flex justify-end gap-4">
-              <button mat-stroked-button color="accent" type="button" class="cancel-button" (click)="onCancel()">
-                Cancelar
-              </button>
-              <button
-                mat-flat-button
-                color="primary"
-                class="incident-primary-button"
-                [disabled]="incidentForm?.invalid || !isDateRangeValid()"
-                type="submit"
-              >
-                {{ isEditMode ? 'Salvar Alterações' : 'Criar Incidente' }}
-              </button>
-            </div>
+        <div class="md:col-span-2 mt-2">
+          <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 flex justify-end gap-4">
+            <button mat-stroked-button color="accent" type="button" class="cancel-button" (click)="onCancel()">
+              Cancelar
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              class="incident-primary-button"
+              [disabled]="incidentForm?.invalid || !isDateRangeValid()"
+              type="submit"
+            >
+              {{ isEditMode ? 'Salvar Alterações' : 'Criar Incidente' }}
+            </button>
           </div>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
 </div>

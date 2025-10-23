@@ -45,6 +45,26 @@
   padding-bottom: 2rem;
 }
 
+.incident-tab-group ::ng-deep .mat-mdc-tab-labels .mdc-tab__text-label {
+  color: #1f2937;
+}
+
+.incident-tab-group ::ng-deep .mat-mdc-tab-labels .mdc-tab--active .mdc-tab__text-label,
+.incident-tab-group ::ng-deep .mat-mdc-tab-labels .mdc-tab__text-label .mdc-tab__text-label-content {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.incident-tab-group ::ng-deep .mat-mdc-tab-ripple,
+.incident-tab-group ::ng-deep .mdc-tab-indicator__content--underline {
+  border-color: #ffffff;
+}
+
+.incident-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::before,
+.incident-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::after {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
 @media (prefers-color-scheme: dark) {
   .incident-summary {
     background: rgba(31, 41, 55, 0.95);
@@ -56,5 +76,15 @@
     .summary-value {
       color: rgba(243, 244, 246, 0.95);
     }
+  }
+
+  .incident-tab-group ::ng-deep .mat-mdc-tab-labels .mdc-tab__text-label {
+    color: rgba(229, 231, 235, 0.7);
+  }
+
+  .incident-tab-group ::ng-deep .mat-mdc-tab-labels .mdc-tab--active .mdc-tab__text-label,
+  .incident-tab-group ::ng-deep .mat-mdc-tab-labels .mdc-tab__text-label .mdc-tab__text-label-content {
+    color: #ffffff;
+    font-weight: 700;
   }
 }

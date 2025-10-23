@@ -1,7 +1,14 @@
 :host {
     display: block;
-    background: #f7fafc; // bg-gray-100
-    min-height: 100vh;
+    background: transparent;
+    min-height: 100%;
+}
+
+.incident-list-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 // Campos de filtro (usa a mesma base visual do formulário)

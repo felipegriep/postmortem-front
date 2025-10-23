@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute } from '@angular/router';
 import { IncidentEventComponent } from '../incident-event-component/incident-event-component';
 import { EventDialogComponent } from '../incident-event-component/event-dialog-component/event-dialog-component';
 import { IncidentEventResponseInterface } from '../../../domain/interfaces/response/incident-event-response-interface';
 import { IncidentEventInterface } from '../../../domain/interfaces/request/incident-event-interface';
+import { IncidentService } from '../../../services/incident-service';
+import { take } from 'rxjs';
 
 @Component({
     selector: 'app-incident-timeline-tab',
@@ -21,12 +23,17 @@ export class IncidentTimelineTabComponent implements OnInit {
     incidentEventList?: IncidentEventComponent;
 
     incidentId?: number;
+    incidentStartedAt?: string;
     isEventDrawerOpen = false;
     isEventDrawerEdit = false;
     private editingEventId?: number;
     drawerEventData?: IncidentEventResponseInterface;
 
-    constructor(private readonly route: ActivatedRoute) {}
+    constructor(
+        private readonly route: ActivatedRoute,
+        private readonly incidentService: IncidentService,
+        private readonly cdr: ChangeDetectorRef
+    ) {}
 
     ngOnInit(): void {
         const idParam =
@@ -35,6 +42,31 @@ export class IncidentTimelineTabComponent implements OnInit {
         if (idParam) {
             const parsed = Number(idParam);
             this.incidentId = Number.isNaN(parsed) ? undefined : parsed;
+            if (this.incidentId) {
+                this.incidentService
+                    .get(this.incidentId)
+                    .pipe(take(1))
+                    .subscribe({
+                        next: (incident) => {
+                            if (!incident) {
+                                this.incidentStartedAt = undefined;
+                                return;
+                            }
+                            const started = incident.startedAt as unknown;
+                            if (started instanceof Date) {
+                                this.incidentStartedAt = started.toISOString();
+                            } else if (typeof started === 'string') {
+                                this.incidentStartedAt = started;
+                            } else {
+                                const parsedDate = new Date(started as any);
+                                this.incidentStartedAt = isNaN(parsedDate.getTime())
+                                    ? undefined
+                                    : parsedDate.toISOString();
+                            }
+                            this.cdr.markForCheck();
+                        },
+                    });
+            }
         }
     }
 

@@ -46,6 +46,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy {
     @Input() eventData?: IncidentEventResponseInterface | IncidentEventInterface;
     @Input() isEdit = false;
+    @Input() incidentStartedAt?: string | Date;
     @Output() cancel = new EventEmitter<void>();
     @Output() submitEvent = new EventEmitter<IncidentEventInterface>();
     @ViewChild('eventAtInput', { static: false }) eventAtInput?: ElementRef<HTMLInputElement>;
@@ -61,6 +62,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
     public readonly xmark = faXmark;
     public readonly calendarDay = faCalendarDay;
     private eventAtPicker?: flatpickr.Instance;
+    private incidentStartDate?: Date;
 
     constructor(
         private readonly faLibrary: FaIconLibrary,
@@ -78,6 +80,9 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (changes['incidentStartedAt']) {
+            this.updateIncidentStartDate();
+        }
         if (changes['eventData'] || changes['isEdit']) {
             this.syncWithInputs();
         }
@@ -182,6 +187,8 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
                 // ignore parse problems
             }
         }
+
+        this.ensureEventAtRespectsIncidentStart();
     }
 
     private buildDefaultEvent(): IncidentEventInterface {
@@ -212,6 +219,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
             allowInput: true,
             clickOpens: true,
             defaultDate: this.event?.eventAt ? new Date(this.event.eventAt) : undefined,
+            minDate: this.incidentStartDate ? new Date(this.incidentStartDate) : undefined,
             onReady: (_selectedDates: Date[], _dateStr: string, instance: any) => {
                 try {
                     if (instance?.altInput) {
@@ -225,6 +233,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
             onChange: (selectedDates: Date[]) => {
                 if (selectedDates && selectedDates[0]) {
                     this.event.eventAt = this.toLocalDatetimeInputValue(selectedDates[0]);
+                    this.ensureEventAtRespectsIncidentStart();
                 }
                 this.cdr.detectChanges();
             },
@@ -241,6 +250,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
                     }
                     if (dt) {
                         this.event.eventAt = this.toLocalDatetimeInputValue(dt);
+                        this.ensureEventAtRespectsIncidentStart();
                     }
                 } catch (e) {
                     // ignore parse errors from manual input
@@ -248,6 +258,29 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
                 this.cdr.detectChanges();
             },
         }) as flatpickr.Instance;
+    }
+
+    private updateIncidentStartDate(): void {
+        this.incidentStartDate = this.parseToDate(this.incidentStartedAt) || undefined;
+        if (this.eventAtPicker) {
+            this.eventAtPicker.set('minDate', this.incidentStartDate ?? null);
+        }
+        this.ensureEventAtRespectsIncidentStart();
+    }
+
+    private ensureEventAtRespectsIncidentStart(): void {
+        if (!this.incidentStartDate || !this.event) {
+            return;
+        }
+        const currentDate = this.parseToDate(this.event.eventAt);
+        if (currentDate && currentDate.getTime() >= this.incidentStartDate.getTime()) {
+            return;
+        }
+        const adjusted = new Date(this.incidentStartDate);
+        this.event.eventAt = this.toLocalDatetimeInputValue(adjusted);
+        if (this.eventAtPicker) {
+            this.eventAtPicker.setDate(adjusted, false);
+        }
     }
 
     private toLocalDatetimeInputValue(date: Date): string {
@@ -263,5 +296,22 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
         const hh = pad(copy.getHours());
         const min = pad(copy.getMinutes());
         return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+    }
+
+    private parseToDate(value?: string | Date | null): Date | null {
+        if (!value) {
+            return null;
+        }
+        if (value instanceof Date) {
+            return isNaN(value.getTime()) ? null : new Date(value.getTime());
+        }
+        const stringValue =
+            typeof value === 'string' ? value.trim() : typeof value === 'number' ? String(value) : `${value}`;
+        const normalized =
+            stringValue.includes(' ') && !stringValue.includes('T')
+                ? stringValue.replace(' ', 'T')
+                : stringValue;
+        const parsed = new Date(normalized);
+        return isNaN(parsed.getTime()) ? null : parsed;
     }
 }

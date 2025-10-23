@@ -8,7 +8,7 @@
 }
 
 /* Fix para o botão 'Novo Evento' dentro deste componente */
-:host button.btn-primary {
+:host ::ng-deep .add-event-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -16,15 +16,33 @@
     padding: 0.5rem 1rem;
     min-height: 2.5rem;
     border-radius: 0.5rem;
+    font-weight: 700;
+    --mdc-filled-button-container-color: #0ea5e9;
+    --mdc-filled-button-label-text-color: #ffffff;
+    background-color: #0ea5e9;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(14,165,233,0.35);
 }
 
-:host button.btn-primary fa-icon {
+:host ::ng-deep .add-event-button:not(.mat-mdc-button-disabled):hover,
+:host ::ng-deep .add-event-button:not(.mat-mdc-button-disabled):focus-visible {
+    background-color: #0284c7;
+    box-shadow: 0 6px 16px rgba(2,132,199,0.35);
+}
+
+:host ::ng-deep .add-event-button.mat-mdc-button-disabled {
+    background-color: rgba(14,165,233,0.35);
+    color: rgba(255,255,255,0.75);
+    box-shadow: none;
+}
+
+:host ::ng-deep .add-event-button fa-icon {
     font-size: 1.125rem; /* garante o ícone em tamanho adequado */
     line-height: 0;
 }
 
 /* small safeguard: ensure icon + text do not wrap/overlap */
-:host button.btn-primary span {
+:host ::ng-deep .add-event-button span {
     white-space: nowrap;
 }
 

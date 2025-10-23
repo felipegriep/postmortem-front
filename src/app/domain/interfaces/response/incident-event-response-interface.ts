@@ -1,5 +1,5 @@
-import {EventTypeEnum} from '../../enums/event-type-enum';
-import {UserAccountResponseInterface} from './user-account-response-interface';
+import { EventTypeEnum } from '../../enums/event-type-enum';
+import { UserAccountResponseInterface } from './user-account-response-interface';
 
 export interface IncidentEventResponseInterface {
     id: number;

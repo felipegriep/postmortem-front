@@ -1,62 +1,103 @@
-/* Styles to harmonize the dialog with the global form/card style */
 :host {
   display: block;
-  border-style: none !important;
+  height: 100%;
 }
 
-/* Make the Material dialog surface look like a card with rounded corners */
-:host ::ng-deep .mat-mdc-dialog-surface {
-  border-radius: 0.75rem; /* rounded like other cards */
-  border: none;
-  box-shadow: 0 12px 36px rgba(15,23,42,0.35);
-  overflow: hidden;
-  --mdc-dialog-container-color: #1f2937;
-  background: #1f2937 !important; /* gray-800 */
+.drawer-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1f2937;
   color: #e2e8f0;
-  max-width: 48rem;
-  width: 100%;
+  box-shadow: -6px 0 28px rgba(15, 23, 42, 0.55);
 }
 
-/* Header: ensure padding and a clear bottom separator */
-:host ::ng-deep header {
-  padding: 1rem 1.25rem;
-  background: rgba(15,23,42,0.35);
-  border-bottom: 1px solid rgba(148,163,184,0.25);
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem 1.25rem;
+  background: rgba(17, 24, 39, 0.85);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
 }
-:host ::ng-deep header h2 {
+
+.drawer-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.drawer-title {
   margin: 0;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff;
 }
-:host ::ng-deep header p {
-  margin: 0.25rem 0 0 0;
-  color: rgba(226,232,240,0.85);
-  font-size: 0.9375rem;
+
+.drawer-subtitle {
+  margin: 0.35rem 0 0 0;
+  color: rgba(226, 232, 240, 0.8);
+  font-size: 0.95rem;
 }
 
-/* Dialog content spacing */
-:host ::ng-deep .mat-mdc-dialog-content {
-  padding: 0.75rem 1.25rem 1.25rem 1.25rem;
-  background: rgba(15,23,42,0.15);
+.close-icon {
+  background: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: rgba(226, 232, 240, 0.7);
+  border-radius: 9999px;
+  transition: color 120ms ease, background-color 120ms ease, transform 120ms ease;
+  cursor: pointer;
 }
 
-:host ::ng-deep .dialog-body {
+.close-icon:hover,
+.close-icon:focus-visible {
+  color: #ffffff;
+  background-color: rgba(14, 165, 233, 0.2);
+  transform: scale(1.05);
+}
+
+.drawer-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* mirrors incident form spacing */
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-/* Align Material fields with custom form look */
+.drawer-body {
+  flex: 1 1 auto;
+  padding: 1.25rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-y: auto;
+  background: rgba(17, 24, 39, 0.65);
+}
+
+.drawer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.25rem 1.75rem 1.75rem;
+  background: rgba(17, 24, 39, 0.8);
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+}
+
 :host ::ng-deep .mat-mdc-form-field {
   width: 100%;
   --mdc-outlined-text-field-container-shape: 0.75rem;
   --mdc-filled-text-field-container-shape: 0.75rem;
-  --mdc-filled-text-field-container-color: rgba(30,41,59,0.7);
-  --mdc-filled-text-field-hover-label-text-color: #38bdf8;
-  --mdc-filled-text-field-focus-label-text-color: #38bdf8;
-  --mdc-filled-text-field-label-text-color: #ffffff;
-  --mdc-filled-text-field-input-text-color: #f8fafc;
-  --mdc-filled-text-field-focus-input-text-color: #f8fafc;
+  --mdc-filled-text-field-container-color: #ffffff;
+  --mdc-filled-text-field-hover-label-text-color: #0f172a;
+  --mdc-filled-text-field-focus-label-text-color: #0f172a;
+  --mdc-filled-text-field-label-text-color: rgba(71, 85, 105, 0.95);
+  --mdc-filled-text-field-input-text-color: #0f172a;
+  --mdc-filled-text-field-focus-input-text-color: #0f172a;
   --mdc-filled-text-field-active-indicator-color: transparent;
   --mdc-filled-text-field-focus-active-indicator-color: transparent;
   --mdc-filled-text-field-disabled-active-indicator-color: transparent;
@@ -70,31 +111,32 @@
 :host ::ng-deep .mat-mdc-text-field-wrapper {
   border-radius: 0.75rem;
   transition: box-shadow 160ms ease, background-color 160ms ease;
-  box-shadow: inset 0 0 0 1px rgba(148,163,184,0.2);
-  background-color: rgba(15,23,42,0.55);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+  background-color: #ffffff;
 }
 
 :host ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
-  box-shadow: inset 0 0 0 1px rgba(56,189,248,0.7);
+  box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.5);
 }
 
 :host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
-  box-shadow: inset 0 0 0 2px rgba(56,189,248,0.95);
-  background-color: rgba(56,189,248,0.08);
+  box-shadow: inset 0 0 0 2px rgba(14, 165, 233, 0.95);
+  background-color: #ffffff;
 }
 
 :host ::ng-deep .mat-mdc-form-field.has-error .mat-mdc-text-field-wrapper {
-  box-shadow: inset 0 0 0 2px rgba(248,113,113,0.95);
-  background-color: rgba(254,226,226,0.08);
+  box-shadow: inset 0 0 0 2px rgba(248, 113, 113, 0.95);
+  background-color: #ffffff;
 }
 
 :host ::ng-deep .mat-mdc-form-field.has-error .mdc-floating-label,
 :host ::ng-deep .mat-mdc-form-field.has-error.mat-focused .mdc-floating-label {
-  color: rgba(248,113,113,0.95);
+  color: rgba(248, 113, 113, 0.95);
 }
 
 :host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
   margin: 0;
+  padding: 0 1rem;
 }
 
 :host ::ng-deep textarea[matInput] {
@@ -109,97 +151,104 @@
 :host ::ng-deep .mat-mdc-select-trigger {
   display: flex;
   align-items: center;
-  color: #f8fafc;
+  color: #0f172a;
 }
 
 :host ::ng-deep .mat-mdc-select-panel {
   border-radius: 0.75rem !important;
-  box-shadow: 0 8px 24px rgba(2,6,23,0.12) !important;
-  border: 1px solid rgba(148,163,184,0.25) !important;
-  background: #111827 !important;
-  color: #f8fafc !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
+  border: 1px solid rgba(203, 213, 225, 0.9) !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
 }
 
 :host ::ng-deep .mat-mdc-option {
-  color: #e2e8f0 !important;
+  color: #0f172a !important;
 }
 
 :host ::ng-deep .mat-mdc-option.mat-mdc-option-active,
 :host ::ng-deep .mat-mdc-option.mat-mdc-option-highlighted:not(.mat-mdc-option-disabled) {
-  background: rgba(56,189,248,0.15) !important;
-  color: #f8fafc !important;
+  background: rgba(14, 165, 233, 0.15) !important;
+  color: #0f172a !important;
 }
 
-/* Dialog actions: ensure spacing consistent with other forms */
-:host ::ng-deep .mat-mdc-dialog-actions {
-  padding: 1rem 1.25rem 1.25rem 1.25rem;
-  background: rgba(15,23,42,0.25);
-  border-top: 1px solid rgba(148,163,184,0.2);
+:host ::ng-deep .spaced-field.mat-mdc-form-field {
+  --mdc-filled-text-field-label-floating-offset: -22px;
 }
 
-/* Make sure icons inside inputs/buttons align nicely */
-:host ::ng-deep .mat-icon,
-:host ::ng-deep fa-icon {
-  vertical-align: middle;
-  color: rgba(226,232,240,0.9);
+:host ::ng-deep .spaced-field .mat-mdc-form-field-infix {
+  padding-top: 1.05rem !important;
+  padding-bottom: 0.8rem !important;
 }
 
-/* Close button styling */
-:host ::ng-deep button.close-icon {
-  z-index: 10;
-  top: 0.75rem !important;
-  right: 0.75rem !important;
-  background: none;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  color: rgba(226,232,240,0.7);
-  border-radius: 9999px;
-  transition: color 120ms ease, background-color 120ms ease, transform 120ms ease;
-  cursor: pointer;
+:host ::ng-deep .spaced-field .mat-mdc-input-element,
+:host ::ng-deep .spaced-field .mat-mdc-select-trigger {
+  padding-top: 0.15rem;
 }
 
-:host ::ng-deep button.close-icon:hover,
-:host ::ng-deep button.close-icon:focus-visible {
-  color: #ffffff;
-  background-color: rgba(56,189,248,0.15);
-  transform: scale(1.05);
-}
-
-/* Small visual polish for header when close button is present */
-:host ::ng-deep header.relative {
-  padding-right: 3.25rem;
+:host ::ng-deep .spaced-field .mdc-floating-label--float-above {
+  transform: translateY(-1.55rem) scale(0.75);
 }
 
 :host ::ng-deep .input-icon {
-  color: rgba(226,232,240,0.8);
-  font-size: 0.95rem;
+  color: rgba(100, 116, 139, 0.8);
+  font-size: 1rem;
 }
 
 :host ::ng-deep .mat-mdc-form-field.mat-focused .input-icon {
-  color: #38bdf8;
+  color: rgba(14, 165, 233, 0.95);
 }
 
 :host ::ng-deep .mat-mdc-form-field.has-error .input-icon {
-  color: rgba(248,113,113,0.95);
+  color: rgba(248, 113, 113, 0.95);
 }
 
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-error {
-  color: rgba(248,113,113,0.95);
+  color: rgba(248, 113, 113, 0.95);
 }
 
-/* Prevent interactions overflow inside dialog */
-:host ::ng-deep .mat-mdc-dialog-surface * {
-  box-sizing: border-box;
-}
-
-/* small screens adjustments: make dialog full width on tiny devices */
 @media (max-width: 480px) {
-  :host ::ng-deep .mat-mdc-dialog-surface {
-    width: calc(100% - 1rem) !important;
-    margin: 0.5rem !important;
+  .drawer-wrapper {
+    box-shadow: none;
   }
+
+  .drawer-header,
+  .drawer-body,
+  .drawer-actions {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+:host ::ng-deep .flatpickr-input[matinput] {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+}
+
+:host ::ng-deep .flatpickr-alt-input {
+  width: 100%;
+  cursor: text;
+  color: #0f172a !important;
+  background: #ffffff !important;
+  border-radius: 0.75rem;
+  border: none;
+}
+
+:host ::ng-deep .event-datetime-field .mat-mdc-form-field-flex {
+  align-items: center;
+}
+
+:host ::ng-deep button.mat-mdc-icon-button {
+  color: rgba(71, 85, 105, 0.75);
+}
+
+:host ::ng-deep button.mat-mdc-icon-button:hover,
+:host ::ng-deep button.mat-mdc-icon-button:focus-visible {
+  color: #0f172a;
+}
+
+:host ::ng-deep .mat-mdc-form-field.has-error button.mat-mdc-icon-button {
+  color: rgba(248, 113, 113, 0.95);
 }

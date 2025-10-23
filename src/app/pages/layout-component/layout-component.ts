@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ChangeDetectorRef,
+    ElementRef,
+    ViewChild,
+} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -176,7 +183,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
     private setUserFromStorage() {
         try {
-            const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+            const token =
+                localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
             if (!token) {
                 this.user = null;
                 return;
@@ -235,7 +243,9 @@ export class LayoutComponent implements OnInit, OnDestroy {
             const el = this.sidebar?.nativeElement;
             if (!el) return;
             const nodes = Array.from(
-                el.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])')
+                el.querySelectorAll<HTMLElement>(
+                    'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+                )
             ).filter((n) => !!(n.offsetWidth || n.offsetHeight || n.getClientRects().length));
             if (!nodes.length) return;
             const first = nodes[0];

@@ -12,15 +12,24 @@ export const routes: Routes = [
             { path: '', component: HomeComponent, pathMatch: 'full' },
             {
                 path: 'incidents',
-                loadComponent: () => import('./pages/incident-list-component/incident-list-component').then((m) => m.IncidentListComponent),
+                loadComponent: () =>
+                    import('./pages/incident-list-component/incident-list-component').then(
+                        (m) => m.IncidentListComponent
+                    ),
             },
             {
                 path: 'incidents/new',
-                loadComponent: () => import('./pages/incident-form-component/incident-form-component').then((m) => m.IncidentFormComponent),
+                loadComponent: () =>
+                    import('./pages/incident-form-component/incident-form-component').then(
+                        (m) => m.IncidentFormComponent
+                    ),
             },
             {
                 path: 'incidents/edit/:id',
-                loadComponent: () => import('./pages/incident-form-component/incident-form-component').then((m) => m.IncidentFormComponent),
+                loadComponent: () =>
+                    import('./pages/incident-form-component/incident-form-component').then(
+                        (m) => m.IncidentFormComponent
+                    ),
             },
         ],
     },

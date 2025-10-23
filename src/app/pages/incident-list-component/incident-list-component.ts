@@ -46,7 +46,17 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Material table data source
     dataSource = new MatTableDataSource<IncidentResponseInterface>([]);
-    displayedColumns: string[] = ['id', 'title', 'service', 'severity', 'status', 'startedAt', 'endedAt', 'mttr', 'actions'];
+    displayedColumns: string[] = [
+        'id',
+        'title',
+        'service',
+        'severity',
+        'status',
+        'startedAt',
+        'endedAt',
+        'mttr',
+        'actions',
+    ];
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -62,7 +72,11 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
         status: '',
     };
 
-    constructor(private incidentService: IncidentService, private router: Router, private faLibrary: FaIconLibrary) {
+    constructor(
+        private incidentService: IncidentService,
+        private router: Router,
+        private faLibrary: FaIconLibrary
+    ) {
         // register pencil icon
         try {
             this.faLibrary.addIcons(faPencil);
@@ -88,7 +102,9 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
     loadIncidents(): void {
         this.incidentService.list().subscribe((resp) => {
             const pageAny: any = resp as any;
-            const data: IncidentResponseInterface[] = Array.isArray(pageAny) ? pageAny : pageAny?.content ?? [];
+            const data: IncidentResponseInterface[] = Array.isArray(pageAny)
+                ? pageAny
+                : pageAny?.content ?? [];
 
             console.log('Incidents loaded:', data);
 
@@ -96,10 +112,14 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
             const normalizeSeverityIncoming = (v: any): string => {
                 if (v === undefined || v === null || String(v).trim() === '') return '';
                 const s = String(v).toUpperCase().trim();
-                if (s.includes('SEV1') || s.includes('SEV-1') || s.includes('SEV_1')) return 'SEV-1';
-                if (s.includes('SEV2') || s.includes('SEV-2') || s.includes('SEV_2')) return 'SEV-2';
-                if (s.includes('SEV3') || s.includes('SEV-3') || s.includes('SEV_3')) return 'SEV-3';
-                if (s.includes('SEV4') || s.includes('SEV-4') || s.includes('SEV_4')) return 'SEV-4';
+                if (s.includes('SEV1') || s.includes('SEV-1') || s.includes('SEV_1'))
+                    return 'SEV-1';
+                if (s.includes('SEV2') || s.includes('SEV-2') || s.includes('SEV_2'))
+                    return 'SEV-2';
+                if (s.includes('SEV3') || s.includes('SEV-3') || s.includes('SEV_3'))
+                    return 'SEV-3';
+                if (s.includes('SEV4') || s.includes('SEV-4') || s.includes('SEV_4'))
+                    return 'SEV-4';
                 return String(v);
             };
 
@@ -107,7 +127,13 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (v === undefined || v === null || String(v).trim() === '') return '';
                 const s = String(v).toUpperCase().trim();
                 if (s === 'OPEN' || s === 'OPENED') return 'Open';
-                if (s === 'IN_ANALYSIS' || s === 'IN ANALYSIS' || s === 'INANALYSIS' || s === 'IN-ANALYSIS') return 'In Analysis';
+                if (
+                    s === 'IN_ANALYSIS' ||
+                    s === 'IN ANALYSIS' ||
+                    s === 'INANALYSIS' ||
+                    s === 'IN-ANALYSIS'
+                )
+                    return 'In Analysis';
                 if (s === 'CLOSED' || s === 'CLOSE') return 'Closed';
                 if (s.includes('OPEN')) return 'Open';
                 if (s.includes('CLOSED') || s.includes('CLOSE')) return 'Closed';
@@ -183,10 +209,16 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (this.filters.service && this.filters.service.toString().trim() !== '') {
             const f = this.filters.service.toString().toLowerCase().trim();
-            incidents = incidents.filter((inc) => (inc.service || '').toString().toLowerCase().includes(f));
+            incidents = incidents.filter((inc) =>
+                (inc.service || '').toString().toLowerCase().includes(f)
+            );
         }
 
-        const normalizeKey = (v: any) => String(v || '').toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
+        const normalizeKey = (v: any) =>
+            String(v || '')
+                .toUpperCase()
+                .trim()
+                .replace(/[^A-Z0-9]/g, '');
 
         if (this.filters.severity && this.filters.severity.toString().trim() !== '') {
             const sevNorm = normalizeKey(this.filters.severity);

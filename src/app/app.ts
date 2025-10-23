@@ -7,14 +7,14 @@ import { LoadingComponent } from './shared/loading.component';
     imports: [RouterOutlet, LoadingComponent],
     // Inline template (moved from app.html) so the analyzer sees the usage of <app-loading>
     template: `
-    <!-- Um wrapper simples com cor de fundo e modo escuro para a aplicação toda -->
-    <main class="bg-gray-100 dark:bg-gray-900 min-h-screen">
-        <!-- Loading overlay component (global) -->
-        <app-loading></app-loading>
+        <!-- Um wrapper simples com cor de fundo e modo escuro para a aplicação toda -->
+        <main class="bg-gray-100 dark:bg-gray-900 min-h-screen">
+            <!-- Loading overlay component (global) -->
+            <app-loading></app-loading>
 
-        <!-- O router-outlet é onde os componentes de rota (lista, formulário) serão renderizados -->
-        <router-outlet></router-outlet>
-    </main>
+            <!-- O router-outlet é onde os componentes de rota (lista, formulário) serão renderizados -->
+            <router-outlet></router-outlet>
+        </main>
     `,
     styleUrls: ['./app.scss'],
 })

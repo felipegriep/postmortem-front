@@ -1,4 +1,4 @@
-import {EventTypeEnum} from '../../enums/event-type-enum';
+import { EventTypeEnum } from '../../enums/event-type-enum';
 
 export interface IncidentEventInterface {
     eventAt: string;

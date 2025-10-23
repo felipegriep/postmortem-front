@@ -1,4 +1,12 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    AfterViewInit,
+    OnDestroy,
+    ViewChild,
+    ElementRef,
+    ChangeDetectorRef,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IncidentService } from '../../services/incident-service';
 import { IncidentInterface } from '../../domain/interfaces/request/incident-interface';
@@ -9,14 +17,18 @@ import { FormsModule, NgForm } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
 import 'flatpickr/dist/flatpickr.min.css';
-import {IncidentEventComponent} from '../incident/incident-event-component/incident-event-component';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {FontAwesomeModule, FaIconLibrary} from '@fortawesome/angular-fontawesome';
-import {faCalendarDay} from '@fortawesome/free-solid-svg-icons';
+import { IncidentEventComponent } from '../incident/incident-event-component/incident-event-component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faCalendarDay } from '@fortawesome/free-solid-svg-icons';
+import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
+import { EventDialogComponent } from '../incident/incident-event-component/event-dialog-component/event-dialog-component';
+import { IncidentEventInterface } from '../../domain/interfaces/request/incident-event-interface';
+import { IncidentEventResponseInterface } from '../../domain/interfaces/response/incident-event-response-interface';
 
 @Component({
     selector: 'app-incident-form-component',
@@ -30,7 +42,9 @@ import {faCalendarDay} from '@fortawesome/free-solid-svg-icons';
         MatButtonModule,
         MatIconModule,
         FontAwesomeModule,
-        IncidentEventComponent
+        IncidentEventComponent,
+        MatSidenavModule,
+        EventDialogComponent,
     ],
     templateUrl: './incident-form-component.html',
     styleUrls: ['./incident-form-component.scss'],
@@ -43,9 +57,16 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('startedAtInput', { static: false }) startedAtInput?: ElementRef<HTMLInputElement>;
     @ViewChild('endedAtInput', { static: false }) endedAtInput?: ElementRef<HTMLInputElement>;
     @ViewChild('incidentForm', { static: false }) incidentForm?: NgForm;
+    @ViewChild('eventDrawer', { static: false }) eventDrawer?: MatDrawer;
+    @ViewChild(IncidentEventComponent, { static: false })
+    incidentEventList?: IncidentEventComponent;
 
     private startedFp: any = null;
     private endedFp: any = null;
+    isEventDrawerOpen = false;
+    isEventDrawerEdit = false;
+    private editingEventId?: number;
+    drawerEventData?: IncidentEventResponseInterface;
 
     constructor(
         private route: ActivatedRoute,
@@ -59,6 +80,38 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         } catch (e) {
             // noop - biblioteca pode não estar disponível em testes
         }
+    }
+
+    openEventDrawer(event?: IncidentEventResponseInterface): void {
+        this.isEventDrawerEdit = !!event;
+        this.editingEventId = event?.id;
+        this.drawerEventData = event ? { ...event } : undefined;
+        this.isEventDrawerOpen = true;
+        this.eventDrawer?.open();
+    }
+
+    closeEventDrawer(): void {
+        this.isEventDrawerOpen = false;
+        this.eventDrawer?.close();
+    }
+
+    onEventDrawerClosed(): void {
+        this.isEventDrawerOpen = false;
+        this.isEventDrawerEdit = false;
+        this.editingEventId = undefined;
+        this.drawerEventData = undefined;
+    }
+
+    handleEventSubmit(event: IncidentEventInterface): void {
+        if (!this.incidentEventList) {
+            return;
+        }
+        if (this.isEventDrawerEdit && this.editingEventId != null) {
+            this.incidentEventList.updateEvent(this.editingEventId, event);
+        } else {
+            this.incidentEventList.createEvent(event);
+        }
+        this.closeEventDrawer();
     }
 
     ngOnInit(): void {
@@ -123,7 +176,9 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     altFormat: 'd/m/Y H:i',
                     altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
                     locale: Portuguese,
-                    defaultDate: this.incident?.startedAt ? new Date(this.incident.startedAt) : undefined,
+                    defaultDate: this.incident?.startedAt
+                        ? new Date(this.incident.startedAt)
+                        : undefined,
                     allowInput: true,
                     clickOpens: true,
                     onReady: (selectedDates: Date[], dateStr: string, instance: any) => {
@@ -131,14 +186,18 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             if (instance && instance.altInput) {
                                 instance.altInput.setAttribute('placeholder', 'DD/MM/YYYY HH:mm');
                                 // ensure it has our visual class
-                                instance.altInput.classList.add('mat-mdc-input-element', 'flatpickr-alt-input');
+                                instance.altInput.classList.add(
+                                    'mat-mdc-input-element',
+                                    'flatpickr-alt-input'
+                                );
                             }
                         } catch {}
                     },
                     onChange: (selectedDates: Date[]) => {
                         if (selectedDates && selectedDates[0]) {
                             // store model in the ISO local-like format expected elsewhere
-                            this.incident.startedAt = this.toLocalDatetimeInputValue(selectedDates[0]) || '';
+                            this.incident.startedAt =
+                                this.toLocalDatetimeInputValue(selectedDates[0]) || '';
                             // clear parse error on successful selection
                             this.setParseError('startedAt', false);
 
@@ -147,7 +206,10 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                 if (this.endedFp) {
                                     this.endedFp.set('minDate', selectedDates[0]);
                                     // if there's an existing ended date earlier than new start, clear it
-                                    if (this.endedFp.selectedDates && this.endedFp.selectedDates[0]) {
+                                    if (
+                                        this.endedFp.selectedDates &&
+                                        this.endedFp.selectedDates[0]
+                                    ) {
                                         const endedMs = this.endedFp.selectedDates[0].getTime();
                                         if (endedMs < selectedDates[0].getTime()) {
                                             this.endedFp.clear();
@@ -168,14 +230,21 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         try {
                             let dt: Date | null = null;
                             if (selectedDates && selectedDates[0]) dt = selectedDates[0];
-                            else if (dateStr) dt = (flatpickr as any).parseDate(dateStr, instance.config.altFormat || instance.config.dateFormat);
+                            else if (dateStr)
+                                dt = (flatpickr as any).parseDate(
+                                    dateStr,
+                                    instance.config.altFormat || instance.config.dateFormat
+                                );
                             if (dt) {
                                 this.incident.startedAt = this.toLocalDatetimeInputValue(dt) || '';
                                 this.setParseError('startedAt', false);
                                 // update minDate on ended picker
                                 if (this.endedFp) {
                                     this.endedFp.set('minDate', dt);
-                                    if (this.endedFp.selectedDates && this.endedFp.selectedDates[0]) {
+                                    if (
+                                        this.endedFp.selectedDates &&
+                                        this.endedFp.selectedDates[0]
+                                    ) {
                                         const endedMs = this.endedFp.selectedDates[0].getTime();
                                         if (endedMs < dt.getTime()) {
                                             this.endedFp.clear();
@@ -207,22 +276,30 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     altFormat: 'd/m/Y H:i',
                     altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
                     locale: Portuguese,
-                    defaultDate: this.incident?.endedAt ? new Date(this.incident.endedAt) : undefined,
+                    defaultDate: this.incident?.endedAt
+                        ? new Date(this.incident.endedAt)
+                        : undefined,
                     // set minDate initially from incident.startedAt if available
-                    minDate: this.incident?.startedAt ? new Date(this.incident.startedAt) : undefined,
+                    minDate: this.incident?.startedAt
+                        ? new Date(this.incident.startedAt)
+                        : undefined,
                     allowInput: true,
                     clickOpens: true,
                     onReady: (selectedDates: Date[], dateStr: string, instance: any) => {
                         try {
                             if (instance && instance.altInput) {
                                 instance.altInput.setAttribute('placeholder', 'DD/MM/YYYY HH:mm');
-                                instance.altInput.classList.add('mat-mdc-input-element', 'flatpickr-alt-input');
+                                instance.altInput.classList.add(
+                                    'mat-mdc-input-element',
+                                    'flatpickr-alt-input'
+                                );
                             }
                         } catch {}
                     },
                     onChange: (selectedDates: Date[]) => {
                         if (selectedDates && selectedDates[0]) {
-                            this.incident.endedAt = this.toLocalDatetimeInputValue(selectedDates[0]) || '';
+                            this.incident.endedAt =
+                                this.toLocalDatetimeInputValue(selectedDates[0]) || '';
                             this.setParseError('endedAt', false);
                         } else {
                             this.incident.endedAt = '';
@@ -235,7 +312,11 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         try {
                             let dt: Date | null = null;
                             if (selectedDates && selectedDates[0]) dt = selectedDates[0];
-                            else if (dateStr) dt = (flatpickr as any).parseDate(dateStr, instance.config.altFormat || instance.config.dateFormat);
+                            else if (dateStr)
+                                dt = (flatpickr as any).parseDate(
+                                    dateStr,
+                                    instance.config.altFormat || instance.config.dateFormat
+                                );
                             if (dt) {
                                 this.incident.endedAt = this.toLocalDatetimeInputValue(dt) || '';
                                 this.setParseError('endedAt', false);
@@ -280,7 +361,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // helper to set or clear parse error on a form field (template-driven NgModel)
     private setParseError(fieldName: string, hasError: boolean) {
         try {
-            const form = (this.incidentForm as any) as NgForm | undefined;
+            const form = this.incidentForm as any as NgForm | undefined;
             if (!form || !form.controls) return;
             const ngModel = (form.controls as any)[fieldName];
             const control = ngModel && ngModel.control ? ngModel.control : null;
@@ -307,7 +388,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // helper to set or clear a range error (ended earlier than started)
     private setRangeError(fieldName: string, hasError: boolean) {
         try {
-            const form = (this.incidentForm as any) as NgForm | undefined;
+            const form = this.incidentForm as any as NgForm | undefined;
             if (!form || !form.controls) return;
             const ngModel = (form.controls as any)[fieldName];
             const control = ngModel && ngModel.control ? ngModel.control : null;
@@ -368,16 +449,19 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
             if (which === 'started' && this.startedFp) {
                 // open flatpickr instance
                 if (typeof this.startedFp.open === 'function') this.startedFp.open();
-                else if (this.startedAtInput && this.startedAtInput.nativeElement) this.startedAtInput.nativeElement.focus();
+                else if (this.startedAtInput && this.startedAtInput.nativeElement)
+                    this.startedAtInput.nativeElement.focus();
             }
             if (which === 'ended' && this.endedFp) {
                 if (typeof this.endedFp.open === 'function') this.endedFp.open();
-                else if (this.endedAtInput && this.endedAtInput.nativeElement) this.endedAtInput.nativeElement.focus();
+                else if (this.endedAtInput && this.endedAtInput.nativeElement)
+                    this.endedAtInput.nativeElement.focus();
             }
         } catch (e) {
             // fallback: focus input
             try {
-                if (which === 'started' && this.startedAtInput) this.startedAtInput.nativeElement.focus();
+                if (which === 'started' && this.startedAtInput)
+                    this.startedAtInput.nativeElement.focus();
                 if (which === 'ended' && this.endedAtInput) this.endedAtInput.nativeElement.focus();
             } catch {}
         }
@@ -421,9 +505,11 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
             if (this.incidentForm && this.incidentForm.invalid) {
                 // mark controls as touched so validation messages appear in template
                 try {
-                    const form = (this.incidentForm as any) as NgForm;
+                    const form = this.incidentForm as any as NgForm;
                     if (form && form.controls) {
-                        Object.values(form.controls).forEach((c: any) => c.markAsTouched && c.markAsTouched());
+                        Object.values(form.controls).forEach(
+                            (c: any) => c.markAsTouched && c.markAsTouched()
+                        );
                     }
                 } catch {}
                 return;
@@ -481,11 +567,9 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (this.isEditMode && this.incident.id != null) {
             // Atualização de incidente existente
-            this.incidentService
-                .update(String(this.incident.id), payload)
-                .subscribe(() => {
-                    this.router.navigate(['/incidents']);
-                });
+            this.incidentService.update(String(this.incident.id), payload).subscribe(() => {
+                this.router.navigate(['/incidents']);
+            });
         } else {
             // Criação de novo incidente (sem id no payload)
             this.incidentService.create(payload).subscribe(() => {

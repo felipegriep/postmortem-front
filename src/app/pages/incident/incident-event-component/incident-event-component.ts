@@ -2,37 +2,36 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    EventEmitter,
     Input,
     OnChanges,
     OnInit,
-    SimpleChanges
+    Output,
+    SimpleChanges,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {MatButtonModule} from '@angular/material/button';
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {IncidentEventResponseInterface} from '../../../domain/interfaces/response/incident-event-response-interface';
-import {EventTypeEnum} from '../../../domain/enums/event-type-enum';
-import {IncidentEventService} from '../../../services/incident-event-service';
-import {IncidentEventInterface} from '../../../domain/interfaces/request/incident-event-interface';
-import {EventDialogComponent} from './event-dialog-component/event-dialog-component';
-import {FontAwesomeModule, FaIconLibrary} from '@fortawesome/angular-fontawesome';
-import {faPen, faPlus, faTrash} from '@fortawesome/free-solid-svg-icons';
+import { CommonModule } from '@angular/common';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { IncidentEventResponseInterface } from '../../../domain/interfaces/response/incident-event-response-interface';
+import { EventTypeEnum } from '../../../domain/enums/event-type-enum';
+import { IncidentEventService } from '../../../services/incident-event-service';
+import { IncidentEventInterface } from '../../../domain/interfaces/request/incident-event-interface';
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-incident-event-component',
     standalone: true,
-    imports: [
-        CommonModule, MatTableModule, MatButtonModule,
-        MatDialogModule, MatTooltipModule, FontAwesomeModule
-    ],
+    imports: [CommonModule, MatTableModule, MatButtonModule, MatTooltipModule, FontAwesomeModule],
     templateUrl: './incident-event-component.html',
     styleUrls: ['./incident-event-component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IncidentEventComponent implements OnInit, OnChanges {
     @Input() incidentId?: number;
+    @Output() addEventRequested = new EventEmitter<void>();
+    @Output() editEventRequested = new EventEmitter<IncidentEventResponseInterface>();
 
     displayedColumns: string[] = ['eventAt', 'type', 'description', 'actions'];
     dataSource = new MatTableDataSource<IncidentEventResponseInterface>();
@@ -44,9 +43,8 @@ export class IncidentEventComponent implements OnInit, OnChanges {
 
     constructor(
         private incidentEventService: IncidentEventService,
-        public dialog: MatDialog,
         private readonly cdr: ChangeDetectorRef,
-        private readonly faLibrary: FaIconLibrary,
+        private readonly faLibrary: FaIconLibrary
     ) {
         try {
             this.faLibrary.addIcons(faPlus, faPen, faTrash);
@@ -72,34 +70,12 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         }
     }
 
-
     loadEvents(): void {
         if (!this.incidentId) return;
-        this.incidentEventService.list(this.incidentId).subscribe(events => {
+        this.incidentEventService.list(this.incidentId).subscribe((events) => {
             this.dataSource.data = events;
             this.hasLoadedOnce = true;
             this.cdr.markForCheck();
-        });
-    }
-
-    openEventDialog(event?: IncidentEventResponseInterface): void {
-        const dialogRef = this.dialog.open(EventDialogComponent, {
-            width: '500px',
-            data: { event, isEdit: !!event, incidentId: this.incidentId },
-            disableClose: true,
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (!result) return;
-            const payload = result as { event: IncidentEventInterface, isEdit: boolean, id?: number };
-            if (!this.incidentId) return;
-            if (payload.isEdit) {
-                // update requires the event id
-                if (!payload.id) return;
-                this.incidentEventService.update(this.incidentId, payload.id, payload.event).subscribe(() => this.loadEvents());
-            } else {
-                this.incidentEventService.create(this.incidentId, payload.event).subscribe(() => this.loadEvents());
-            }
         });
     }
 
@@ -109,6 +85,30 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         this.incidentEventService.delete(this.incidentId, eventId).subscribe(() => {
             this.loadEvents();
         });
+    }
+
+    requestCreateEvent(): void {
+        this.addEventRequested.emit();
+    }
+
+    requestEditEvent(event: IncidentEventResponseInterface): void {
+        this.editEventRequested.emit(event);
+    }
+
+    createEvent(event: IncidentEventInterface): void {
+        if (!this.incidentId) {
+            return;
+        }
+        this.incidentEventService.create(this.incidentId, event).subscribe(() => this.loadEvents());
+    }
+
+    updateEvent(eventId: number, event: IncidentEventInterface): void {
+        if (!this.incidentId) {
+            return;
+        }
+        this.incidentEventService
+            .update(this.incidentId, eventId, event)
+            .subscribe(() => this.loadEvents());
     }
 
     getTypeClass(type: EventTypeEnum | string): string {
@@ -121,5 +121,4 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         } as Record<EventTypeEnum | string, string>;
         return classes[type] ?? 'bg-gray-100 text-gray-800';
     }
-
 }

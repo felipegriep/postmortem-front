@@ -8,6 +8,19 @@
     padding-bottom: 2rem;
 }
 
+.incident-drawer-container {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.event-drawer-panel {
+    width: min(460px, 100vw);
+    max-width: 100%;
+    border-left: none;
+    background: transparent;
+    padding: 0;
+}
+
 :host-context(.dark) {
     background: #0f172a;
 }
@@ -135,8 +148,46 @@
     padding-right: 1.75rem;
 }
 
+:host ::ng-deep button[mat-stroked-button].cancel-button {
+    background-color: #fee2e2;
+    border-color: #fee2e2;
+    color: #991b1b;
+}
+
+:host ::ng-deep button[mat-stroked-button].cancel-button:hover,
+:host ::ng-deep button[mat-stroked-button].cancel-button:focus-visible {
+    background-color: #fca5a5;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
+:host ::ng-deep button[mat-stroked-button].cancel-button:disabled {
+    background-color: rgba(254, 226, 226, 0.6);
+    border-color: rgba(254, 226, 226, 0.6);
+    color: rgba(255, 255, 255, 0.75);
+}
+
 :host ::ng-deep button[mat-flat-button] {
     box-shadow: 0 4px 12px rgba(14,165,233,0.35);
+}
+
+:host ::ng-deep .incident-primary-button.mat-mdc-unelevated-button {
+    --mdc-filled-button-container-color: #0ea5e9;
+    --mdc-filled-button-label-text-color: #ffffff;
+    --mdc-filled-button-container-shape: 0.75rem;
+    background-color: #0ea5e9;
+    color: #ffffff;
+}
+
+:host ::ng-deep .incident-primary-button.mat-mdc-unelevated-button:not(.mat-mdc-button-disabled):hover,
+:host ::ng-deep .incident-primary-button.mat-mdc-unelevated-button:not(.mat-mdc-button-disabled):focus-visible {
+    background-color: #0284c7;
+    box-shadow: 0 6px 16px rgba(2,132,199,0.35);
+}
+
+:host ::ng-deep .incident-primary-button.mat-mdc-unelevated-button.mat-mdc-button-disabled {
+    background-color: rgba(14,165,233,0.35);
+    color: rgba(255,255,255,0.75);
 }
 
 :host ::ng-deep button[mat-flat-button]:disabled {

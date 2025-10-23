@@ -1,14 +1,39 @@
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import "./material-overrides.scss";
-
 /* You can add global styles to this file, and also import other style files */
 
 /* Global styles and shared theme moved out from component SCSS to keep component bundles small */
+
+html,
+body {
+  font-family: 'Exo 2', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+/* Material overrides */
+.mat-mdc-header-row {
+  font-family: 'Exo 2', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.mat-mdc-dialog-container {
+  backdrop-filter: none !important;
+}
+
+.mat-mdc-menu-panel {
+  backdrop-filter: none !important;
+}
+
+.mat-mdc-tooltip {
+  backdrop-filter: none !important;
+}
+
+.mat-dialog-content {
+  backdrop-filter: none !important;
+}
 
 :root {
   --app-primary: #0ea5e9; /* sky-500 as default app primary; adjust as desired */

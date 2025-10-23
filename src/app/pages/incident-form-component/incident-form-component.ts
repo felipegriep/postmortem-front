@@ -17,7 +17,6 @@ import { FormsModule, NgForm } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
 import 'flatpickr/dist/flatpickr.min.css';
-import { IncidentEventComponent } from '../incident/incident-event-component/incident-event-component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -25,10 +24,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCalendarDay } from '@fortawesome/free-solid-svg-icons';
-import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
-import { EventDialogComponent } from '../incident/incident-event-component/event-dialog-component/event-dialog-component';
-import { IncidentEventInterface } from '../../domain/interfaces/request/incident-event-interface';
-import { IncidentEventResponseInterface } from '../../domain/interfaces/response/incident-event-response-interface';
+import { Subject, of, switchMap, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-incident-form-component',
@@ -42,9 +38,6 @@ import { IncidentEventResponseInterface } from '../../domain/interfaces/response
         MatButtonModule,
         MatIconModule,
         FontAwesomeModule,
-        IncidentEventComponent,
-        MatSidenavModule,
-        EventDialogComponent,
     ],
     templateUrl: './incident-form-component.html',
     styleUrls: ['./incident-form-component.scss'],
@@ -57,16 +50,10 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('startedAtInput', { static: false }) startedAtInput?: ElementRef<HTMLInputElement>;
     @ViewChild('endedAtInput', { static: false }) endedAtInput?: ElementRef<HTMLInputElement>;
     @ViewChild('incidentForm', { static: false }) incidentForm?: NgForm;
-    @ViewChild('eventDrawer', { static: false }) eventDrawer?: MatDrawer;
-    @ViewChild(IncidentEventComponent, { static: false })
-    incidentEventList?: IncidentEventComponent;
 
     private startedFp: any = null;
     private endedFp: any = null;
-    isEventDrawerOpen = false;
-    isEventDrawerEdit = false;
-    private editingEventId?: number;
-    drawerEventData?: IncidentEventResponseInterface;
+    private destroy$ = new Subject<void>();
 
     constructor(
         private route: ActivatedRoute,
@@ -82,85 +69,62 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    openEventDrawer(event?: IncidentEventResponseInterface): void {
-        this.isEventDrawerEdit = !!event;
-        this.editingEventId = event?.id;
-        this.drawerEventData = event ? { ...event } : undefined;
-        this.isEventDrawerOpen = true;
-        this.eventDrawer?.open();
-    }
-
-    closeEventDrawer(): void {
-        this.isEventDrawerOpen = false;
-        this.eventDrawer?.close();
-    }
-
-    onEventDrawerClosed(): void {
-        this.isEventDrawerOpen = false;
-        this.isEventDrawerEdit = false;
-        this.editingEventId = undefined;
-        this.drawerEventData = undefined;
-    }
-
-    handleEventSubmit(event: IncidentEventInterface): void {
-        if (!this.incidentEventList) {
-            return;
-        }
-        if (this.isEventDrawerEdit && this.editingEventId != null) {
-            this.incidentEventList.updateEvent(this.editingEventId, event);
-        } else {
-            this.incidentEventList.createEvent(event);
-        }
-        this.closeEventDrawer();
-    }
-
     ngOnInit(): void {
         // ensure Material theme is loaded when this lazy component initializes
         this.loadMaterialTheme();
-        const idParam = this.route.snapshot.paramMap.get('id');
-        if (idParam) {
-            this.isEditMode = true;
-            const incidentId = +idParam;
-            this.incidentService.get(incidentId).subscribe((incident) => {
-                if (incident) {
-                    // Mapear IncidentResponseInterface -> IncidentInterface para o formulário
-                    this.incident = {
-                        id: incident.id ? Number(incident.id) : undefined,
-                        title: incident.title,
-                        service: incident.service,
-                        severity: incident.severity,
-                        status: incident.status,
-                        startedAt:
-                            this.formatForInput(incident.startedAt) ||
-                            this.toLocalDatetimeInputValue(new Date())!,
-                        endedAt: this.toLocalDatetimeInputValue(incident.endedAt) || '',
-                        impactShort: incident.impactShort,
-                    };
-                    // if pickers already initialized, update their dates
-                    try {
-                        if (this.startedFp && this.incident.startedAt) {
-                            this.startedFp.setDate(new Date(this.incident.startedAt));
-                        }
-                        if (this.endedFp && this.incident.endedAt) {
-                            this.endedFp.setDate(new Date(this.incident.endedAt));
-                        }
-                        // ensure ended picker's minDate is synchronized
-                        if (this.startedFp && this.endedFp && this.incident.startedAt) {
-                            this.endedFp.set('minDate', new Date(this.incident.startedAt));
-                            this.updateRangeValidation();
-                        }
-                    } catch (e) {
-                        // ignore
+        const paramSource$ = this.route.parent?.paramMap ?? this.route.paramMap;
+
+        paramSource$
+            .pipe(
+                takeUntil(this.destroy$),
+                switchMap((params) => {
+                    const idParam = params.get('id');
+                    const parsedId = idParam != null ? Number(idParam) : NaN;
+                    if (!idParam || Number.isNaN(parsedId)) {
+                        this.isEditMode = false;
+                        this.incident = this.getEmptyIncident();
+                        this.resetPickers();
+                        return of(null);
                     }
-                } else {
-                    // Tratar caso de incidente não encontrado, redirecionando para a lista
-                    this.router.navigate(['/incidents']);
+                    this.isEditMode = true;
+                    return this.incidentService.get(parsedId);
+                })
+            )
+            .subscribe((incident) => {
+                if (!incident) {
+                    return;
                 }
+                // Mapear IncidentResponseInterface -> IncidentInterface para o formulário
+                this.incident = {
+                    id: incident.id ? Number(incident.id) : undefined,
+                    title: incident.title,
+                    service: incident.service,
+                    severity: incident.severity,
+                    status: incident.status,
+                    startedAt:
+                        this.formatForInput(incident.startedAt) ||
+                        this.toLocalDatetimeInputValue(new Date())!,
+                    endedAt: this.toLocalDatetimeInputValue(incident.endedAt) || '',
+                    impactShort: incident.impactShort,
+                };
+                this.syncPickersWithModel();
+                this.configureEndedMinDate();
+                this.cdr.detectChanges();
             });
-        } else {
-            this.isEditMode = false;
-            this.incident = this.getEmptyIncident();
-        }
+    }
+
+    private resetPickers(): void {
+        try {
+            if (this.startedFp) {
+                this.startedFp.clear();
+            }
+        } catch {}
+        try {
+            if (this.endedFp) {
+                this.endedFp.clear();
+                this.endedFp.set('minDate', null);
+            }
+        } catch {}
     }
 
     ngAfterViewInit(): void {
@@ -334,28 +298,14 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             }
 
-            // After both pickers are created, ensure ended picker's minDate is set based on startedAt (if present)
-            try {
-                if (this.startedFp && this.endedFp && this.incident?.startedAt) {
-                    const startDate = new Date(this.incident.startedAt);
-                    this.endedFp.set('minDate', startDate);
-                    if (this.endedFp.selectedDates && this.endedFp.selectedDates[0]) {
-                        const endedMs = this.endedFp.selectedDates[0].getTime();
-                        if (endedMs < startDate.getTime()) {
-                            this.endedFp.clear();
-                            this.incident.endedAt = '';
-                            this.setParseError('endedAt', false);
-                        }
-                    }
-                    this.updateRangeValidation();
-                }
-            } catch (e) {
-                // ignore
-            }
+            // After both pickers are created, ensure ended picker's constraints are synchronized
+            this.configureEndedMinDate();
         } catch (e) {
             // fallback: leave inputs as-is if flatpickr fails
             console.warn('flatpickr initialization failed', e);
         }
+
+        this.syncPickersWithModel();
     }
 
     // helper to set or clear parse error on a form field (template-driven NgModel)
@@ -441,6 +391,50 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.endedFp = null;
             }
         } catch {}
+
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    private syncPickersWithModel(): void {
+        try {
+            if (this.startedFp) {
+                const startDate = this.parseToDate(this.incident.startedAt);
+                if (startDate) this.startedFp.setDate(startDate, true);
+                else this.startedFp.clear();
+            }
+            if (this.endedFp) {
+                const endDate = this.parseToDate(this.incident.endedAt);
+                if (endDate) this.endedFp.setDate(endDate, true);
+                else this.endedFp.clear();
+            }
+        } catch (e) {
+            // ignore sync errors
+        }
+    }
+
+    private configureEndedMinDate(): void {
+        try {
+            if (!this.startedFp || !this.endedFp) {
+                return;
+            }
+            const startDate = this.parseToDate(this.incident.startedAt);
+            if (!startDate) {
+                this.endedFp.set('minDate', null);
+                this.updateRangeValidation();
+                return;
+            }
+            this.endedFp.set('minDate', startDate);
+            const selected = this.endedFp.selectedDates?.[0] ?? null;
+            if (selected && selected.getTime() < startDate.getTime()) {
+                this.endedFp.clear();
+                this.incident.endedAt = '';
+                this.setParseError('endedAt', false);
+            }
+            this.updateRangeValidation();
+        } catch (e) {
+            // ignore min-date sync issues
+        }
     }
 
     // Open calendar manually (used by calendar buttons)
@@ -584,11 +578,29 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private toLocalDatetimeInputValue(dateLike: Date | string | null | undefined): string | null {
         if (!dateLike) return null;
-        const d = new Date(dateLike);
-        if (isNaN(d.getTime())) return null;
-        const tzOffset = d.getTimezoneOffset();
-        const local = new Date(d.getTime() - tzOffset * 60000);
+        const parsed = this.parseToDate(dateLike);
+        if (!parsed) {
+            return null;
+        }
+        const tzOffset = parsed.getTimezoneOffset();
+        const local = new Date(parsed.getTime() - tzOffset * 60000);
         return local.toISOString().slice(0, 16);
+    }
+
+    private parseToDate(dateLike: Date | string | null | undefined): Date | null {
+        if (!dateLike) {
+            return null;
+        }
+        if (dateLike instanceof Date) {
+            const cloned = new Date(dateLike.getTime());
+            return isNaN(cloned.getTime()) ? null : cloned;
+        }
+        const normalized =
+            dateLike.includes(' ') && !dateLike.includes('T')
+                ? dateLike.replace(' ', 'T')
+                : dateLike;
+        const parsed = new Date(normalized);
+        return isNaN(parsed.getTime()) ? null : parsed;
     }
 
     // Load the prebuilt Material theme from the public folder (only once)

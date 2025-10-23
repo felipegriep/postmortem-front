@@ -1,0 +1,60 @@
+.incident-tabs-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.incident-summary {
+  position: sticky;
+  top: 5.5rem;
+  z-index: 5;
+  padding: 1.25rem 1.5rem;
+  background: var(--mat-card-background-color, #fff);
+  border-radius: 0.75rem;
+
+  .summary-header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .summary-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(107, 114, 128, 1);
+    margin: 0;
+  }
+
+  .summary-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(31, 41, 55, 1);
+    margin: 0.2rem 0 0;
+    word-break: break-word;
+  }
+
+  .summary-title {
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+}
+
+.tab-content {
+  padding-bottom: 2rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .incident-summary {
+    background: rgba(31, 41, 55, 0.95);
+
+    .summary-label {
+      color: rgba(209, 213, 219, 0.7);
+    }
+
+    .summary-value {
+      color: rgba(243, 244, 246, 0.95);
+    }
+  }
+}

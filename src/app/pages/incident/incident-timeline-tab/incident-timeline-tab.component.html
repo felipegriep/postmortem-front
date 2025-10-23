@@ -1,0 +1,32 @@
+<mat-drawer-container class="timeline-drawer-container">
+  <mat-drawer-content>
+    <ng-container *ngIf="incidentId; else missingIncident">
+      <app-incident-event-component
+        [incidentId]="incidentId"
+        (addEventRequested)="openEventDrawer()"
+        (editEventRequested)="openEventDrawer($event)"
+      ></app-incident-event-component>
+    </ng-container>
+    <ng-template #missingIncident>
+      <div class="timeline-empty-state">
+        Não foi possível identificar o incidente. Retorne à aba de detalhes e selecione um registro válido.
+      </div>
+    </ng-template>
+  </mat-drawer-content>
+
+  <mat-drawer
+    #eventDrawer="matDrawer"
+    class="event-drawer-panel"
+    position="end"
+    mode="over"
+    [autoFocus]="false"
+    (closedStart)="onEventDrawerClosed()"
+  >
+    <app-event-dialog-component
+      [eventData]="drawerEventData"
+      [isEdit]="isEventDrawerEdit"
+      (cancel)="closeEventDrawer()"
+      (submitEvent)="handleEventSubmit($event)"
+    ></app-event-dialog-component>
+  </mat-drawer>
+</mat-drawer-container>

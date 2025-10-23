@@ -1,0 +1,36 @@
+.analysis-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.analysis-container mat-card {
+  max-width: 720px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+}
+
+.analysis-container h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.analysis-container p {
+  margin: 0;
+  color: rgba(55, 65, 81, 0.9);
+  line-height: 1.6;
+}
+
+@media (prefers-color-scheme: dark) {
+  .analysis-container p {
+    color: rgba(229, 231, 235, 0.85);
+  }
+}

@@ -20,16 +20,48 @@ export const routes: Routes = [
             {
                 path: 'incidents/new',
                 loadComponent: () =>
-                    import('./pages/incident-form-component/incident-form-component').then(
-                        (m) => m.IncidentFormComponent
+                    import('./pages/incident-detail-tabs/incident-detail-tabs.component').then(
+                        (m) => m.IncidentDetailTabsComponent
                     ),
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () =>
+                            import('./pages/incident-form-component/incident-form-component').then(
+                                (m) => m.IncidentFormComponent
+                            ),
+                    },
+                ],
             },
             {
                 path: 'incidents/edit/:id',
                 loadComponent: () =>
-                    import('./pages/incident-form-component/incident-form-component').then(
-                        (m) => m.IncidentFormComponent
+                    import('./pages/incident-detail-tabs/incident-detail-tabs.component').then(
+                        (m) => m.IncidentDetailTabsComponent
                     ),
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () =>
+                            import('./pages/incident-form-component/incident-form-component').then(
+                                (m) => m.IncidentFormComponent
+                            ),
+                    },
+                    {
+                        path: 'timeline',
+                        loadComponent: () =>
+                            import(
+                                './pages/incident/incident-timeline-tab/incident-timeline-tab.component'
+                            ).then((m) => m.IncidentTimelineTabComponent),
+                    },
+                    {
+                        path: 'analysis',
+                        loadComponent: () =>
+                            import(
+                                './pages/incident/incident-analysis-tab/incident-analysis-tab.component'
+                            ).then((m) => m.IncidentAnalysisTabComponent),
+                    },
+                ],
             },
         ],
     },

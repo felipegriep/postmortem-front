@@ -1,218 +1,229 @@
-<mat-drawer-container class="incident-drawer-container">
-  <mat-drawer-content>
-    <div class="w-full">
-      <div class="mx-auto p-4 md:p-8 max-w-5xl">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8">
-          <header class="mb-8 border-b pb-4 dark:border-gray-600">
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
-              {{ isEditMode ? 'Editar Incidente #' + incident.id : 'Registrar Novo Incidente' }}
-            </h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Preencha os detalhes do incidente abaixo.
-            </p>
-          </header>
+<div class="incident-form-wrapper">
+  <div class="mx-auto p-4 md:p-8 max-w-5xl">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8">
+      <header class="mb-8 border-b pb-4 dark:border-gray-600">
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+          {{ isEditMode ? 'Editar Incidente #' + incident.id : 'Registrar Novo Incidente' }}
+        </h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Preencha os detalhes do incidente abaixo.
+        </p>
+      </header>
 
-          <form #incidentForm="ngForm" (ngSubmit)="onSubmit()">
-            <div class="grid gap-6 md:grid-cols-2">
-              <div class="md:col-span-2">
-                <mat-form-field appearance="fill" floatLabel="always" class="w-full"
-                                 [ngClass]="{'has-error': title.invalid && (title.dirty || title.touched)}">
-                  <mat-label>Título do Incidente</mat-label>
-                  <input
-                    matInput
-                    id="title"
-                    name="title"
-                    #title="ngModel"
-                    [(ngModel)]="incident.title"
-                    placeholder="Ex: Indisponibilidade da API de Pagamentos"
-                    required>
-                  <mat-error *ngIf="title.invalid && (title.dirty || title.touched)">
-                    O título é obrigatório.
-                  </mat-error>
-                </mat-form-field>
-              </div>
+      <form #incidentForm="ngForm" (ngSubmit)="onSubmit()">
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="md:col-span-2">
+            <mat-form-field
+              appearance="fill"
+              floatLabel="always"
+              class="w-full"
+              [ngClass]="{ 'has-error': title.invalid && (title.dirty || title.touched) }"
+            >
+              <mat-label>Título do Incidente</mat-label>
+              <input
+                matInput
+                id="title"
+                name="title"
+                #title="ngModel"
+                [(ngModel)]="incident.title"
+                placeholder="Ex: Indisponibilidade da API de Pagamentos"
+                required
+              />
+              <mat-error *ngIf="title.invalid && (title.dirty || title.touched)">
+                O título é obrigatório.
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-              <div class="md:col-span-2">
-                <mat-form-field appearance="fill" floatLabel="always" class="w-full"
-                                 [ngClass]="{'has-error': service.invalid && (service.dirty || service.touched)}">
-                  <mat-label>Serviço Afetado</mat-label>
-                  <input
-                    matInput
-                    id="service"
-                    name="service"
-                    #service="ngModel"
-                    [(ngModel)]="incident.service"
-                    placeholder="Ex: billing, checkout, auth"
-                    required>
-                  <mat-error *ngIf="service.invalid && (service.dirty || service.touched)">
-                    O serviço é obrigatório.
-                  </mat-error>
-                </mat-form-field>
-              </div>
+          <div class="md:col-span-2">
+            <mat-form-field
+              appearance="fill"
+              floatLabel="always"
+              class="w-full"
+              [ngClass]="{ 'has-error': service.invalid && (service.dirty || service.touched) }"
+            >
+              <mat-label>Serviço Afetado</mat-label>
+              <input
+                matInput
+                id="service"
+                name="service"
+                #service="ngModel"
+                [(ngModel)]="incident.service"
+                placeholder="Ex: billing, checkout, auth"
+                required
+              />
+              <mat-error *ngIf="service.invalid && (service.dirty || service.touched)">
+                O serviço é obrigatório.
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-              <div>
-                <mat-form-field appearance="fill" floatLabel="always" class="w-full"
-                                 [ngClass]="{'has-error': severity.invalid && (severity.dirty || severity.touched)}">
-                  <mat-label>Severidade</mat-label>
-                  <mat-select
-                    id="severity"
-                    name="severity"
-                    #severity="ngModel"
-                    [(ngModel)]="incident.severity"
-                    required>
-                    <mat-option value="SEV-1">SEV-1 (Crítico)</mat-option>
-                    <mat-option value="SEV-2">SEV-2 (Alto)</mat-option>
-                    <mat-option value="SEV-3">SEV-3 (Médio)</mat-option>
-                    <mat-option value="SEV-4">SEV-4 (Baixo)</mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="severity.invalid && (severity.dirty || severity.touched)">
-                    A severidade é obrigatória.
-                  </mat-error>
-                </mat-form-field>
-              </div>
+          <div>
+            <mat-form-field
+              appearance="fill"
+              floatLabel="always"
+              class="w-full"
+              [ngClass]="{ 'has-error': severity.invalid && (severity.dirty || severity.touched) }"
+            >
+              <mat-label>Severidade</mat-label>
+              <mat-select id="severity" name="severity" #severity="ngModel" [(ngModel)]="incident.severity" required>
+                <mat-option value="SEV-1">SEV-1 (Crítico)</mat-option>
+                <mat-option value="SEV-2">SEV-2 (Alto)</mat-option>
+                <mat-option value="SEV-3">SEV-3 (Médio)</mat-option>
+                <mat-option value="SEV-4">SEV-4 (Baixo)</mat-option>
+              </mat-select>
+              <mat-error *ngIf="severity.invalid && (severity.dirty || severity.touched)">
+                A severidade é obrigatória.
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-              <div>
-                <mat-form-field appearance="fill" floatLabel="always" class="w-full"
-                                 [ngClass]="{'has-error': status.invalid && (status.dirty || status.touched)}">
-                  <mat-label>Status</mat-label>
-                  <mat-select
-                    id="status"
-                    name="status"
-                    #status="ngModel"
-                    [(ngModel)]="incident.status"
-                    required>
-                    <mat-option value="Open">Aberto</mat-option>
-                    <mat-option value="In Analysis">Em Análise</mat-option>
-                    <mat-option value="Closed">Resolvido</mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="status.invalid && (status.dirty || status.touched)">
-                    O status é obrigatório.
-                  </mat-error>
-                </mat-form-field>
-              </div>
+          <div>
+            <mat-form-field
+              appearance="fill"
+              floatLabel="always"
+              class="w-full"
+              [ngClass]="{ 'has-error': status.invalid && (status.dirty || status.touched) }"
+            >
+              <mat-label>Status</mat-label>
+              <mat-select id="status" name="status" #status="ngModel" [(ngModel)]="incident.status" required>
+                <mat-option value="Open">Aberto</mat-option>
+                <mat-option value="In Analysis">Em Análise</mat-option>
+                <mat-option value="Closed">Resolvido</mat-option>
+              </mat-select>
+              <mat-error *ngIf="status.invalid && (status.dirty || status.touched)">
+                O status é obrigatório.
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-              <div>
-                <mat-form-field appearance="fill" floatLabel="always" class="w-full"
-                                 [ngClass]="{'has-error': startedAt.invalid && (startedAt.dirty || startedAt.touched) || startedAt.errors?.['parse']}">
-                  <mat-label>Início do Incidente</mat-label>
-                  <input
-                    matInput
-                    #startedAtInput
-                    id="startedAt"
-                    name="startedAt"
-                    #startedAt="ngModel"
-                    [(ngModel)]="incident.startedAt"
-                    required
-                    placeholder="DD/MM/YYYY HH:mm">
-                  <button
-                    mat-icon-button
-                    matSuffix
-                    type="button"
-                    aria-label="Abrir calendário"
-                    (click)="openCalendar('started')">
-                    <fa-icon [icon]="calendarDay" aria-hidden="true"></fa-icon>
-                  </button>
-                  <mat-error *ngIf="startedAt.errors?.['required'] && (startedAt.dirty || startedAt.touched)">
-                    A data de início é obrigatória.
-                  </mat-error>
-                  <mat-error *ngIf="startedAt.errors?.['parse']">
-                    Formato inválido. Use DD/MM/YYYY HH:mm
-                  </mat-error>
-                </mat-form-field>
-              </div>
+          <div>
+            <mat-form-field
+              appearance="fill"
+              floatLabel="always"
+              class="w-full"
+              [ngClass]="{
+                'has-error':
+                  startedAt.invalid && (startedAt.dirty || startedAt.touched) || startedAt.errors?.['parse']
+              }"
+            >
+              <mat-label>Início do Incidente</mat-label>
+              <input
+                matInput
+                #startedAtInput
+                id="startedAt"
+                name="startedAt"
+                #startedAt="ngModel"
+                [(ngModel)]="incident.startedAt"
+                required
+                placeholder="DD/MM/YYYY HH:mm"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                aria-label="Abrir calendário"
+                (click)="openCalendar('started')"
+              >
+                <fa-icon [icon]="calendarDay" aria-hidden="true"></fa-icon>
+              </button>
+              <mat-error *ngIf="startedAt.errors?.['required'] && (startedAt.dirty || startedAt.touched)">
+                A data de início é obrigatória.
+              </mat-error>
+              <mat-error *ngIf="startedAt.errors?.['parse']">
+                Formato inválido. Use DD/MM/YYYY HH:mm
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-              <div>
-                <mat-form-field appearance="fill" floatLabel="always" class="w-full"
-                                 [ngClass]="{'has-error': endedAt.invalid && (endedAt.dirty || endedAt.touched) || endedAt.errors?.['parse'] || endedAt.errors?.['range']}">
-                  <mat-label>Fim do Incidente</mat-label>
-                  <input
-                    matInput
-                    #endedAtInput
-                    id="endedAt"
-                    name="endedAt"
-                    #endedAt="ngModel"
-                    [(ngModel)]="incident.endedAt"
-                    placeholder="DD/MM/YYYY HH:mm">
-                  <button
-                    mat-icon-button
-                    matSuffix
-                    type="button"
-                    aria-label="Abrir calendário"
-                    (click)="openCalendar('ended')">
-                    <fa-icon [icon]="calendarDay" aria-hidden="true"></fa-icon>
-                  </button>
-                  <mat-error *ngIf="endedAt.errors?.['parse']">
-                    Formato inválido. Use DD/MM/YYYY HH:mm
-                  </mat-error>
-                  <mat-error *ngIf="endedAt.errors?.['range']">
-                    A data de término não pode ser anterior à data de início.
-                  </mat-error>
-                </mat-form-field>
-              </div>
+          <div>
+            <mat-form-field
+              appearance="fill"
+              floatLabel="always"
+              class="w-full"
+              [ngClass]="{
+                'has-error':
+                  endedAt.invalid && (endedAt.dirty || endedAt.touched) ||
+                  endedAt.errors?.['parse'] ||
+                  endedAt.errors?.['range']
+              }"
+            >
+              <mat-label>Fim do Incidente</mat-label>
+              <input
+                matInput
+                #endedAtInput
+                id="endedAt"
+                name="endedAt"
+                #endedAt="ngModel"
+                [(ngModel)]="incident.endedAt"
+                placeholder="DD/MM/YYYY HH:mm"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                aria-label="Abrir calendário"
+                (click)="openCalendar('ended')"
+              >
+                <fa-icon [icon]="calendarDay" aria-hidden="true"></fa-icon>
+              </button>
+              <mat-error *ngIf="endedAt.errors?.['parse']">
+                Formato inválido. Use DD/MM/YYYY HH:mm
+              </mat-error>
+              <mat-error *ngIf="endedAt.errors?.['range']">
+                A data de término não pode ser anterior à data de início.
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-              <div class="md:col-span-2">
-                <mat-form-field appearance="fill" floatLabel="always" class="w-full"
-                                 [ngClass]="{'has-error': impactShortModel.invalid && (impactShortModel.dirty || impactShortModel.touched)}">
-                  <mat-label>Breve Resumo do Impacto</mat-label>
-                  <textarea
-                    matInput
-                    id="impactShort"
-                    name="impactShort"
-                    #impactShortModel="ngModel"
-                    class="impact-textarea"
-                    [(ngModel)]="incident.impactShort"
-                    maxlength="500"
-                    placeholder="Descreva o impacto de forma concisa. O que foi afetado, quantos clientes, por quanto tempo?"
-                    cdkTextareaAutosize
-                    cdkAutosizeMinRows="4"
-                    cdkAutosizeMaxRows="8"></textarea>
-                  <mat-hint align="end">{{ incident.impactShort?.length || 0 }}/500</mat-hint>
-                  <mat-error *ngIf="impactShortModel.errors?.['maxlength']">
-                    Limite máximo de 500 caracteres.
-                  </mat-error>
-                </mat-form-field>
-              </div>
+          <div class="md:col-span-2">
+            <mat-form-field
+              appearance="fill"
+              floatLabel="always"
+              class="w-full"
+              [ngClass]="{
+                'has-error': impactShortModel.invalid && (impactShortModel.dirty || impactShortModel.touched)
+              }"
+            >
+              <mat-label>Breve Resumo do Impacto</mat-label>
+              <textarea
+                matInput
+                id="impactShort"
+                name="impactShort"
+                #impactShortModel="ngModel"
+                class="impact-textarea"
+                [(ngModel)]="incident.impactShort"
+                maxlength="500"
+                placeholder="Descreva o impacto de forma concisa. O que foi afetado, quantos clientes, por quanto tempo?"
+                cdkTextareaAutosize
+                cdkAutosizeMinRows="4"
+                cdkAutosizeMaxRows="8"
+              ></textarea>
+              <mat-hint align="end">{{ incident.impactShort.length || 0 }}/500</mat-hint>
+              <mat-error *ngIf="impactShortModel.errors?.['maxlength']">
+                Limite máximo de 500 caracteres.
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-              <div class="md:col-span-2 mt-2">
-                <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 flex justify-end gap-4">
-                            <button mat-stroked-button color="accent" type="button" class="cancel-button" (click)="onCancel()">
-                    Cancelar
-                  </button>
-                  <button
-                    mat-flat-button
-                    color="primary"
-                    class="incident-primary-button"
-                    [disabled]="incidentForm?.invalid || !isDateRangeValid()"
-                    type="submit">
-                    {{ isEditMode ? 'Salvar Alterações' : 'Criar Incidente' }}
-                  </button>
-                </div>
-              </div>
+          <div class="md:col-span-2 mt-2">
+            <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 flex justify-end gap-4">
+              <button mat-stroked-button color="accent" type="button" class="cancel-button" (click)="onCancel()">
+                Cancelar
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                class="incident-primary-button"
+                [disabled]="incidentForm?.invalid || !isDateRangeValid()"
+                type="submit"
+              >
+                {{ isEditMode ? 'Salvar Alterações' : 'Criar Incidente' }}
+              </button>
             </div>
-          </form>
-
-          <app-incident-event-component
-            [incidentId]="incident.id"
-            (addEventRequested)="openEventDrawer()"
-            (editEventRequested)="openEventDrawer($event)">
-          </app-incident-event-component>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
-  </mat-drawer-content>
-
-  <mat-drawer
-    #eventDrawer="matDrawer"
-    class="event-drawer-panel"
-    position="end"
-    mode="over"
-    [autoFocus]="false"
-    (closedStart)="onEventDrawerClosed()">
-    <app-event-dialog-component
-      [eventData]="drawerEventData"
-      [isEdit]="isEventDrawerEdit"
-      (cancel)="closeEventDrawer()"
-      (submitEvent)="handleEventSubmit($event)">
-    </app-event-dialog-component>
-  </mat-drawer>
-</mat-drawer-container>
+  </div>
+</div>

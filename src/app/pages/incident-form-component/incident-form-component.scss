@@ -8,17 +8,8 @@
     padding-bottom: 2rem;
 }
 
-.incident-drawer-container {
+.incident-form-wrapper {
     width: 100%;
-    min-height: 100vh;
-}
-
-.event-drawer-panel {
-    width: min(460px, 100vw);
-    max-width: 100%;
-    border-left: none;
-    background: transparent;
-    padding: 0;
 }
 
 :host-context(.dark) {

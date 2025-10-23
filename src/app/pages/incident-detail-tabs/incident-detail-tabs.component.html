@@ -1,0 +1,48 @@
+<div class="incident-tabs-page">
+  <mat-card class="incident-summary mat-elevation-z2">
+    <div class="summary-header">
+      <div>
+        <p class="summary-label">ID</p>
+        <p class="summary-value">{{ summary.id || 'Novo' }}</p>
+      </div>
+      <div class="summary-title-block">
+        <p class="summary-label">Título</p>
+        <p class="summary-value summary-title">{{ summary.title || '—' }}</p>
+      </div>
+      <div>
+        <p class="summary-label">Severidade</p>
+        <p class="summary-value">{{ summary.severity || '—' }}</p>
+      </div>
+      <div>
+        <p class="summary-label">Status</p>
+        <p class="summary-value">{{ summary.status || '—' }}</p>
+      </div>
+      <div>
+        <p class="summary-label">Início</p>
+        <p class="summary-value">
+          {{ summary.startedAt ? (summary.startedAt | date : 'dd/MM/yyyy HH:mm') : '—' }}
+        </p>
+      </div>
+      <div>
+        <p class="summary-label">Fim</p>
+        <p class="summary-value">
+          {{ summary.endedAt ? (summary.endedAt | date : 'dd/MM/yyyy HH:mm') : '—' }}
+        </p>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-tab-group
+    class="incident-tab-group"
+    [selectedIndex]="selectedIndex"
+    (selectedIndexChange)="onTabChange($event)"
+  >
+    <mat-tab label="Detalhes"></mat-tab>
+    <mat-tab label="Timeline" [disabled]="isNewIncident"></mat-tab>
+    <mat-tab label="Análise" [disabled]="isNewIncident"></mat-tab>
+  </mat-tab-group>
+
+  <div class="tab-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

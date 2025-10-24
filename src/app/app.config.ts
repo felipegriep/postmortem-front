@@ -15,6 +15,7 @@ import { ProviderEnum } from './domain/enums/provider-enum';
 import { AuthLoginService } from './services/auth-login.service';
 import { AuthService } from './auth/auth.service';
 import { LoadingInterceptor } from './shared/loading.interceptor';
+import { ErrorInterceptor } from './shared/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -67,7 +68,8 @@ export const appConfig: ApplicationConfig = {
             deps: [AuthService],
             multi: true,
         },
-        // Register global loading interceptor to show overlay during HTTP requests
+        // Register global interceptors to control loading state and surface errors
         { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     ],
 };

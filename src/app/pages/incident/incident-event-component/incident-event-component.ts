@@ -19,6 +19,7 @@ import { IncidentEventService } from '../../../services/incident-event-service';
 import { IncidentEventInterface } from '../../../domain/interfaces/request/incident-event-interface';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { ToastService } from '../../../shared/toast.service';
 
 @Component({
     selector: 'app-incident-event-component',
@@ -44,7 +45,8 @@ export class IncidentEventComponent implements OnInit, OnChanges {
     constructor(
         private incidentEventService: IncidentEventService,
         private readonly cdr: ChangeDetectorRef,
-        private readonly faLibrary: FaIconLibrary
+        private readonly faLibrary: FaIconLibrary,
+        private readonly toast: ToastService
     ) {
         try {
             this.faLibrary.addIcons(faPlus, faPen, faTrash);
@@ -83,6 +85,7 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         // Adicionar um confirm aqui seria uma boa prática em um app real
         if (!this.incidentId) return;
         this.incidentEventService.delete(this.incidentId, eventId).subscribe(() => {
+            this.toast.success('Evento removido com sucesso!');
             this.loadEvents();
         });
     }
@@ -99,7 +102,10 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         if (!this.incidentId) {
             return;
         }
-        this.incidentEventService.create(this.incidentId, event).subscribe(() => this.loadEvents());
+        this.incidentEventService.create(this.incidentId, event).subscribe(() => {
+            this.toast.success('Evento adicionado na linha do tempo!');
+            this.loadEvents();
+        });
     }
 
     updateEvent(eventId: number, event: IncidentEventInterface): void {
@@ -108,7 +114,10 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         }
         this.incidentEventService
             .update(this.incidentId, eventId, event)
-            .subscribe(() => this.loadEvents());
+            .subscribe(() => {
+                this.toast.success('Evento atualizado com sucesso!');
+                this.loadEvents();
+            });
     }
 
     getTypeClass(type: EventTypeEnum | string): string {

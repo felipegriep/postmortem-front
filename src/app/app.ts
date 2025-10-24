@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LoadingComponent } from './shared/loading.component';
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, LoadingComponent],
+    imports: [RouterOutlet, LoadingComponent, MatSnackBarModule],
     // Inline template (moved from app.html) so the analyzer sees the usage of <app-loading>
     template: `
         <!-- Um wrapper simples com cor de fundo e modo escuro para a aplicação toda -->

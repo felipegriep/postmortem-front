@@ -25,6 +25,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCalendarDay } from '@fortawesome/free-solid-svg-icons';
 import { Subject, of, switchMap, takeUntil } from 'rxjs';
+import { ToastService } from '../../shared/toast.service';
 
 @Component({
     selector: 'app-incident-form-component',
@@ -60,7 +61,8 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private router: Router,
         private incidentService: IncidentService,
         private cdr: ChangeDetectorRef,
-        private readonly faLibrary: FaIconLibrary
+        private readonly faLibrary: FaIconLibrary,
+        private readonly toast: ToastService
     ) {
         try {
             this.faLibrary.addIcons(faCalendarDay);
@@ -526,24 +528,23 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // convert local ISO-like (YYYY-MM-DDTHH:mm) to UTC ISO (Z) without milliseconds
         const localIsoStringToUtcIso = (localIso?: string | null): string | null => {
             if (!localIso) return null;
-            // accept 'YYYY-MM-DDTHH:mm' or 'YYYY-MM-DDTHH:mm:ss'
-            const [datePart, timePart] = localIso.split('T');
+
+            // normalize common variants: allow space separator and missing seconds
+            const normalized = localIso.trim().replace(' ', 'T');
+            const [datePart, timePartRaw] = normalized.split('T');
             if (!datePart) return null;
+
             const [y, m, d] = datePart.split('-').map((v) => Number(v));
             if (!y || !m || !d) return null;
-            let hh = 0,
-                mm = 0,
-                ss = 0;
-            if (timePart) {
-                const parts = timePart.split(':').map((v) => Number(v));
-                hh = parts[0] ?? 0;
-                mm = parts[1] ?? 0;
-                ss = parts[2] ?? 0;
-            }
-            // build local Date from components (this yields local time)
+
+            const timeParts = (timePartRaw ?? '').split(':').map((v) => Number(v));
+            const hh = timeParts[0] ?? 0;
+            const mm = timeParts[1] ?? 0;
+            const ss = timeParts[2] ?? 0;
+
             const localDate = new Date(y, m - 1, d, hh, mm, ss);
             if (isNaN(localDate.getTime())) return null;
-            // format without milliseconds: YYYY-MM-DDTHH:mm:ssZ
+
             const iso = localDate.toISOString();
             return iso.replace(/\.\d{3}Z$/, 'Z');
         };
@@ -560,13 +561,13 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         if (this.isEditMode && this.incident.id != null) {
-            // Atualização de incidente existente
             this.incidentService.update(String(this.incident.id), payload).subscribe(() => {
+                this.toast.success('Incidente atualizado com sucesso!');
                 this.router.navigate(['/incidents']);
             });
         } else {
-            // Criação de novo incidente (sem id no payload)
             this.incidentService.create(payload).subscribe(() => {
+                this.toast.success('Incidente criado com sucesso!');
                 this.router.navigate(['/incidents']);
             });
         }

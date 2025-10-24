@@ -1,33 +1,74 @@
 <div class="incident-tabs-page">
   <mat-card class="incident-summary mat-elevation-z2">
     <div class="summary-header">
-      <div>
-        <p class="summary-label">ID</p>
-        <p class="summary-value">{{ summary.id || 'Novo' }}</p>
+      <div class="summary-row summary-row--main">
+        <div class="summary-block summary-block--id">
+          <p class="summary-label">ID</p>
+          <p class="summary-value">{{ summary.id || 'Novo' }}</p>
+        </div>
+        <div
+          class="summary-block summary-block--title summary-title-block"
+          [matTooltip]="summary.title || ''"
+          matTooltipPosition="above"
+          matTooltipShowDelay="200"
+        >
+          <p class="summary-label">Título</p>
+          <p class="summary-value summary-title">
+            {{ (summary.title || '') | slice:0:25 }}{{ (summary.title || '').length > 25 ? '...' : '' }}
+          </p>
+        </div>
+        <div class="summary-block">
+          <p class="summary-label">Severidade</p>
+          <p class="summary-value">{{ summary.severity || '—' }}</p>
+        </div>
+        <div class="summary-block">
+          <p class="summary-label">Status</p>
+          <p class="summary-value">{{ summary.status || '—' }}</p>
+        </div>
+        <div class="summary-block">
+          <p class="summary-label">Início</p>
+          <p class="summary-value">
+            {{ summary.startedAt ? (summary.startedAt | date : 'dd/MM/yyyy HH:mm') : '—' }}
+          </p>
+        </div>
+        <div class="summary-block">
+          <p class="summary-label">Fim</p>
+          <p class="summary-value">
+            {{ summary.endedAt ? (summary.endedAt | date : 'dd/MM/yyyy HH:mm') : '—' }}
+          </p>
+        </div>
       </div>
-      <div class="summary-title-block">
-        <p class="summary-label">Título</p>
-        <p class="summary-value summary-title">{{ summary.title || '—' }}</p>
-      </div>
-      <div>
-        <p class="summary-label">Severidade</p>
-        <p class="summary-value">{{ summary.severity || '—' }}</p>
-      </div>
-      <div>
-        <p class="summary-label">Status</p>
-        <p class="summary-value">{{ summary.status || '—' }}</p>
-      </div>
-      <div>
-        <p class="summary-label">Início</p>
-        <p class="summary-value">
-          {{ summary.startedAt ? (summary.startedAt | date : 'dd/MM/yyyy HH:mm') : '—' }}
-        </p>
-      </div>
-      <div>
-        <p class="summary-label">Fim</p>
-        <p class="summary-value">
-          {{ summary.endedAt ? (summary.endedAt | date : 'dd/MM/yyyy HH:mm') : '—' }}
-        </p>
+      <div class="summary-row summary-row--metrics">
+        <div class="summary-block">
+          <p class="summary-label">MTTR (min)</p>
+          <p class="summary-value">
+            {{
+              summary.mttrMinutes !== null && summary.mttrMinutes !== undefined
+                ? (summary.mttrMinutes | number : '1.0-0')
+                : '—'
+            }}
+          </p>
+        </div>
+        <div class="summary-block">
+          <p class="summary-label">MTTA (min)</p>
+          <p class="summary-value">
+            {{
+              summary.mttaMinutes !== null && summary.mttaMinutes !== undefined
+                ? (summary.mttaMinutes | number : '1.0-0')
+                : '—'
+            }}
+          </p>
+        </div>
+        <div class="summary-block">
+          <p class="summary-label">Score de Completude</p>
+          <p class="summary-value">
+            {{
+              summary.completenessScore !== null && summary.completenessScore !== undefined
+                ? (summary.completenessScore | number : '1.0-0') + '%'
+                : '—'
+            }}
+          </p>
+        </div>
       </div>
     </div>
   </mat-card>

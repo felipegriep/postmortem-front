@@ -5,7 +5,13 @@
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Incidentes</h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Liste, filtre e gerencie os incidentes.</p>
             </div>
-            <button (click)="createNewIncident()" class="btn-primary" type="button">
+            <button
+                mat-flat-button
+                color="primary"
+                (click)="createNewIncident()"
+                type="button"
+                class="incident-primary-button"
+            >
                 Novo Incidente
             </button>
         </header>
@@ -14,25 +20,43 @@
         <section class="mb-6">
             <div class="grid md:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-medium mb-1">Serviço</label>
-                    <input [(ngModel)]="filters.service" (ngModelChange)="onServiceChange($event)" class="form-input w-full"
-                            name="filterService" type="text" placeholder="Digite o serviço (ex: billing)">
+                    <mat-form-field appearance="fill" class="filter-field">
+                        <mat-label>Serviço</mat-label>
+                        <input
+                            matInput
+                            [(ngModel)]="filters.service"
+                            (ngModelChange)="onServiceChange($event)"
+                            name="filterService"
+                            type="text"
+                            placeholder="Digite o serviço (ex: billing)"
+                        />
+                    </mat-form-field>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Severidade</label>
-                    <select (ngModelChange)="onSeverityChange($event)" [(ngModel)]="filters.severity" class="form-input w-full"
-                            name="filterSeverity">
-                        <option value="">Todas</option>
-                        <option *ngFor="let s of availableSeverities" [value]="s">{{ s }}</option>
-                    </select>
+                    <mat-form-field appearance="fill" class="filter-field">
+                        <mat-label>Severidade</mat-label>
+                        <mat-select
+                            (ngModelChange)="onSeverityChange($event)"
+                            [(ngModel)]="filters.severity"
+                            name="filterSeverity"
+                        >
+                            <mat-option value="">Todas</mat-option>
+                            <mat-option *ngFor="let s of availableSeverities" [value]="s">{{ s }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Status</label>
-                    <select (ngModelChange)="onStatusChange($event)" [(ngModel)]="filters.status" class="form-input w-full"
-                            name="filterStatus">
-                        <option value="">Todos</option>
-                        <option *ngFor="let s of availableStatus" [value]="s">{{ s }}</option>
-                    </select>
+                    <mat-form-field appearance="fill" class="filter-field">
+                        <mat-label>Status</mat-label>
+                        <mat-select
+                            (ngModelChange)="onStatusChange($event)"
+                            [(ngModel)]="filters.status"
+                            name="filterStatus"
+                        >
+                            <mat-option value="">Todos</mat-option>
+                            <mat-option *ngFor="let s of availableStatus" [value]="s">{{ s }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
             </div>
             <div class="mt-3 text-right">

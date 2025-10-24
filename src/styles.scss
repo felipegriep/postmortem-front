@@ -186,11 +186,46 @@ button {
     @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
 }
 
+.incident-primary-button {
+    font-weight: 600;
+}
+
+.incident-primary-button.mat-mdc-unelevated-button {
+    --mdc-filled-button-container-color: #0ea5e9;
+    --mdc-filled-button-label-text-color: #ffffff;
+    --mdc-filled-button-container-shape: 0.75rem;
+    background-color: #0ea5e9 !important;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0 1.75rem;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+    border-radius: 0.75rem;
+}
+
+.incident-primary-button.mat-mdc-unelevated-button .mdc-button__label {
+    color: #ffffff !important;
+}
+
+.incident-primary-button.mat-mdc-unelevated-button:not(.mat-mdc-button-disabled):hover,
+.incident-primary-button.mat-mdc-unelevated-button:not(.mat-mdc-button-disabled):focus-visible {
+    background-color: #0284c7 !important;
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+}
+
+.incident-primary-button.mat-mdc-unelevated-button.mat-mdc-button-disabled {
+    background-color: rgba(14, 165, 233, 0.35) !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+    box-shadow: none;
+}
+
 /* Ícones puros */
 button.btn-icon {
     @apply inline-flex items-center justify-center w-8 h-8 p-0 rounded-full transition-transform transform;
     background-color: transparent; /* fundo limpo */
-    color: #3b82f6; /* azul leve */
+    color: #0ea5e9; /* azul leve */
     line-height: 0;
     box-shadow: none;
 
@@ -209,7 +244,7 @@ button.btn-icon {
 button.edit-icon fa-icon {
     width: 1rem;
     height: 1rem;
-    color: #3b82f6; /* azul padrão */
+    color: #0ea5e9; /* azul padrão */
 }
 
 .mat-mdc-form-field-flex {

@@ -38,7 +38,14 @@
 
         <!-- If logged in show panel link -->
         <div *ngIf="isLoggedIn" class="mt-8">
-            <a class="btn-primary text-lg shadow-lg" routerLink="/incidents">Ver Painel de Incidentes</a>
+            <a
+                mat-flat-button
+                color="primary"
+                class="incident-primary-button text-lg"
+                routerLink="/incidents"
+            >
+                Ver Painel de Incidentes
+            </a>
         </div>
 
         <!-- If NOT logged in we no longer render the Google button here; it's now in the header -->

@@ -12,6 +12,7 @@ import { IncidentService } from '../../services/incident-service';
 import { IncidentResponseInterface } from '../../domain/interfaces/response/incident-response-interface';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface IncidentSummary {
     id?: string;
@@ -20,6 +21,9 @@ interface IncidentSummary {
     status?: IncidentResponseInterface['status'];
     startedAt?: Date | null;
     endedAt?: Date | null;
+    completenessScore?: number | null;
+    mttrMinutes?: number | null;
+    mttaMinutes?: number | null;
 }
 
 interface TabLink {
@@ -36,6 +40,7 @@ interface TabLink {
         RouterModule,
         MatTabsModule,
         MatCardModule,
+        MatTooltipModule,
     ],
     templateUrl: './incident-detail-tabs.component.html',
     styleUrls: ['./incident-detail-tabs.component.scss'],
@@ -132,6 +137,9 @@ export class IncidentDetailTabsComponent implements OnInit, OnDestroy {
                         status: incident.status,
                         startedAt: this.toDate(incident.startedAt),
                         endedAt: this.toDate(incident.endedAt),
+                        completenessScore: incident.completenessScore ?? null,
+                        mttrMinutes: incident.mttrMinutes ?? null,
+                        mttaMinutes: incident.mttaMinutes ?? null,
                     };
                     this.cdr.markForCheck();
                 },

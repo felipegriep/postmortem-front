@@ -55,6 +55,7 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
         'startedAt',
         'endedAt',
         'mttr',
+        'score',
         'actions',
     ];
 

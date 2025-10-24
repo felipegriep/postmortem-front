@@ -16,4 +16,5 @@ export interface IncidentResponseInterface {
     updatedAt: Date;
     mttrMinutes: number;
     mttaMinutes: number;
+    completenessScore: number;
 }

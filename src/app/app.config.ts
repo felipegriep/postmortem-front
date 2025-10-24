@@ -5,7 +5,7 @@ import {
     APP_INITIALIZER,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideAnimations(),
         provideRouter(routes),
-        provideHttpClient(),
+        provideHttpClient(withInterceptorsFromDi()),
         // Provide the canonical, capitalized provider value expected by backend
         { provide: AUTH_PROVIDER, useValue: ProviderEnum.GOOGLE },
         {

@@ -61,7 +61,15 @@
                     <!-- Title Column -->
                     <ng-container matColumnDef="title">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-left">Título</th>
-                        <td mat-cell *matCellDef="let row">{{ row.title }}</td>
+                        <td
+                            mat-cell
+                            *matCellDef="let row"
+                            [matTooltip]="row.title || ''"
+                            matTooltipPosition="above"
+                            matTooltipShowDelay="200"
+                        >
+                            {{ (row.title || '') | slice:0:25 }}{{ (row.title || '').length > 25 ? '...' : '' }}
+                        </td>
                     </ng-container>
 
                     <!-- Service Column -->
@@ -85,19 +93,29 @@
                     <!-- Started At Column -->
                     <ng-container matColumnDef="startedAt">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>Início</th>
-                        <td mat-cell *matCellDef="let row">{{ row.startedAt | date: 'short' }}</td>
+                        <td mat-cell *matCellDef="let row">{{ row.startedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
                     </ng-container>
 
                     <!-- Ended At Column -->
                     <ng-container matColumnDef="endedAt">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>Fim</th>
-                        <td mat-cell *matCellDef="let row">{{ row.endedAt ? (row.endedAt | date: 'short') : '-' }}</td>
+                        <td mat-cell *matCellDef="let row">
+                            {{ row.endedAt ? (row.endedAt | date: 'dd/MM/yyyy HH:mm') : '-' }}
+                        </td>
                     </ng-container>
 
                     <!-- MTTR Column -->
                     <ng-container matColumnDef="mttr">
                         <th mat-header-cell *matHeaderCellDef>MTTR</th>
                         <td mat-cell *matCellDef="let row"> {{ row.mttrMinutes ? row.mttrMinutes : ' - ' }} </td>
+                    </ng-container>
+
+                    <!-- Score Column -->
+                    <ng-container matColumnDef="score">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Score</th>
+                        <td mat-cell *matCellDef="let row">
+                            {{ row.completenessScore !== undefined && row.completenessScore !== null ? row.completenessScore : '-' }}
+                        </td>
                     </ng-container>
 
                     <!-- Actions Column -->

@@ -23,8 +23,8 @@ export class ToastService {
     show(message: string, options: ToastOptions = {}): void {
         const {
             kind = 'info',
-            durationMs = 4000,
-            action = 'Fechar',
+            durationMs = 1000000,
+            action = null,
             horizontalPosition = 'end',
             verticalPosition = 'top',
         } = options;

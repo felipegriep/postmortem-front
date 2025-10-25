@@ -221,24 +221,89 @@ button {
     box-shadow: none;
 }
 
-.toast-success {
-    background: linear-gradient(135deg, #22c55e, #15803d) !important;
-    color: #ffffff !important;
+.mat-mdc-snack-bar-container {
+    border-radius: 0.75rem !important;
+    box-shadow: 0 24px 45px rgba(15, 23, 42, 0.28) !important;
+    padding: 0 0.75rem !important;
 }
 
-.toast-error {
-    background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
-    color: #ffffff !important;
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    box-shadow: none !important;
+    background-color: transparent !important;
 }
 
-.toast-info {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
-    color: #ffffff !important;
+.mat-mdc-snack-bar-container .mdc-snackbar__label {
+    font-weight: 600;
+    letter-spacing: 0.01em;
 }
 
-.toast-warning {
-    background: linear-gradient(135deg, #fbbf24, #d97706) !important;
-    color: #1f2937 !important;
+.mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mdc-button__label {
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.mat-mdc-snack-bar-container.toast-success {
+    --mdc-snackbar-container-color: rgba(59, 126, 95, 0.6);
+    --mdc-snackbar-supporting-text-color: #f2fbfb;
+    --mdc-snackbar-action-color: #f2fbfb;
+}
+
+.mat-mdc-snack-bar-container.toast-success .mat-mdc-simple-snack-bar {
+    background-color: rgba(59, 126, 95, 0.6);
+    color: #f2fbfb;
+    border-radius: 0.75rem;
+}
+
+.mat-mdc-snack-bar-container.toast-success .mat-mdc-snack-bar-action .mdc-button__label {
+    color: #f2fbfb;
+}
+
+.mat-mdc-snack-bar-container.toast-error {
+    --mdc-snackbar-container-color: rgba(184, 54, 53, 0.6);
+    --mdc-snackbar-supporting-text-color: #fbf7f8;
+    --mdc-snackbar-action-color: #fbf7f8;
+}
+
+.mat-mdc-snack-bar-container.toast-error .mat-mdc-simple-snack-bar {
+    background-color: rgba(184, 54, 53, 0.6);
+    color: #fbf7f8;
+    border-radius: 0.75rem;
+}
+
+.mat-mdc-snack-bar-container.toast-error .mat-mdc-snack-bar-action .mdc-button__label {
+    color: #fbf7f8;
+}
+
+.mat-mdc-snack-bar-container.toast-warning {
+    --mdc-snackbar-container-color: rgba(221, 139, 50, 0.6);
+    --mdc-snackbar-supporting-text-color: #ffffd7;
+    --mdc-snackbar-action-color: #ffffd7;
+}
+
+.mat-mdc-snack-bar-container.toast-warning .mat-mdc-simple-snack-bar {
+    background-color: rgba(221, 139, 50, 0.6);
+    color: #ffffd7;
+    border-radius: 0.75rem;
+}
+
+.mat-mdc-snack-bar-container.toast-warning .mat-mdc-snack-bar-action .mdc-button__label {
+    color: #ffffd7;
+}
+
+.mat-mdc-snack-bar-container.toast-info {
+    --mdc-snackbar-container-color: rgba(45, 99, 201, 0.6);
+    --mdc-snackbar-supporting-text-color: #f1feff;
+    --mdc-snackbar-action-color: #f1feff;
+}
+
+.mat-mdc-snack-bar-container.toast-info .mat-mdc-simple-snack-bar {
+    background-color: rgba(45, 99, 201, 0.6);
+    color: #f1feff;
+    border-radius: 0.75rem;
+}
+
+.mat-mdc-snack-bar-container.toast-info .mat-mdc-snack-bar-action .mdc-button__label {
+    color: #f1feff;
 }
 
 /* Ícones puros */

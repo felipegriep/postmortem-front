@@ -224,7 +224,9 @@ export class IncidentListComponent implements OnInit, OnDestroy {
         this.loadIncidents();
     }
 
-    private mapSeverityToQuery(value?: string): SeverityEnum | keyof typeof SeverityEnum | undefined {
+    private mapSeverityToQuery(
+        value?: string
+    ): SeverityEnum | keyof typeof SeverityEnum | undefined {
         if (!value) return undefined;
         const enumKey = Object.entries(SeverityEnum).find(([, label]) => label === value)?.[0];
         if (enumKey && enumKey in SeverityEnum) {

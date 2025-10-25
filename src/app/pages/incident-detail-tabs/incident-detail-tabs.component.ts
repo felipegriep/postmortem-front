@@ -35,13 +35,7 @@ interface TabLink {
 @Component({
     selector: 'app-incident-detail-tabs',
     standalone: true,
-    imports: [
-        CommonModule,
-        RouterModule,
-        MatTabsModule,
-        MatCardModule,
-        MatTooltipModule,
-    ],
+    imports: [CommonModule, RouterModule, MatTabsModule, MatCardModule, MatTooltipModule],
     templateUrl: './incident-detail-tabs.component.html',
     styleUrls: ['./incident-detail-tabs.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,8 +77,7 @@ export class IncidentDetailTabsComponent implements OnInit, OnDestroy {
                 map(() => this.route.firstChild?.snapshot.routeConfig?.path ?? '')
             )
             .subscribe((path) => {
-                const newIndex =
-                    path === 'timeline' ? 1 : path === 'analysis' ? 2 : 0;
+                const newIndex = path === 'timeline' ? 1 : path === 'analysis' ? 2 : 0;
                 if (this.selectedIndex !== newIndex) {
                     this.selectedIndex = newIndex;
                     this.cdr.markForCheck();

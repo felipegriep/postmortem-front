@@ -125,7 +125,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
         return ev;
     }
 
-    // Convert 'datetime-local' input value (yyyy-MM-ddTHH:mm or with seconds) to backend format 'yyyy-MM-dd HH:mm:ss'
+    // Convert 'datetime-local' input value (yyyy-MM-ddTHH:mm:ss) to backend format 'yyyy-MM-dd HH:mm:ss'
     private formatForBackend(input?: string): string {
         if (!input) return input as string;
         let dt = input;
@@ -133,16 +133,16 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
         if (dt.includes('T')) dt = dt.replace('T', ' ');
         // Ensure seconds are present
         if (!/\d{2}:\d{2}:\d{2}$/.test(dt)) {
-            // dt probably ends with 'HH:mm' -> add ':00'
+            // append missing seconds when value ends with 'HH:mm'
             dt = dt + ':00';
         }
         return dt;
     }
 
-    // Convert backend date string (e.g. 'yyyy-MM-dd HH:mm:ss') or ISO (yyyy-MM-ddTHH:mm:ssZ) to 'yyyy-MM-ddTHH:mm' for the input
+    // Convert backend date string (e.g. 'yyyy-MM-dd HH:mm:ss') or ISO (yyyy-MM-ddTHH:mm:ssZ) to 'yyyy-MM-ddTHH:mm:ss' for the input
     private toInputFormat(input?: string): string {
         if (!input) {
-            // default to current local datetime in format yyyy-MM-ddTHH:mm
+            // default to current local datetime in format yyyy-MM-ddTHH:mm:ss
             const now = new Date();
             const pad = (n: number) => n.toString().padStart(2, '0');
             const yyyy = now.getFullYear();
@@ -150,16 +150,17 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
             const dd = pad(now.getDate());
             const hh = pad(now.getHours());
             const min = pad(now.getMinutes());
-            return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+            const ss = pad(now.getSeconds());
+            return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
         }
         let dt = input.trim();
-        // If backend format 'yyyy-MM-dd HH:mm:ss', replace space with 'T' and drop seconds
+        // If backend format 'yyyy-MM-dd HH:mm:ss', replace space with 'T'
         if (dt.includes(' ')) {
             dt = dt.replace(' ', 'T');
         }
-        // If it has seconds or timezone, normalize by slicing the first 16 characters 'yyyy-MM-ddTHH:mm'
-        if (dt.length >= 16) {
-            return dt.slice(0, 16);
+        // If it has seconds or timezone, normalize by slicing the first 19 characters 'yyyy-MM-ddTHH:mm:ss'
+        if (dt.length >= 19) {
+            return dt.slice(0, 19);
         }
         return dt;
     }
@@ -211,9 +212,9 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
         this.eventAtPicker = (flatpickr as any)(this.eventAtInput.nativeElement, {
             enableTime: true,
             time_24hr: true,
-            dateFormat: 'Y-m-d\\TH:i',
+            dateFormat: 'Y-m-d\\TH:i:S',
             altInput: true,
-            altFormat: 'd/m/Y H:i',
+            altFormat: 'd/m/Y H:i:S',
             altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
             locale: Portuguese,
             allowInput: true,
@@ -223,7 +224,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
             onReady: (_selectedDates: Date[], _dateStr: string, instance: any) => {
                 try {
                     if (instance?.altInput) {
-                        instance.altInput.setAttribute('placeholder', 'DD/MM/YYYY HH:mm');
+                        instance.altInput.setAttribute('placeholder', 'DD/MM/YYYY HH:mm:ss');
                         instance.altInput.classList.add('mat-mdc-input-element');
                     }
                 } catch (e) {
@@ -295,7 +296,8 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
         const dd = pad(copy.getDate());
         const hh = pad(copy.getHours());
         const min = pad(copy.getMinutes());
-        return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+        const ss = pad(copy.getSeconds());
+        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
     }
 
     private parseToDate(value?: string | Date | null): Date | null {
@@ -306,7 +308,11 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
             return isNaN(value.getTime()) ? null : new Date(value.getTime());
         }
         const stringValue =
-            typeof value === 'string' ? value.trim() : typeof value === 'number' ? String(value) : `${value}`;
+            typeof value === 'string'
+                ? value.trim()
+                : typeof value === 'number'
+                ? String(value)
+                : `${value}`;
         const normalized =
             stringValue.includes(' ') && !stringValue.includes('T')
                 ? stringValue.replace(' ', 'T')

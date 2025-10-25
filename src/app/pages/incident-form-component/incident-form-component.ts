@@ -137,9 +137,9 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     enableTime: true,
                     time_24hr: true,
                     // internal value format (ISO-like), altInput displays BR format to the user
-                    dateFormat: 'Y-m-d H:i',
+                    dateFormat: 'Y-m-d H:i:S',
                     altInput: true,
-                    altFormat: 'd/m/Y H:i',
+                    altFormat: 'd/m/Y H:i:S',
                     altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
                     locale: Portuguese,
                     defaultDate: this.incident?.startedAt
@@ -150,7 +150,10 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     onReady: (selectedDates: Date[], dateStr: string, instance: any) => {
                         try {
                             if (instance && instance.altInput) {
-                                instance.altInput.setAttribute('placeholder', 'DD/MM/YYYY HH:mm');
+                                instance.altInput.setAttribute(
+                                    'placeholder',
+                                    'DD/MM/YYYY HH:mm:ss'
+                                );
                                 // ensure it has our visual class
                                 instance.altInput.classList.add(
                                     'mat-mdc-input-element',
@@ -237,9 +240,9 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.endedFp = (flatpickr as any)(this.endedAtInput.nativeElement, {
                     enableTime: true,
                     time_24hr: true,
-                    dateFormat: 'Y-m-d H:i',
+                    dateFormat: 'Y-m-d H:i:S',
                     altInput: true,
-                    altFormat: 'd/m/Y H:i',
+                    altFormat: 'd/m/Y H:i:S',
                     altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
                     locale: Portuguese,
                     defaultDate: this.incident?.endedAt
@@ -254,7 +257,10 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     onReady: (selectedDates: Date[], dateStr: string, instance: any) => {
                         try {
                             if (instance && instance.altInput) {
-                                instance.altInput.setAttribute('placeholder', 'DD/MM/YYYY HH:mm');
+                                instance.altInput.setAttribute(
+                                    'placeholder',
+                                    'DD/MM/YYYY HH:mm:ss'
+                                );
                                 instance.altInput.classList.add(
                                     'mat-mdc-input-element',
                                     'flatpickr-alt-input'
@@ -521,12 +527,12 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        // Prepare payload copying the incident but converting local times to UTC ISO
+        // Prepare payload copying the incident but formatting dates for backend consumption
         const { id: _id, ...raw } = this.incident as any;
         const payload: any = { ...raw };
 
-        // convert local ISO-like (YYYY-MM-DDTHH:mm) to UTC ISO (Z) without milliseconds
-        const localIsoStringToUtcIso = (localIso?: string | null): string | null => {
+        // convert local ISO-like (YYYY-MM-DDTHH:mm:ss) to 'YYYY-MM-DD HH:mm:ss'
+        const localIsoStringToBackend = (localIso?: string | null): string | null => {
             if (!localIso) return null;
 
             // normalize common variants: allow space separator and missing seconds
@@ -545,18 +551,22 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
             const localDate = new Date(y, m - 1, d, hh, mm, ss);
             if (isNaN(localDate.getTime())) return null;
 
-            const iso = localDate.toISOString();
-            return iso.replace(/\.\d{3}Z$/, 'Z');
+            const pad = (n: number) => n.toString().padStart(2, '0');
+            return `${localDate.getFullYear()}-${pad(localDate.getMonth() + 1)}-${pad(
+                localDate.getDate()
+            )} ${pad(localDate.getHours())}:${pad(localDate.getMinutes())}:${pad(
+                localDate.getSeconds()
+            )}`;
         };
 
         // convert startedAt and endedAt
         if (payload.startedAt) {
-            const utc = localIsoStringToUtcIso(payload.startedAt);
-            if (utc) payload.startedAt = utc;
+            const formatted = localIsoStringToBackend(payload.startedAt);
+            if (formatted) payload.startedAt = formatted;
         }
         if (payload.endedAt) {
-            const utcE = localIsoStringToUtcIso(payload.endedAt);
-            if (utcE) payload.endedAt = utcE;
+            const formattedEnd = localIsoStringToBackend(payload.endedAt);
+            if (formattedEnd) payload.endedAt = formattedEnd;
             else payload.endedAt = null;
         }
 
@@ -583,9 +593,14 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!parsed) {
             return null;
         }
-        const tzOffset = parsed.getTimezoneOffset();
-        const local = new Date(parsed.getTime() - tzOffset * 60000);
-        return local.toISOString().slice(0, 16);
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const yyyy = parsed.getFullYear();
+        const mm = pad(parsed.getMonth() + 1);
+        const dd = pad(parsed.getDate());
+        const hh = pad(parsed.getHours());
+        const min = pad(parsed.getMinutes());
+        const ss = pad(parsed.getSeconds());
+        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
     }
 
     private parseToDate(dateLike: Date | string | null | undefined): Date | null {

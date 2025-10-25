@@ -112,12 +112,10 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         if (!this.incidentId) {
             return;
         }
-        this.incidentEventService
-            .update(this.incidentId, eventId, event)
-            .subscribe(() => {
-                this.toast.success('Evento atualizado com sucesso!');
-                this.loadEvents();
-            });
+        this.incidentEventService.update(this.incidentId, eventId, event).subscribe(() => {
+            this.toast.success('Evento atualizado com sucesso!');
+            this.loadEvents();
+        });
     }
 
     getTypeClass(type: EventTypeEnum | string): string {

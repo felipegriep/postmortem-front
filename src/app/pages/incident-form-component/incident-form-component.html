@@ -115,7 +115,7 @@
                 #startedAt="ngModel"
                 [(ngModel)]="incident.startedAt"
                 required
-                placeholder="DD/MM/YYYY HH:mm"
+                placeholder="DD/MM/YYYY HH:mm:ss"
               />
               <button
                 mat-icon-button
@@ -130,7 +130,7 @@
                 A data de início é obrigatória.
               </mat-error>
               <mat-error *ngIf="startedAt.errors?.['parse']">
-                Formato inválido. Use DD/MM/YYYY HH:mm
+                Formato inválido. Use DD/MM/YYYY HH:mm:ss
               </mat-error>
             </mat-form-field>
           </div>
@@ -155,7 +155,7 @@
                 name="endedAt"
                 #endedAt="ngModel"
                 [(ngModel)]="incident.endedAt"
-                placeholder="DD/MM/YYYY HH:mm"
+                placeholder="DD/MM/YYYY HH:mm:ss"
               />
               <button
                 mat-icon-button
@@ -167,7 +167,7 @@
                 <fa-icon [icon]="calendarDay" aria-hidden="true"></fa-icon>
               </button>
               <mat-error *ngIf="endedAt.errors?.['parse']">
-                Formato inválido. Use DD/MM/YYYY HH:mm
+                Formato inválido. Use DD/MM/YYYY HH:mm:ss
               </mat-error>
               <mat-error *ngIf="endedAt.errors?.['range']">
                 A data de término não pode ser anterior à data de início.

@@ -11,8 +11,10 @@ export interface GetIncidentsParams {
     page?: number;
     size?: number;
     serviceName?: string;
-    severity?: SeverityEnum;
-    status?: StatusEnum;
+    severity?: SeverityEnum | keyof typeof SeverityEnum;
+    status?: StatusEnum | keyof typeof StatusEnum;
+    sort?: string;
+    direction?: 'ASC' | 'DESC';
 }
 
 @Injectable({
@@ -40,6 +42,12 @@ export class IncidentService {
             }
             if (params.status) {
                 httpParams = httpParams.set('status', params.status);
+            }
+            if (params.sort) {
+                httpParams = httpParams.set('sort', params.sort);
+            }
+            if (params.direction) {
+                httpParams = httpParams.set('direction', params.direction);
             }
         }
 

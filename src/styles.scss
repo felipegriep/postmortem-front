@@ -36,11 +36,14 @@ body {
 }
 
 :root {
-  --app-primary: #0ea5e9; /* sky-500 as default app primary; adjust as desired */
+  --app-primary: #0ea5e9;
+  /* sky-500 as default app primary; adjust as desired */
   --fp-primary: var(--app-primary);
   --fp-bg: #ffffff;
-  --fp-text: #0f172a; /* gray-900 */
-  --fp-muted: #6b7280; /* gray-500 */
+  --fp-text: #0f172a;
+  /* gray-900 */
+  --fp-muted: #6b7280;
+  /* gray-500 */
 }
 
 /* Primary button utility for the form */
@@ -50,22 +53,25 @@ body {
   font-weight: 700;
   padding: 0.5rem 1.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 6px 12px rgba(2,6,23,0.06);
+  box-shadow: 0 6px 12px rgba(2, 6, 23, 0.06);
   border: none;
   transition: background 120ms ease, transform 80ms ease;
 }
+
 .btn-primary:hover:not(:disabled) {
   background: color-mix(in srgb, var(--app-primary) 80%, black 20%);
   transform: translateY(-1px);
 }
+
 .btn-primary:disabled {
-  background: rgba(125,211,252,0.5);
+  background: rgba(125, 211, 252, 0.5);
   cursor: not-allowed;
   transform: none;
 }
+
 .btn-primary:focus {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(14,165,233,0.12);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
 }
 
 /* Error visuals shared */
@@ -73,12 +79,14 @@ body {
 .datetime-input.ng-invalid.ng-touched,
 .flatpickr-input.ng-invalid.ng-touched,
 .flatpickr-alt-input.ng-invalid.ng-touched {
-  border-color: #e53e3e !important; /* red-600 */
-  box-shadow: 0 0 0 3px rgba(229,62,62,0.08);
+  border-color: #e53e3e !important;
+  /* red-600 */
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.08);
 }
 
 .text-error {
-  color: #e53e3e; /* red-600 */
+  color: #e53e3e;
+  /* red-600 */
   font-size: 0.8125rem;
 }
 
@@ -86,11 +94,12 @@ body {
 .flatpickr-calendar {
   background: var(--fp-bg);
   color: var(--fp-text);
-  border: 1px solid rgba(15,23,42,0.08);
-  box-shadow: 0 6px 18px rgba(2,6,23,0.08);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.08);
   border-radius: 8px;
   font-family: inherit;
-  z-index: 9999; /* ensure calendar appears above other elements */
+  z-index: 9999;
+  /* ensure calendar appears above other elements */
 }
 
 .flatpickr-months {
@@ -108,7 +117,7 @@ body {
 }
 
 .flatpickr-day.today {
-  box-shadow: inset 0 0 0 1px rgba(37,99,235,0.12);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
 }
 
 .flatpickr-day.selected,
@@ -119,14 +128,15 @@ body {
 }
 
 .flatpickr-day:hover {
-  background: rgba(37,99,235,0.08);
+  background: rgba(37, 99, 235, 0.08);
 }
 
 /* time picker styling */
 .flatpickr-time {
   background: transparent;
-  border-top: 1px solid rgba(15,23,42,0.04);
+  border-top: 1px solid rgba(15, 23, 42, 0.04);
 }
+
 .flatpickr-time .flatpickr-time-separator,
 .flatpickr-time input {
   color: var(--fp-text);
@@ -138,7 +148,7 @@ body {
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
-  border: 1px solid rgba(209,213,219,1);
+  border: 1px solid rgba(209, 213, 219, 1);
   background: #fff;
 }
 
@@ -162,174 +172,179 @@ body {
 }
 
 .mat-mdc-tooltip .mat-mdc-tooltip-surface {
-    white-space: pre-line;
-    background-color: rgba(17, 24, 39, 0.95) !important;
-    color: #fff !important;
-    opacity: 1 !important; /* garante visibilidade durante a animação */
-    padding: 0.5rem 0.625rem !important;
-    border-radius: 0.5rem !important;
-    box-shadow: 0 6px 20px rgba(2, 6, 23, 0.6) !important;
-    font-size: 0.875rem !important;
-    line-height: 1.2 !important;
-    max-width: 320px !important;
-    text-align: left;
+  white-space: pre-line;
+  background-color: rgba(17, 24, 39, 0.95) !important;
+  color: #fff !important;
+  opacity: 1 !important;
+  /* garante visibilidade durante a animação */
+  padding: 0.5rem 0.625rem !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 6px 20px rgba(2, 6, 23, 0.6) !important;
+  font-size: 0.875rem !important;
+  line-height: 1.2 !important;
+  max-width: 320px !important;
+  text-align: left;
 }
 
 /* Seta/caret do tooltip (se habilitada pela lib) */
 .mat-mdc-tooltip .mdc-tooltip__caret-surface-top,
 .mat-mdc-tooltip .mdc-tooltip__caret-surface-bottom {
-    background: rgba(17, 24, 39, 0.95) !important;
+  background: rgba(17, 24, 39, 0.95) !important;
 }
 
 /* Botões genéricos */
 button {
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
 }
 
 .incident-primary-button {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .incident-primary-button.mat-mdc-unelevated-button {
-    --mdc-filled-button-container-color: #0ea5e9;
-    --mdc-filled-button-label-text-color: #ffffff;
-    --mdc-filled-button-container-shape: 0.75rem;
-    background-color: #0ea5e9 !important;
-    color: #ffffff !important;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 2.75rem;
-    padding: 0 1.75rem;
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
-    border-radius: 0.75rem;
+  --mdc-filled-button-container-color: #0ea5e9;
+  --mdc-filled-button-label-text-color: #ffffff;
+  --mdc-filled-button-container-shape: 0.75rem;
+  background-color: #0ea5e9 !important;
+  color: #ffffff !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1.75rem;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+  border-radius: 0.75rem;
 }
 
 .incident-primary-button.mat-mdc-unelevated-button .mdc-button__label {
-    color: #ffffff !important;
+  color: #ffffff !important;
 }
 
 .incident-primary-button.mat-mdc-unelevated-button:not(.mat-mdc-button-disabled):hover,
 .incident-primary-button.mat-mdc-unelevated-button:not(.mat-mdc-button-disabled):focus-visible {
-    background-color: #0284c7 !important;
-    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+  background-color: #0284c7 !important;
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
 }
 
 .incident-primary-button.mat-mdc-unelevated-button.mat-mdc-button-disabled {
-    background-color: rgba(14, 165, 233, 0.35) !important;
-    color: rgba(255, 255, 255, 0.75) !important;
-    box-shadow: none;
+  background-color: rgba(14, 165, 233, 0.35) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  box-shadow: none;
 }
 
 .mat-mdc-snack-bar-container {
-    border-radius: 0.75rem !important;
-    box-shadow: 0 24px 45px rgba(15, 23, 42, 0.28) !important;
-    padding: 0 0.75rem !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 24px 45px rgba(15, 23, 42, 0.28) !important;
+  padding: 0 0.75rem !important;
 }
 
 .mat-mdc-snack-bar-container .mdc-snackbar__surface {
-    box-shadow: none !important;
-    background-color: transparent !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
 }
 
 .mat-mdc-snack-bar-container .mdc-snackbar__label {
-    font-weight: 600;
-    letter-spacing: 0.01em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mdc-button__label {
-    font-weight: 700;
-    text-transform: uppercase;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .mat-mdc-snack-bar-container.toast-success {
-    --mdc-snackbar-container-color: rgba(59, 126, 95, 0.6);
-    --mdc-snackbar-supporting-text-color: #f2fbfb;
-    --mdc-snackbar-action-color: #f2fbfb;
+  --mdc-snackbar-container-color: rgba(59, 126, 95, 0.6);
+  --mdc-snackbar-supporting-text-color: #f2fbfb;
+  --mdc-snackbar-action-color: #f2fbfb;
 }
 
 .mat-mdc-snack-bar-container.toast-success .mat-mdc-simple-snack-bar {
-    background-color: rgba(59, 126, 95, 0.6);
-    color: #f2fbfb;
-    border-radius: 0.75rem;
+  background-color: rgba(59, 126, 95, 0.6);
+  color: #f2fbfb;
+  border-radius: 0.75rem;
 }
 
 .mat-mdc-snack-bar-container.toast-success .mat-mdc-snack-bar-action .mdc-button__label {
-    color: #f2fbfb;
+  color: #f2fbfb;
 }
 
 .mat-mdc-snack-bar-container.toast-error {
-    --mdc-snackbar-container-color: rgba(184, 54, 53, 0.6);
-    --mdc-snackbar-supporting-text-color: #fbf7f8;
-    --mdc-snackbar-action-color: #fbf7f8;
+  --mdc-snackbar-container-color: rgba(184, 54, 53, 0.6);
+  --mdc-snackbar-supporting-text-color: #fbf7f8;
+  --mdc-snackbar-action-color: #fbf7f8;
 }
 
 .mat-mdc-snack-bar-container.toast-error .mat-mdc-simple-snack-bar {
-    background-color: rgba(184, 54, 53, 0.6);
-    color: #fbf7f8;
-    border-radius: 0.75rem;
+  background-color: rgba(184, 54, 53, 0.6);
+  color: #fbf7f8;
+  border-radius: 0.75rem;
 }
 
 .mat-mdc-snack-bar-container.toast-error .mat-mdc-snack-bar-action .mdc-button__label {
-    color: #fbf7f8;
+  color: #fbf7f8;
 }
 
 .mat-mdc-snack-bar-container.toast-warning {
-    --mdc-snackbar-container-color: rgba(221, 139, 50, 0.6);
-    --mdc-snackbar-supporting-text-color: #ffffd7;
-    --mdc-snackbar-action-color: #ffffd7;
+  --mdc-snackbar-container-color: rgba(221, 139, 50, 0.6);
+  --mdc-snackbar-supporting-text-color: #ffffd7;
+  --mdc-snackbar-action-color: #ffffd7;
 }
 
 .mat-mdc-snack-bar-container.toast-warning .mat-mdc-simple-snack-bar {
-    background-color: rgba(221, 139, 50, 0.6);
-    color: #ffffd7;
-    border-radius: 0.75rem;
+  background-color: rgba(221, 139, 50, 0.6);
+  color: #ffffd7;
+  border-radius: 0.75rem;
 }
 
 .mat-mdc-snack-bar-container.toast-warning .mat-mdc-snack-bar-action .mdc-button__label {
-    color: #ffffd7;
+  color: #ffffd7;
 }
 
 .mat-mdc-snack-bar-container.toast-info {
-    --mdc-snackbar-container-color: rgba(45, 99, 201, 0.6);
-    --mdc-snackbar-supporting-text-color: #f1feff;
-    --mdc-snackbar-action-color: #f1feff;
+  --mdc-snackbar-container-color: rgba(45, 99, 201, 0.6);
+  --mdc-snackbar-supporting-text-color: #f1feff;
+  --mdc-snackbar-action-color: #f1feff;
 }
 
 .mat-mdc-snack-bar-container.toast-info .mat-mdc-simple-snack-bar {
-    background-color: rgba(45, 99, 201, 0.6);
-    color: #f1feff;
-    border-radius: 0.75rem;
+  background-color: rgba(45, 99, 201, 0.6);
+  color: #f1feff;
+  border-radius: 0.75rem;
 }
 
 .mat-mdc-snack-bar-container.toast-info .mat-mdc-snack-bar-action .mdc-button__label {
-    color: #f1feff;
+  color: #f1feff;
 }
 
 /* Ícones puros */
 button.btn-icon {
-    @apply inline-flex items-center justify-center w-8 h-8 p-0 rounded-full transition-transform transform;
-    background-color: transparent; /* fundo limpo */
-    color: #0ea5e9; /* azul leve */
-    line-height: 0;
-    box-shadow: none;
+  @apply inline-flex items-center justify-center w-8 h-8 p-0 rounded-full transition-transform transform;
+  background-color: transparent;
+  /* fundo limpo */
+  color: #0ea5e9;
+  /* azul leve */
+  line-height: 0;
+  box-shadow: none;
 
-    &:hover {
-        background-color: rgba(59, 130, 246, 0.1); /* leve highlight */
-        transform: scale(1.1);
-    }
+  &:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    /* leve highlight */
+    transform: scale(1.1);
+  }
 
-    &:active {
-        background-color: rgba(59, 130, 246, 0.2);
-        transform: scale(1.0);
-    }
+  &:active {
+    background-color: rgba(59, 130, 246, 0.2);
+    transform: scale(1.0);
+  }
 }
 
 /* Específico para o botão editar (poderia reaproveitar em outros, tipo excluir etc.) */
 button.edit-icon fa-icon {
-    width: 1rem;
-    height: 1rem;
-    color: #0ea5e9; /* azul padrão */
+  width: 1rem;
+  height: 1rem;
+  color: #0ea5e9;
+  /* azul padrão */
 }
 
 .mat-mdc-form-field-flex {

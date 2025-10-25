@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { IncidentResponseInterface } from '../../domain/interfaces/response/incident-response-interface';
 import { IncidentService } from '../../services/incident-service';
 import { Router } from '@angular/router';
@@ -7,8 +7,8 @@ import { FormsModule } from '@angular/forms';
 
 // Angular Material imports
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
@@ -19,7 +19,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 
-import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
+import { SeverityEnum } from '../../domain/enums/severity-enum';
+import { StatusEnum } from '../../domain/enums/status-enum';
 
 @Component({
     selector: 'app-incident-list-component',
@@ -40,12 +42,8 @@ import { MatTableDataSource } from '@angular/material/table';
     templateUrl: './incident-list-component.html',
     styleUrls: ['./incident-list-component.scss'],
 })
-export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
-    allIncidents: IncidentResponseInterface[] = [];
-    filteredIncidents: IncidentResponseInterface[] = [];
-
-    // Material table data source
-    dataSource = new MatTableDataSource<IncidentResponseInterface>([]);
+export class IncidentListComponent implements OnInit, OnDestroy {
+    incidents: IncidentResponseInterface[] = [];
     displayedColumns: string[] = [
         'id',
         'title',
@@ -59,13 +57,19 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
         'actions',
     ];
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
-    @ViewChild(MatSort) sort!: MatSort;
+    @ViewChild(MatPaginator) paginator?: MatPaginator;
 
-    // Opções para os filtros
-    availableServices: string[] = [];
-    availableSeverities: string[] = [];
-    availableStatus: string[] = [];
+    readonly availableSeverities = Object.values(SeverityEnum);
+    readonly availableStatus = Object.values(StatusEnum);
+
+    totalItems = 0;
+    pageIndex = 0;
+    pageSize = 10;
+    readonly pageSizeOptions = [5, 10, 20];
+    sortActive = 'createdAt';
+    sortDirection: 'asc' | 'desc' = 'desc';
+
+    private requestSub?: Subscription;
 
     filters = {
         service: '',
@@ -93,152 +97,80 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadIncidents();
     }
 
-    ngAfterViewInit(): void {
-        try {
-            if (this.paginator) this.dataSource.paginator = this.paginator;
-            if (this.sort) this.dataSource.sort = this.sort;
-        } catch (e) {}
+    ngOnDestroy(): void {
+        this.requestSub?.unsubscribe();
     }
 
     loadIncidents(): void {
-        this.incidentService.list().subscribe((resp) => {
-            const pageAny: any = resp as any;
-            const data: IncidentResponseInterface[] = Array.isArray(pageAny)
-                ? pageAny
-                : pageAny?.content ?? [];
+        const query = {
+            page: this.pageIndex,
+            size: this.pageSize,
+            serviceName: this.filters.service?.trim() || undefined,
+            severity: this.mapSeverityToQuery(this.filters.severity),
+            status: this.mapStatusToQuery(this.filters.status),
+            sort: this.resolveSortField(this.sortActive),
+            direction: this.sortDirection.toUpperCase() as 'ASC' | 'DESC',
+        };
 
-            console.log('Incidents loaded:', data);
-
-            // Normalize incoming data: map common variants to canonical strings
-            const normalizeSeverityIncoming = (v: any): string => {
-                if (v === undefined || v === null || String(v).trim() === '') return '';
-                const s = String(v).toUpperCase().trim();
-                if (s.includes('SEV1') || s.includes('SEV-1') || s.includes('SEV_1'))
-                    return 'SEV-1';
-                if (s.includes('SEV2') || s.includes('SEV-2') || s.includes('SEV_2'))
-                    return 'SEV-2';
-                if (s.includes('SEV3') || s.includes('SEV-3') || s.includes('SEV_3'))
-                    return 'SEV-3';
-                if (s.includes('SEV4') || s.includes('SEV-4') || s.includes('SEV_4'))
-                    return 'SEV-4';
-                return String(v);
-            };
-
-            const normalizeStatusIncoming = (v: any): string => {
-                if (v === undefined || v === null || String(v).trim() === '') return '';
-                const s = String(v).toUpperCase().trim();
-                if (s === 'OPEN' || s === 'OPENED') return 'Open';
-                if (
-                    s === 'IN_ANALYSIS' ||
-                    s === 'IN ANALYSIS' ||
-                    s === 'INANALYSIS' ||
-                    s === 'IN-ANALYSIS'
-                )
-                    return 'In Analysis';
-                if (s === 'CLOSED' || s === 'CLOSE') return 'Closed';
-                if (s.includes('OPEN')) return 'Open';
-                if (s.includes('CLOSED') || s.includes('CLOSE')) return 'Closed';
-                if (s.includes('ANALYS')) return 'In Analysis';
-                return String(v);
-            };
-
-            const mapped = data.map((inc: any) => ({
+        this.requestSub?.unsubscribe();
+        this.requestSub = this.incidentService.list(query).subscribe((page) => {
+            const content = Array.isArray(page) ? page : page?.content ?? [];
+            if (page && typeof page.number === 'number') {
+                this.pageIndex = page.number;
+            }
+            if (page && typeof page.size === 'number') {
+                this.pageSize = page.size;
+            }
+            const normalized = content.map((inc: any) => ({
                 ...inc,
-                severity: normalizeSeverityIncoming(inc.severity),
-                status: normalizeStatusIncoming(inc.status),
+                severity: this.normalizeSeverity(inc.severity),
+                status: this.normalizeStatus(inc.status),
             }));
 
-            // Ordenação resiliente
-            this.allIncidents = [...mapped].sort((a, b) => {
-                const aNum = Number(a.id);
-                const bNum = Number(b.id);
-                const aNumOk = !Number.isNaN(aNum);
-                const bNumOk = !Number.isNaN(bNum);
-                if (aNumOk && bNumOk) return bNum - aNum;
-
-                const aTime = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
-                const bTime = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
-                if (bTime !== aTime) return bTime - aTime;
-
-                return String(b.id).localeCompare(String(a.id));
-            });
-
-            this.filteredIncidents = this.allIncidents;
-            this.populateFilterOptions();
-            this.applyFilters();
-
-            // update material table source
-            this.dataSource.data = this.filteredIncidents;
-            try {
-                if (this.paginator) this.dataSource.paginator = this.paginator;
-                if (this.sort) this.dataSource.sort = this.sort;
-            } catch (e) {}
+            this.incidents = normalized;
+            this.totalItems = page?.totalElements ?? normalized.length;
         });
     }
 
-    populateFilterOptions(): void {
-        const services = this.allIncidents.map((inc) => inc.service);
-        this.availableServices = [...new Set(services)];
-        const sevs = this.allIncidents
-            .map((inc) => inc.severity)
-            .filter((s) => s !== undefined && s !== null && String(s).trim() !== '');
-        this.availableSeverities = [...new Set(sevs)].sort();
-        const stats = this.allIncidents
-            .map((inc) => inc.status)
-            .filter((s) => s !== undefined && s !== null && String(s).trim() !== '');
-        this.availableStatus = [...new Set(stats)].sort();
-    }
-
-    // Handlers that receive the new value from (ngModelChange) and update filters before applying
     onServiceChange(newValue: string): void {
         this.filters.service = (newValue || '').toString();
-        this.applyFilters();
+        this.resetToFirstPageAndReload();
     }
 
     onSeverityChange(newValue: string): void {
         this.filters.severity = (newValue || '').toString();
-        this.applyFilters();
+        this.resetToFirstPageAndReload();
     }
 
     onStatusChange(newValue: string): void {
         this.filters.status = (newValue || '').toString();
-        this.applyFilters();
+        this.resetToFirstPageAndReload();
     }
 
-    applyFilters(): void {
-        let incidents = [...this.allIncidents];
-
-        if (this.filters.service && this.filters.service.toString().trim() !== '') {
-            const f = this.filters.service.toString().toLowerCase().trim();
-            incidents = incidents.filter((inc) =>
-                (inc.service || '').toString().toLowerCase().includes(f)
-            );
+    onSortChange(sort: Sort): void {
+        if (!sort.direction) {
+            this.sortActive = 'createdAt';
+            this.sortDirection = 'desc';
+        } else {
+            this.sortActive = sort.active;
+            this.sortDirection = sort.direction as 'asc' | 'desc';
         }
+        this.resetToFirstPageAndReload();
+    }
 
-        const normalizeKey = (v: any) =>
-            String(v || '')
-                .toUpperCase()
-                .trim()
-                .replace(/[^A-Z0-9]/g, '');
-
-        if (this.filters.severity && this.filters.severity.toString().trim() !== '') {
-            const sevNorm = normalizeKey(this.filters.severity);
-            incidents = incidents.filter((inc) => normalizeKey(inc.severity) === sevNorm);
-        }
-
-        if (this.filters.status && this.filters.status.toString().trim() !== '') {
-            const statNorm = normalizeKey(this.filters.status);
-            incidents = incidents.filter((inc) => normalizeKey(inc.status) === statNorm);
-        }
-
-        this.filteredIncidents = incidents;
-        // update table datasource
-        this.dataSource.data = this.filteredIncidents;
+    onPageChange(event: PageEvent): void {
+        this.pageIndex = event.pageIndex;
+        this.pageSize = event.pageSize;
+        this.loadIncidents();
     }
 
     resetFilters(): void {
         this.filters = { service: '', severity: '', status: '' };
-        this.applyFilters();
+        this.resetToFirstPageAndReload();
+    }
+
+    get matSortActiveField(): string {
+        return this.displayedColumns.includes(this.sortActive) ? this.sortActive : '';
     }
 
     createNewIncident(): void {
@@ -284,7 +216,68 @@ export class IncidentListComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        // nothing to cleanup now
+    private resetToFirstPageAndReload(): void {
+        if (this.pageIndex !== 0) {
+            this.pageIndex = 0;
+            this.paginator?.firstPage();
+        }
+        this.loadIncidents();
+    }
+
+    private mapSeverityToQuery(value?: string): SeverityEnum | keyof typeof SeverityEnum | undefined {
+        if (!value) return undefined;
+        const enumKey = Object.entries(SeverityEnum).find(([, label]) => label === value)?.[0];
+        if (enumKey && enumKey in SeverityEnum) {
+            return enumKey as keyof typeof SeverityEnum;
+        }
+        const enumValue = Object.values(SeverityEnum).find((label) => label === value);
+        return enumValue ?? undefined;
+    }
+
+    private mapStatusToQuery(value?: string): StatusEnum | keyof typeof StatusEnum | undefined {
+        if (!value) return undefined;
+        const enumKey = Object.entries(StatusEnum).find(([, label]) => label === value)?.[0];
+        if (enumKey && enumKey in StatusEnum) {
+            return enumKey as keyof typeof StatusEnum;
+        }
+        const enumValue = Object.values(StatusEnum).find((label) => label === value);
+        return enumValue ?? undefined;
+    }
+
+    private resolveSortField(column: string): string {
+        const map: Record<string, string> = {
+            id: 'id',
+            title: 'title',
+            service: 'service',
+            severity: 'severity',
+            status: 'status',
+            startedAt: 'startedAt',
+            endedAt: 'endedAt',
+            mttr: 'mttrMinutes',
+        };
+        return map[column] ?? 'createdAt';
+    }
+
+    private normalizeSeverity(value: any): string {
+        if (value === undefined || value === null || String(value).trim() === '') return '';
+        const s = String(value).toUpperCase().trim();
+        if (s.includes('SEV1') || s.includes('SEV-1') || s.includes('SEV_1')) return 'SEV-1';
+        if (s.includes('SEV2') || s.includes('SEV-2') || s.includes('SEV_2')) return 'SEV-2';
+        if (s.includes('SEV3') || s.includes('SEV-3') || s.includes('SEV_3')) return 'SEV-3';
+        if (s.includes('SEV4') || s.includes('SEV-4') || s.includes('SEV_4')) return 'SEV-4';
+        return String(value);
+    }
+
+    private normalizeStatus(value: any): string {
+        if (value === undefined || value === null || String(value).trim() === '') return '';
+        const s = String(value).toUpperCase().trim();
+        if (s === 'OPEN' || s === 'OPENED') return 'Open';
+        if (s === 'IN_ANALYSIS' || s === 'IN ANALYSIS' || s === 'INANALYSIS' || s === 'IN-ANALYSIS')
+            return 'In Analysis';
+        if (s === 'CLOSED' || s === 'CLOSE') return 'Closed';
+        if (s.includes('OPEN')) return 'Open';
+        if (s.includes('CLOSED') || s.includes('CLOSE')) return 'Closed';
+        if (s.includes('ANALYS')) return 'In Analysis';
+        return String(value);
     }
 }

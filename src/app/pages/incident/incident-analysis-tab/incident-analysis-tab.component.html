@@ -1,9 +1,231 @@
-<div class="analysis-container">
-  <mat-card appearance="outlined">
-    <h2>Bem-vindo à análise</h2>
-    <p>
-      Esta aba será o espaço para consolidar aprendizados, causas raiz e próximos passos do incidente.
-      Em breve você poderá registrar aqui a linha do tempo resumida, fatores contribuintes e ações de melhoria.
-    </p>
-  </mat-card>
+<div class="analysis-wrapper dark:bg-gray-800">
+  <div class="analysis-shell w-full p-4 md:p-8 bg-gray-900 dark:bg-gray-800 text-white">
+    <header class="analysis-header border-b pb-4 mb-6 dark:border-gray-700">
+      <div class="analysis-header__info">
+        <h1 class="analysis-title text-3xl font-bold text-gray-800 dark:text-gray-100">
+          Análise de Causa Raiz
+        </h1>
+        <p class="analysis-subtitle text-sm text-gray-600 dark:text-gray-300">
+          Complete os 5 Porquês e documente a causa, fatores e lições aprendidas.
+        </p>
+        <p
+          class="analysis-updated text-xs text-gray-500 dark:text-gray-400 mt-2"
+          *ngIf="rca && lastUpdatedDisplay"
+        >
+          Última atualização: {{ lastUpdatedDisplay }}
+        </p>
+      </div>
+      <div class="analysis-header__actions">
+        <mat-spinner *ngIf="isBusy" diameter="28" class="mr-4"></mat-spinner>
+        <button
+          mat-stroked-button
+          color="accent"
+          class="cancel-button"
+          type="button"
+          (click)="loadRca()"
+          [disabled]="isBusy"
+        >
+          Cancelar
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          class="incident-primary-button"
+          type="button"
+          (click)="onSave()"
+          [disabled]="isBusy || !rca"
+        >
+          Salvar alterações
+        </button>
+      </div>
+    </header>
+
+    <ng-container *ngIf="rca; else loading">
+      <section class="analysis-section" aria-labelledby="whys-title">
+        <div class="section-header">
+          <h2 id="whys-title" class="section-title">5 Porquês</h2>
+          <p class="section-description">
+            Desenvolva a linha de raciocínio investigativa respondendo sequencialmente aos porquês.
+          </p>
+        </div>
+        <div class="section-body">
+          <mat-form-field
+            appearance="fill"
+            floatLabel="always"
+            matTooltip="Registre o evento inicial observado e como ele foi detectado."
+            matTooltipPosition="above"
+          >
+            <mat-label>Por quê 1</mat-label>
+            <textarea
+              matInput
+              cdkTextareaAutosize
+              [(ngModel)]="rca.why1"
+              name="why1"
+              maxlength="500"
+              #why1="ngModel"
+              placeholder="Ex: Serviço de pagamentos indisponível às 14h (monitoramento)."
+            ></textarea>
+            <mat-hint align="end" class="char-counter">{{ why1.value?.length || 0 }} / 500</mat-hint>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            floatLabel="always"
+            matTooltip="Relacione a causa direta do primeiro porquê."
+            matTooltipPosition="above"
+          >
+            <mat-label>Por quê 2</mat-label>
+            <textarea
+              matInput
+              cdkTextareaAutosize
+              [(ngModel)]="rca.why2"
+              name="why2"
+              maxlength="500"
+              #why2="ngModel"
+              placeholder="Ex: Pico de CPU no cluster principal."
+            ></textarea>
+            <mat-hint align="end" class="char-counter">{{ why2.value?.length || 0 }} / 500</mat-hint>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            floatLabel="always"
+            matTooltip="Aprofunde no processo ou sistema envolvido."
+            matTooltipPosition="above"
+          >
+            <mat-label>Por quê 3</mat-label>
+            <textarea
+              matInput
+              cdkTextareaAutosize
+              [(ngModel)]="rca.why3"
+              name="why3"
+              maxlength="500"
+              #why3="ngModel"
+              placeholder="Ex: Autoscaling desabilitado para manutenção."
+            ></textarea>
+            <mat-hint align="end" class="char-counter">{{ why3.value?.length || 0 }} / 500</mat-hint>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            floatLabel="always"
+            matTooltip="Identifique falhas de controles ou políticas."
+            matTooltipPosition="above"
+          >
+            <mat-label>Por quê 4</mat-label>
+            <textarea
+              matInput
+              cdkTextareaAutosize
+              [(ngModel)]="rca.why4"
+              name="why4"
+              maxlength="500"
+              #why4="ngModel"
+              placeholder="Ex: Processo de manutenção sem checklist de reconfiguração."
+            ></textarea>
+            <mat-hint align="end" class="char-counter">{{ why4.value?.length || 0 }} / 500</mat-hint>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            floatLabel="always"
+            matTooltip="Conclua com a raiz estrutural do problema."
+            matTooltipPosition="above"
+          >
+            <mat-label>Por quê 5</mat-label>
+            <textarea
+              matInput
+              cdkTextareaAutosize
+              [(ngModel)]="rca.why5"
+              name="why5"
+              maxlength="500"
+              #why5="ngModel"
+              placeholder="Ex: Ausência de revisão de procedimentos pós-manutenção."
+            ></textarea>
+            <mat-hint align="end" class="char-counter">{{ why5.value?.length || 0 }} / 500</mat-hint>
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section class="analysis-section" aria-labelledby="cause-title">
+        <div class="section-header">
+          <h2 id="cause-title" class="section-title">Causa Raiz e Fatores Contribuintes</h2>
+          <p class="section-description">
+            Sintetize as descobertas destacando a causa primária e os elementos que ampliaram o impacto.
+          </p>
+        </div>
+        <div class="section-body cause-grid">
+          <mat-form-field
+            appearance="fill"
+            floatLabel="always"
+            matTooltip="Descreva a causa principal em linguagem objetiva e verificável."
+            matTooltipPosition="above"
+          >
+            <mat-label>Causa Raiz</mat-label>
+            <textarea
+              matInput
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="3"
+              [(ngModel)]="rca.rootCauseText"
+              name="rootCauseText"
+              maxlength="800"
+              #rootCause="ngModel"
+              placeholder="Ex: Processo de manutenção sem validação de restauração do autoscaling."
+            ></textarea>
+            <mat-hint align="end" class="char-counter">{{ rootCause.value?.length || 0 }} / 800</mat-hint>
+          </mat-form-field>
+          <mat-form-field
+            appearance="fill"
+            floatLabel="always"
+            matTooltip="Liste fatores adicionais que agravaram ou prolongaram o incidente."
+            matTooltipPosition="above"
+          >
+            <mat-label>Fatores Contribuintes</mat-label>
+            <textarea
+              matInput
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="3"
+              [(ngModel)]="rca.contributingFactors"
+              name="contributingFactors"
+              maxlength="800"
+              #factors="ngModel"
+              placeholder="Ex: Falta de alerta específico para autoscaling desabilitado."
+            ></textarea>
+            <mat-hint align="end" class="char-counter">{{ factors.value?.length || 0 }} / 800</mat-hint>
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section class="analysis-section" aria-labelledby="lessons-title">
+        <div class="section-header">
+          <h2 id="lessons-title" class="section-title">Lições Aprendidas</h2>
+          <p class="section-description">
+            Documente ações preventivas, melhorias processuais e aprendizados para reforçar a resiliência.
+          </p>
+        </div>
+        <div class="section-body">
+          <mat-form-field
+            appearance="fill"
+            floatLabel="always"
+            matTooltip="Foque em ações aplicáveis, responsáveis definidos e mecanismos de acompanhamento."
+            matTooltipPosition="above"
+          >
+            <mat-label>Lições (opcional)</mat-label>
+            <textarea
+              matInput
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="5"
+              [(ngModel)]="rca.lessonsLearned"
+              name="lessonsLearned"
+              maxlength="4000"
+              #lessons="ngModel"
+              placeholder="Ex: Criar checklist pós-manutenção e reabilitar autoscaling com validação registrada."
+            ></textarea>
+            <mat-hint align="end" class="char-counter">{{ lessons.value?.length || 0 }} / 4000</mat-hint>
+          </mat-form-field>
+        </div>
+      </section>
+    </ng-container>
+
+    <ng-template #loading>
+      <div class="analysis-loading">
+        <mat-spinner diameter="60"></mat-spinner>
+      </div>
+    </ng-template>
+  </div>
 </div>

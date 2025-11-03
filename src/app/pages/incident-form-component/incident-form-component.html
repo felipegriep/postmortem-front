@@ -198,30 +198,38 @@
                 cdkAutosizeMinRows="4"
                 cdkAutosizeMaxRows="8"
               ></textarea>
-              <mat-hint align="end">{{ incident.impactShort.length || 0 }}/500</mat-hint>
+              <mat-hint align="end" class="char-counter">
+                {{ incident?.impactShort?.length ?? 0 }}/500
+              </mat-hint>
               <mat-error *ngIf="impactShortModel.errors?.['maxlength']">
                 Limite máximo de 500 caracteres.
               </mat-error>
             </mat-form-field>
           </div>
-
-        <div class="md:col-span-2 mt-2">
-          <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600 flex justify-end gap-4">
-            <button mat-stroked-button color="accent" type="button" class="cancel-button" (click)="onCancel()">
-              Cancelar
-            </button>
-            <button
-              mat-flat-button
-              color="primary"
-              class="incident-primary-button"
-              [disabled]="incidentForm?.invalid || !isDateRangeValid()"
-              type="submit"
-            >
-              {{ isEditMode ? 'Salvar Alterações' : 'Criar Incidente' }}
-            </button>
-          </div>
-        </div>
       </div>
+      <footer class="form-footer">
+        <div class="form-footer__status">
+          <span class="form-footer__label">Última atualização</span>
+          <span class="form-footer__value">{{ lastUpdatedDisplay || 'Sem registro' }}</span>
+          <span class="form-footer__hint">
+            {{ incidentForm?.dirty ? 'Alterações não salvas' : 'Tudo sincronizado' }}
+          </span>
+        </div>
+        <div class="form-footer__actions">
+          <button mat-stroked-button color="accent" type="button" class="cancel-button" (click)="onCancel()">
+            Cancelar
+          </button>
+          <button
+            mat-flat-button
+            color="primary"
+            class="incident-primary-button"
+            [disabled]="incidentForm?.invalid || !isDateRangeValid()"
+            type="submit"
+          >
+            {{ isEditMode ? 'Salvar Alterações' : 'Criar Incidente' }}
+          </button>
+        </div>
+      </footer>
     </form>
   </div>
 </div>

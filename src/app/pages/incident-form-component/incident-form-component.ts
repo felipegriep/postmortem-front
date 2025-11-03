@@ -36,6 +36,7 @@ import {
     normalizeToDate,
     toBackendDateTimeString,
     toLocalInputDateTime,
+    formatDateToDisplay,
 } from '../../shared/date-utils';
 
 @Component({
@@ -57,6 +58,7 @@ import {
 export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     incident: IncidentInterface = this.getEmptyIncident();
     isEditMode = false;
+    lastUpdatedAt: string | Date | null = null;
     public readonly calendarDay = faCalendarDay;
     readonly datePlaceholder = DATE_PLACEHOLDER;
     readonly flatpickrValueFormat = FLATPICKR_VALUE_FORMAT;
@@ -101,6 +103,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.isEditMode = false;
                         this.incident = this.getEmptyIncident();
                         this.resetPickers();
+                        this.lastUpdatedAt = null;
                         return of(null);
                     }
                     this.isEditMode = true;
@@ -126,6 +129,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 };
                 this.syncPickersWithModel();
                 this.configureEndedMinDate();
+                this.lastUpdatedAt = incident.updatedAt ?? incident.createdAt ?? null;
                 this.cdr.detectChanges();
             });
     }
@@ -494,6 +498,10 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
             endedAt: '',
             impactShort: '',
         };
+    }
+
+    get lastUpdatedDisplay(): string | null {
+        return formatDateToDisplay(this.lastUpdatedAt);
     }
 
     // Garantir que o input datetime-local sempre receba uma string no formato correto

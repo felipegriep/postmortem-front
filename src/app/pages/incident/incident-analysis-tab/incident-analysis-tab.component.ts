@@ -163,11 +163,7 @@ export class IncidentAnalysisTabComponent implements OnInit, OnChanges {
             .pipe(
                 switchMap(() => this.rcaService.get(this.incidentId)),
                 take(1),
-                catchError(() => of(null)),
-                finalize(() => {
-                    this.isSaving = false;
-                    this.cdr.markForCheck();
-                })
+                catchError(() => of(null))
             )
             .subscribe({
                 next: (data: RootCauseResponseInterface | null) => {
@@ -176,6 +172,11 @@ export class IncidentAnalysisTabComponent implements OnInit, OnChanges {
                 },
                 error: () => {
                     this.applyRcaResponse(null);
+                    this.isSaving = false;
+                    this.cdr.markForCheck();
+                },
+                complete: () => {
+                    this.isSaving = false;
                     this.cdr.markForCheck();
                 },
             });

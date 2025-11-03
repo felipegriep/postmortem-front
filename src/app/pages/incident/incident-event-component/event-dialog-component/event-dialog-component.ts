@@ -26,6 +26,16 @@ import { faCalendarDay, faXmark } from '@fortawesome/free-solid-svg-icons';
 import flatpickr from 'flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
 import 'flatpickr/dist/flatpickr.min.css';
+import {
+    DATE_PLACEHOLDER,
+    FLATPICKR_ALT_FORMAT,
+    FLATPICKR_VALUE_FORMAT,
+} from '../../../../shared/date.constants';
+import {
+    normalizeToDate,
+    toBackendDateTimeString,
+    toLocalInputDateTime,
+} from '../../../../shared/date-utils';
 
 @Component({
     selector: 'app-event-dialog-component',
@@ -63,6 +73,9 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
     public readonly calendarDay = faCalendarDay;
     private eventAtPicker?: flatpickr.Instance;
     private incidentStartDate?: Date;
+    readonly datePlaceholder = DATE_PLACEHOLDER;
+    readonly flatpickrValueFormat = FLATPICKR_VALUE_FORMAT;
+    readonly flatpickrAltFormat = FLATPICKR_ALT_FORMAT;
 
     constructor(
         private readonly faLibrary: FaIconLibrary,
@@ -121,48 +134,13 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
     // Public method used by the template to return the event payload formatted for the backend
     serializeEvent(): IncidentEventInterface {
         const ev: IncidentEventInterface = { ...this.event } as IncidentEventInterface;
-        ev.eventAt = this.formatForBackend(ev.eventAt);
+        ev.eventAt = toBackendDateTimeString(ev.eventAt) ?? ev.eventAt;
         return ev;
     }
 
-    // Convert 'datetime-local' input value (yyyy-MM-ddTHH:mm:ss) to backend format 'yyyy-MM-dd HH:mm:ss'
-    private formatForBackend(input?: string): string {
-        if (!input) return input as string;
-        let dt = input;
-        // If input uses 'T' separator (datetime-local), replace with space
-        if (dt.includes('T')) dt = dt.replace('T', ' ');
-        // Ensure seconds are present
-        if (!/\d{2}:\d{2}:\d{2}$/.test(dt)) {
-            // append missing seconds when value ends with 'HH:mm'
-            dt = dt + ':00';
-        }
-        return dt;
-    }
-
     // Convert backend date string (e.g. 'yyyy-MM-dd HH:mm:ss') or ISO (yyyy-MM-ddTHH:mm:ssZ) to 'yyyy-MM-ddTHH:mm:ss' for the input
-    private toInputFormat(input?: string): string {
-        if (!input) {
-            // default to current local datetime in format yyyy-MM-ddTHH:mm:ss
-            const now = new Date();
-            const pad = (n: number) => n.toString().padStart(2, '0');
-            const yyyy = now.getFullYear();
-            const mm = pad(now.getMonth() + 1);
-            const dd = pad(now.getDate());
-            const hh = pad(now.getHours());
-            const min = pad(now.getMinutes());
-            const ss = pad(now.getSeconds());
-            return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
-        }
-        let dt = input.trim();
-        // If backend format 'yyyy-MM-dd HH:mm:ss', replace space with 'T'
-        if (dt.includes(' ')) {
-            dt = dt.replace(' ', 'T');
-        }
-        // If it has seconds or timezone, normalize by slicing the first 19 characters 'yyyy-MM-ddTHH:mm:ss'
-        if (dt.length >= 19) {
-            return dt.slice(0, 19);
-        }
-        return dt;
+    private toInputFormat(input?: string | Date): string {
+        return toLocalInputDateTime(input) ?? toLocalInputDateTime(new Date())!;
     }
 
     isFormValid(): boolean {
@@ -212,9 +190,9 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
         this.eventAtPicker = (flatpickr as any)(this.eventAtInput.nativeElement, {
             enableTime: true,
             time_24hr: true,
-            dateFormat: 'Y-m-d\\TH:i:S',
+            dateFormat: this.flatpickrValueFormat,
             altInput: true,
-            altFormat: 'd/m/Y H:i:S',
+            altFormat: this.flatpickrAltFormat,
             altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
             locale: Portuguese,
             allowInput: true,
@@ -224,7 +202,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
             onReady: (_selectedDates: Date[], _dateStr: string, instance: any) => {
                 try {
                     if (instance?.altInput) {
-                        instance.altInput.setAttribute('placeholder', 'DD/MM/YYYY HH:mm:ss');
+                        instance.altInput.setAttribute('placeholder', this.datePlaceholder);
                         instance.altInput.classList.add('mat-mdc-input-element');
                     }
                 } catch (e) {
@@ -233,7 +211,8 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
             },
             onChange: (selectedDates: Date[]) => {
                 if (selectedDates && selectedDates[0]) {
-                    this.event.eventAt = this.toLocalDatetimeInputValue(selectedDates[0]);
+                    this.event.eventAt =
+                        toLocalInputDateTime(selectedDates[0]) ?? this.event.eventAt;
                     this.ensureEventAtRespectsIncidentStart();
                 }
                 this.cdr.detectChanges();
@@ -250,7 +229,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
                         );
                     }
                     if (dt) {
-                        this.event.eventAt = this.toLocalDatetimeInputValue(dt);
+                        this.event.eventAt = toLocalInputDateTime(dt) ?? this.event.eventAt;
                         this.ensureEventAtRespectsIncidentStart();
                     }
                 } catch (e) {
@@ -262,7 +241,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
     }
 
     private updateIncidentStartDate(): void {
-        this.incidentStartDate = this.parseToDate(this.incidentStartedAt) || undefined;
+        this.incidentStartDate = normalizeToDate(this.incidentStartedAt) || undefined;
         if (this.eventAtPicker) {
             this.eventAtPicker.set('minDate', this.incidentStartDate ?? null);
         }
@@ -273,51 +252,14 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
         if (!this.incidentStartDate || !this.event) {
             return;
         }
-        const currentDate = this.parseToDate(this.event.eventAt);
+        const currentDate = normalizeToDate(this.event.eventAt);
         if (currentDate && currentDate.getTime() >= this.incidentStartDate.getTime()) {
             return;
         }
         const adjusted = new Date(this.incidentStartDate);
-        this.event.eventAt = this.toLocalDatetimeInputValue(adjusted);
+        this.event.eventAt = toLocalInputDateTime(adjusted) ?? this.event.eventAt;
         if (this.eventAtPicker) {
             this.eventAtPicker.setDate(adjusted, false);
         }
-    }
-
-    private toLocalDatetimeInputValue(date: Date): string {
-        if (!date) return '';
-        const copy = new Date(date);
-        if (isNaN(copy.getTime())) {
-            return '';
-        }
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        const yyyy = copy.getFullYear();
-        const mm = pad(copy.getMonth() + 1);
-        const dd = pad(copy.getDate());
-        const hh = pad(copy.getHours());
-        const min = pad(copy.getMinutes());
-        const ss = pad(copy.getSeconds());
-        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
-    }
-
-    private parseToDate(value?: string | Date | null): Date | null {
-        if (!value) {
-            return null;
-        }
-        if (value instanceof Date) {
-            return isNaN(value.getTime()) ? null : new Date(value.getTime());
-        }
-        const stringValue =
-            typeof value === 'string'
-                ? value.trim()
-                : typeof value === 'number'
-                ? String(value)
-                : `${value}`;
-        const normalized =
-            stringValue.includes(' ') && !stringValue.includes('T')
-                ? stringValue.replace(' ', 'T')
-                : stringValue;
-        const parsed = new Date(normalized);
-        return isNaN(parsed.getTime()) ? null : parsed;
     }
 }

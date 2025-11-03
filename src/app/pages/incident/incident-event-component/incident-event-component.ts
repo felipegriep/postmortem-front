@@ -20,6 +20,7 @@ import { IncidentEventInterface } from '../../../domain/interfaces/request/incid
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../../../shared/toast.service';
+import { DATE_DISPLAY_FORMAT } from '../../../shared/date.constants';
 
 @Component({
     selector: 'app-incident-event-component',
@@ -41,6 +42,7 @@ export class IncidentEventComponent implements OnInit, OnChanges {
     public readonly plus = faPlus;
     public readonly edit = faPen;
     public readonly trash = faTrash;
+    readonly dateDisplayFormat = DATE_DISPLAY_FORMAT;
 
     constructor(
         private incidentEventService: IncidentEventService,
@@ -104,7 +106,11 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         }
         this.incidentEventService.create(this.incidentId, event).subscribe(() => {
             this.toast.success('Evento adicionado na linha do tempo!');
-            this.loadEvents();
+            if (typeof window !== 'undefined') {
+                window.location.reload();
+            } else {
+                this.loadEvents();
+            }
         });
     }
 
@@ -114,7 +120,11 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         }
         this.incidentEventService.update(this.incidentId, eventId, event).subscribe(() => {
             this.toast.success('Evento atualizado com sucesso!');
-            this.loadEvents();
+            if (typeof window !== 'undefined') {
+                window.location.reload();
+            } else {
+                this.loadEvents();
+            }
         });
     }
 

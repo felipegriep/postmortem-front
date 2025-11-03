@@ -22,6 +22,7 @@ import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { SeverityEnum } from '../../domain/enums/severity-enum';
 import { StatusEnum } from '../../domain/enums/status-enum';
+import { DATE_DISPLAY_FORMAT } from '../../shared/date.constants';
 
 @Component({
     selector: 'app-incident-list-component',
@@ -61,6 +62,7 @@ export class IncidentListComponent implements OnInit, OnDestroy {
 
     readonly availableSeverities = Object.values(SeverityEnum);
     readonly availableStatus = Object.values(StatusEnum);
+    readonly dateDisplayFormat = DATE_DISPLAY_FORMAT;
 
     totalItems = 0;
     pageIndex = 0;

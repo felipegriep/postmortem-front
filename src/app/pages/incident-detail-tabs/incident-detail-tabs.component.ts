@@ -12,6 +12,7 @@ import { IncidentService } from '../../services/incident-service';
 import { IncidentResponseInterface } from '../../domain/interfaces/response/incident-response-interface';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
+import { DATE_DISPLAY_FORMAT } from '../../shared/date.constants';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface IncidentSummary {
@@ -50,6 +51,7 @@ export class IncidentDetailTabsComponent implements OnInit, OnDestroy {
     selectedIndex = 0;
     isNewIncident = false;
     summary: IncidentSummary = {};
+    readonly dateDisplayFormat = DATE_DISPLAY_FORMAT;
 
     private destroy$ = new Subject<void>();
 

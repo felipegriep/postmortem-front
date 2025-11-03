@@ -115,7 +115,7 @@
                 #startedAt="ngModel"
                 [(ngModel)]="incident.startedAt"
                 required
-                placeholder="DD/MM/YYYY HH:mm:ss"
+                [placeholder]="datePlaceholder"
               />
               <button
                 mat-icon-button
@@ -155,7 +155,7 @@
                 name="endedAt"
                 #endedAt="ngModel"
                 [(ngModel)]="incident.endedAt"
-                placeholder="DD/MM/YYYY HH:mm:ss"
+                [placeholder]="datePlaceholder"
               />
               <button
                 mat-icon-button

@@ -28,13 +28,13 @@
         <div class="summary-block">
           <p class="summary-label">Início</p>
           <p class="summary-value">
-            {{ summary.startedAt ? (summary.startedAt | date : 'dd/MM/yyyy HH:mm:ss') : '—' }}
+            {{ summary.startedAt ? (summary.startedAt | date : dateDisplayFormat) : '—' }}
           </p>
         </div>
         <div class="summary-block">
           <p class="summary-label">Fim</p>
           <p class="summary-value">
-            {{ summary.endedAt ? (summary.endedAt | date : 'dd/MM/yyyy HH:mm:ss') : '—' }}
+            {{ summary.endedAt ? (summary.endedAt | date : dateDisplayFormat) : '—' }}
           </p>
         </div>
       </div>

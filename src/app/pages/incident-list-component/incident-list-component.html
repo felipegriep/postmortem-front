@@ -126,14 +126,14 @@
                     <!-- Started At Column -->
                     <ng-container matColumnDef="startedAt">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>Início</th>
-                        <td mat-cell *matCellDef="let row">{{ row.startedAt | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+                        <td mat-cell *matCellDef="let row">{{ row.startedAt | date: dateDisplayFormat }}</td>
                     </ng-container>
 
                     <!-- Ended At Column -->
                     <ng-container matColumnDef="endedAt">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>Fim</th>
                         <td mat-cell *matCellDef="let row">
-                            {{ row.endedAt ? (row.endedAt | date: 'dd/MM/yyyy HH:mm:ss') : '-' }}
+                            {{ row.endedAt ? (row.endedAt | date: dateDisplayFormat) : '-' }}
                         </td>
                     </ng-container>
 

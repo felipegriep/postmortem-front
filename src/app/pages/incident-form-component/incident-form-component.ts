@@ -26,6 +26,17 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 import { faCalendarDay } from '@fortawesome/free-solid-svg-icons';
 import { Subject, of, switchMap, takeUntil } from 'rxjs';
 import { ToastService } from '../../shared/toast.service';
+import {
+    DATE_PLACEHOLDER,
+    DATE_DISPLAY_FORMAT,
+    FLATPICKR_ALT_FORMAT,
+    FLATPICKR_VALUE_FORMAT,
+} from '../../shared/date.constants';
+import {
+    normalizeToDate,
+    toBackendDateTimeString,
+    toLocalInputDateTime,
+} from '../../shared/date-utils';
 
 @Component({
     selector: 'app-incident-form-component',
@@ -47,6 +58,10 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     incident: IncidentInterface = this.getEmptyIncident();
     isEditMode = false;
     public readonly calendarDay = faCalendarDay;
+    readonly datePlaceholder = DATE_PLACEHOLDER;
+    readonly flatpickrValueFormat = FLATPICKR_VALUE_FORMAT;
+    readonly flatpickrAltFormat = FLATPICKR_ALT_FORMAT;
+    readonly dateDisplayFormat = DATE_DISPLAY_FORMAT;
 
     @ViewChild('startedAtInput', { static: false }) startedAtInput?: ElementRef<HTMLInputElement>;
     @ViewChild('endedAtInput', { static: false }) endedAtInput?: ElementRef<HTMLInputElement>;
@@ -105,8 +120,8 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     status: incident.status,
                     startedAt:
                         this.formatForInput(incident.startedAt) ||
-                        this.toLocalDatetimeInputValue(new Date())!,
-                    endedAt: this.toLocalDatetimeInputValue(incident.endedAt) || '',
+                        toLocalInputDateTime(new Date())!,
+                    endedAt: toLocalInputDateTime(incident.endedAt) || '',
                     impactShort: incident.impactShort,
                 };
                 this.syncPickersWithModel();
@@ -137,23 +152,18 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     enableTime: true,
                     time_24hr: true,
                     // internal value format (ISO-like), altInput displays BR format to the user
-                    dateFormat: 'Y-m-d H:i:S',
+                    dateFormat: this.flatpickrValueFormat,
                     altInput: true,
-                    altFormat: 'd/m/Y H:i:S',
+                    altFormat: this.flatpickrAltFormat,
                     altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
                     locale: Portuguese,
-                    defaultDate: this.incident?.startedAt
-                        ? new Date(this.incident.startedAt)
-                        : undefined,
+                    defaultDate: normalizeToDate(this.incident?.startedAt) || undefined,
                     allowInput: true,
                     clickOpens: true,
                     onReady: (selectedDates: Date[], dateStr: string, instance: any) => {
                         try {
                             if (instance && instance.altInput) {
-                                instance.altInput.setAttribute(
-                                    'placeholder',
-                                    'DD/MM/YYYY HH:mm:ss'
-                                );
+                                instance.altInput.setAttribute('placeholder', this.datePlaceholder);
                                 // ensure it has our visual class
                                 instance.altInput.classList.add(
                                     'mat-mdc-input-element',
@@ -165,8 +175,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     onChange: (selectedDates: Date[]) => {
                         if (selectedDates && selectedDates[0]) {
                             // store model in the ISO local-like format expected elsewhere
-                            this.incident.startedAt =
-                                this.toLocalDatetimeInputValue(selectedDates[0]) || '';
+                            this.incident.startedAt = toLocalInputDateTime(selectedDates[0]) || '';
                             // clear parse error on successful selection
                             this.setParseError('startedAt', false);
 
@@ -205,7 +214,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     instance.config.altFormat || instance.config.dateFormat
                                 );
                             if (dt) {
-                                this.incident.startedAt = this.toLocalDatetimeInputValue(dt) || '';
+                                this.incident.startedAt = toLocalInputDateTime(dt) || '';
                                 this.setParseError('startedAt', false);
                                 // update minDate on ended picker
                                 if (this.endedFp) {
@@ -240,27 +249,20 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.endedFp = (flatpickr as any)(this.endedAtInput.nativeElement, {
                     enableTime: true,
                     time_24hr: true,
-                    dateFormat: 'Y-m-d H:i:S',
+                    dateFormat: this.flatpickrValueFormat,
                     altInput: true,
-                    altFormat: 'd/m/Y H:i:S',
+                    altFormat: this.flatpickrAltFormat,
                     altInputClass: 'mat-mdc-input-element flatpickr-alt-input',
                     locale: Portuguese,
-                    defaultDate: this.incident?.endedAt
-                        ? new Date(this.incident.endedAt)
-                        : undefined,
+                    defaultDate: normalizeToDate(this.incident?.endedAt) || undefined,
                     // set minDate initially from incident.startedAt if available
-                    minDate: this.incident?.startedAt
-                        ? new Date(this.incident.startedAt)
-                        : undefined,
+                    minDate: normalizeToDate(this.incident?.startedAt) || undefined,
                     allowInput: true,
                     clickOpens: true,
                     onReady: (selectedDates: Date[], dateStr: string, instance: any) => {
                         try {
                             if (instance && instance.altInput) {
-                                instance.altInput.setAttribute(
-                                    'placeholder',
-                                    'DD/MM/YYYY HH:mm:ss'
-                                );
+                                instance.altInput.setAttribute('placeholder', this.datePlaceholder);
                                 instance.altInput.classList.add(
                                     'mat-mdc-input-element',
                                     'flatpickr-alt-input'
@@ -270,8 +272,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     },
                     onChange: (selectedDates: Date[]) => {
                         if (selectedDates && selectedDates[0]) {
-                            this.incident.endedAt =
-                                this.toLocalDatetimeInputValue(selectedDates[0]) || '';
+                            this.incident.endedAt = toLocalInputDateTime(selectedDates[0]) || '';
                             this.setParseError('endedAt', false);
                         } else {
                             this.incident.endedAt = '';
@@ -290,7 +291,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     instance.config.altFormat || instance.config.dateFormat
                                 );
                             if (dt) {
-                                this.incident.endedAt = this.toLocalDatetimeInputValue(dt) || '';
+                                this.incident.endedAt = toLocalInputDateTime(dt) || '';
                                 this.setParseError('endedAt', false);
                             } else {
                                 this.incident.endedAt = '';
@@ -369,8 +370,8 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // update range validation state based on current model values
     private updateRangeValidation() {
         try {
-            const s = this.incident.startedAt ? new Date(this.incident.startedAt) : null;
-            const e = this.incident.endedAt ? new Date(this.incident.endedAt) : null;
+            const s = normalizeToDate(this.incident.startedAt);
+            const e = normalizeToDate(this.incident.endedAt);
             if (!s || !e) {
                 // no range to validate -> clear
                 this.setRangeError('endedAt', false);
@@ -407,12 +408,12 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     private syncPickersWithModel(): void {
         try {
             if (this.startedFp) {
-                const startDate = this.parseToDate(this.incident.startedAt);
+                const startDate = normalizeToDate(this.incident.startedAt);
                 if (startDate) this.startedFp.setDate(startDate, true);
                 else this.startedFp.clear();
             }
             if (this.endedFp) {
-                const endDate = this.parseToDate(this.incident.endedAt);
+                const endDate = normalizeToDate(this.incident.endedAt);
                 if (endDate) this.endedFp.setDate(endDate, true);
                 else this.endedFp.clear();
             }
@@ -426,7 +427,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
             if (!this.startedFp || !this.endedFp) {
                 return;
             }
-            const startDate = this.parseToDate(this.incident.startedAt);
+            const startDate = normalizeToDate(this.incident.startedAt);
             if (!startDate) {
                 this.endedFp.set('minDate', null);
                 this.updateRangeValidation();
@@ -473,8 +474,8 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     isDateRangeValid(): boolean {
         try {
             if (!this.incident) return true;
-            const s = this.incident.startedAt ? new Date(this.incident.startedAt) : null;
-            const e = this.incident.endedAt ? new Date(this.incident.endedAt) : null;
+            const s = normalizeToDate(this.incident.startedAt);
+            const e = normalizeToDate(this.incident.endedAt);
             if (!s || !e) return true;
             return e.getTime() >= s.getTime();
         } catch {
@@ -489,7 +490,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
             service: '',
             severity: SeverityEnum.SEV_3, // Valor padrão
             status: StatusEnum.OPEN,
-            startedAt: this.toLocalDatetimeInputValue(new Date())!, // Data e hora atual (local, formato input)
+            startedAt: toLocalInputDateTime(new Date())!,
             endedAt: '',
             impactShort: '',
         };
@@ -497,8 +498,7 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Garantir que o input datetime-local sempre receba uma string no formato correto
     formatForInput(value: string | Date | null | undefined): string {
-        const v = this.toLocalDatetimeInputValue(value);
-        return v ?? '';
+        return toLocalInputDateTime(value) ?? '';
     }
 
     onSubmit(): void {
@@ -531,41 +531,13 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const { id: _id, ...raw } = this.incident as any;
         const payload: any = { ...raw };
 
-        // convert local ISO-like (YYYY-MM-DDTHH:mm:ss) to 'YYYY-MM-DD HH:mm:ss'
-        const localIsoStringToBackend = (localIso?: string | null): string | null => {
-            if (!localIso) return null;
-
-            // normalize common variants: allow space separator and missing seconds
-            const normalized = localIso.trim().replace(' ', 'T');
-            const [datePart, timePartRaw] = normalized.split('T');
-            if (!datePart) return null;
-
-            const [y, m, d] = datePart.split('-').map((v) => Number(v));
-            if (!y || !m || !d) return null;
-
-            const timeParts = (timePartRaw ?? '').split(':').map((v) => Number(v));
-            const hh = timeParts[0] ?? 0;
-            const mm = timeParts[1] ?? 0;
-            const ss = timeParts[2] ?? 0;
-
-            const localDate = new Date(y, m - 1, d, hh, mm, ss);
-            if (isNaN(localDate.getTime())) return null;
-
-            const pad = (n: number) => n.toString().padStart(2, '0');
-            return `${localDate.getFullYear()}-${pad(localDate.getMonth() + 1)}-${pad(
-                localDate.getDate()
-            )} ${pad(localDate.getHours())}:${pad(localDate.getMinutes())}:${pad(
-                localDate.getSeconds()
-            )}`;
-        };
-
         // convert startedAt and endedAt
         if (payload.startedAt) {
-            const formatted = localIsoStringToBackend(payload.startedAt);
+            const formatted = toBackendDateTimeString(payload.startedAt);
             if (formatted) payload.startedAt = formatted;
         }
         if (payload.endedAt) {
-            const formattedEnd = localIsoStringToBackend(payload.endedAt);
+            const formattedEnd = toBackendDateTimeString(payload.endedAt);
             if (formattedEnd) payload.endedAt = formattedEnd;
             else payload.endedAt = null;
         }
@@ -573,50 +545,33 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.isEditMode && this.incident.id != null) {
             this.incidentService.update(String(this.incident.id), payload).subscribe(() => {
                 this.toast.success('Incidente atualizado com sucesso!');
-                this.router.navigate(['/incidents']);
+                if (typeof window !== 'undefined') {
+                    window.location.reload();
+                }
             });
         } else {
-            this.incidentService.create(payload).subscribe(() => {
+            this.incidentService.create(payload).subscribe((created) => {
                 this.toast.success('Incidente criado com sucesso!');
-                this.router.navigate(['/incidents']);
+                const targetId =
+                    created && typeof created === 'object'
+                        ? (created as any)?.id ?? created
+                        : created;
+
+                if (targetId !== undefined && targetId !== null) {
+                    this.router.navigate(['/incidents/edit', targetId]).then(() => {
+                        if (typeof window !== 'undefined') {
+                            window.location.reload();
+                        }
+                    });
+                } else if (typeof window !== 'undefined') {
+                    window.location.reload();
+                }
             });
         }
     }
 
     onCancel(): void {
         this.router.navigate(['/incidents']);
-    }
-
-    private toLocalDatetimeInputValue(dateLike: Date | string | null | undefined): string | null {
-        if (!dateLike) return null;
-        const parsed = this.parseToDate(dateLike);
-        if (!parsed) {
-            return null;
-        }
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        const yyyy = parsed.getFullYear();
-        const mm = pad(parsed.getMonth() + 1);
-        const dd = pad(parsed.getDate());
-        const hh = pad(parsed.getHours());
-        const min = pad(parsed.getMinutes());
-        const ss = pad(parsed.getSeconds());
-        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
-    }
-
-    private parseToDate(dateLike: Date | string | null | undefined): Date | null {
-        if (!dateLike) {
-            return null;
-        }
-        if (dateLike instanceof Date) {
-            const cloned = new Date(dateLike.getTime());
-            return isNaN(cloned.getTime()) ? null : cloned;
-        }
-        const normalized =
-            dateLike.includes(' ') && !dateLike.includes('T')
-                ? dateLike.replace(' ', 'T')
-                : dateLike;
-        const parsed = new Date(normalized);
-        return isNaN(parsed.getTime()) ? null : parsed;
     }
 
     // Load the prebuilt Material theme from the public folder (only once)

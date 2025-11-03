@@ -8,35 +8,6 @@
         <p class="analysis-subtitle text-sm text-gray-600 dark:text-gray-300">
           Complete os 5 Porquês e documente a causa, fatores e lições aprendidas.
         </p>
-        <p
-          class="analysis-updated text-xs text-gray-500 dark:text-gray-400 mt-2"
-          *ngIf="rca && lastUpdatedDisplay"
-        >
-          Última atualização: {{ lastUpdatedDisplay }}
-        </p>
-      </div>
-      <div class="analysis-header__actions">
-        <mat-spinner *ngIf="isBusy" diameter="28" class="mr-4"></mat-spinner>
-        <button
-          mat-stroked-button
-          color="accent"
-          class="cancel-button"
-          type="button"
-          (click)="loadRca()"
-          [disabled]="isBusy"
-        >
-          Cancelar
-        </button>
-        <button
-          mat-flat-button
-          color="primary"
-          class="incident-primary-button"
-          type="button"
-          (click)="onSave()"
-          [disabled]="isBusy || !rca"
-        >
-          Salvar alterações
-        </button>
       </div>
     </header>
 
@@ -54,6 +25,7 @@
             floatLabel="always"
             matTooltip="Registre o evento inicial observado e como ele foi detectado."
             matTooltipPosition="above"
+            [ngClass]="{ 'has-error': (why1.dirty || why1.touched) && !rca?.why1?.trim() }"
           >
             <mat-label>Por quê 1</mat-label>
             <textarea
@@ -63,8 +35,12 @@
               name="why1"
               maxlength="500"
               #why1="ngModel"
+              required
               placeholder="Ex: Serviço de pagamentos indisponível às 14h (monitoramento)."
             ></textarea>
+            <mat-error *ngIf="(why1.dirty || why1.touched) && !rca?.why1?.trim()">
+              O primeiro porquê é obrigatório.
+            </mat-error>
             <mat-hint align="end" class="char-counter">{{ why1.value?.length || 0 }} / 500</mat-hint>
           </mat-form-field>
           <mat-form-field
@@ -228,4 +204,34 @@
       </div>
     </ng-template>
   </div>
+
+    <footer class="analysis-footer" *ngIf="rca">
+      <div class="analysis-footer__status" *ngIf="lastUpdatedDisplay">
+        <span class="analysis-footer__label">Última atualização:</span>
+        <span class="analysis-footer__value">{{ lastUpdatedDisplay }}</span>
+      </div>
+      <div class="analysis-footer__actions">
+        <button
+          mat-stroked-button
+          color="accent"
+          class="cancel-button"
+          type="button"
+          (click)="loadRca()"
+          [disabled]="isBusy"
+        >
+          Cancelar
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          class="incident-primary-button"
+          type="button"
+          (click)="onSave()"
+          [disabled]="isBusy || !rca?.why1?.trim()"
+        >
+          Salvar alterações
+        </button>
+        <mat-spinner *ngIf="isBusy" diameter="28"></mat-spinner>
+      </div>
+    </footer>
 </div>

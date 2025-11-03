@@ -11,6 +11,17 @@
       </div>
     </header>
 
+    <section class="analysis-blameless-banner" aria-label="Cultura Blameless">
+      <fa-icon [icon]="blamelessIcon" aria-hidden="true"></fa-icon>
+      <div class="analysis-blameless-banner__copy">
+        <h2>Cultura sem culpabilização</h2>
+        <p>
+          Esta análise existe para aprender e fortalecer o sistema — foque em fatos, causas sistêmicas
+          e melhorias duradouras. Atribuição de culpa não é bem-vinda aqui.
+        </p>
+      </div>
+    </section>
+
     <ng-container *ngIf="rca; else loading">
       <section class="analysis-section" aria-labelledby="whys-title">
         <div class="section-header">

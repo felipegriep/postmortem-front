@@ -13,11 +13,12 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, finalize, switchMap, take } from 'rxjs/operators';
@@ -25,6 +26,7 @@ import { RootCauseService } from '../../../services/root-cause-service';
 import { RootCauseInterface } from '../../../domain/interfaces/request/root-cause-interface';
 import { RootCauseResponseInterface } from '../../../domain/interfaces/response/root-cause-response-interface';
 import { formatDateToDisplay } from '../../../shared/date-utils';
+import { faHandHoldingHeart } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-incident-analysis-tab',
@@ -41,6 +43,7 @@ import { formatDateToDisplay } from '../../../shared/date-utils';
         MatIconModule,
         MatTooltipModule,
         MatProgressSpinnerModule,
+        FontAwesomeModule,
     ],
     templateUrl: './incident-analysis-tab.component.html',
     styleUrls: ['./incident-analysis-tab.component.scss'],
@@ -54,6 +57,7 @@ export class IncidentAnalysisTabComponent implements OnInit, OnChanges {
     private lastUpdatedAt: string | null = null;
     isLoading = false;
     isSaving = false;
+    readonly blamelessIcon = faHandHoldingHeart;
 
     constructor(
         private readonly rcaService: RootCauseService,

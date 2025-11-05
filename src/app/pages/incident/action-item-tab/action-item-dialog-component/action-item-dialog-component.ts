@@ -13,11 +13,12 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCalendarDay, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -39,6 +40,8 @@ import {
     toBackendDateTimeString,
     toLocalInputDateTime,
 } from '../../../../shared/date-utils';
+import { Observable, Subject } from 'rxjs';
+import { map, startWith, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-action-item-dialog-component',
@@ -50,6 +53,7 @@ import {
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        MatAutocompleteModule,
         MatButtonModule,
         TextFieldModule,
         FontAwesomeModule,
@@ -68,7 +72,8 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
         description: this.fb.control('', {
             validators: [Validators.required, Validators.maxLength(500)],
         }),
-        ownerId: this.fb.control<number | null>(null, { validators: [Validators.required] }),
+        owner: this.fb.control<UserAccountResponseInterface | string | null>(null),
+        ownerId: this.fb.control<number | null>(null),
         dueDate: this.fb.control('', { validators: [Validators.required] }),
         status: this.fb.control<ActionStatusEnum>(ActionStatusEnum.TODO, {
             validators: [Validators.required],
@@ -83,8 +88,14 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     readonly flatpickrValueFormat = FLATPICKR_VALUE_FORMAT;
     readonly flatpickrAltFormat = FLATPICKR_ALT_FORMAT;
     readonly closeIcon = faXmark;
+    readonly ownerControl = this.form.get('owner') as FormControl<
+        UserAccountResponseInterface | string | null
+    >;
+    readonly ownerIdControl = this.form.get('ownerId') as FormControl<number | null>;
+    readonly filteredOwners$: Observable<UserAccountResponseInterface[]>;
 
     private dueDatePicker?: flatpickr.Instance;
+    private readonly destroy$ = new Subject<void>();
 
     private _owners: UserAccountResponseInterface[] = [];
     @Input() mode: 'create' | 'edit' = 'create';
@@ -95,7 +106,9 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
         return this._action;
     }
     @Input() set owners(value: UserAccountResponseInterface[] | null | undefined) {
-        this._owners = value ?? [];
+        this._owners = (value ?? []).slice();
+        this.syncOwnerControls();
+        this.emitOwnerFilterRefresh();
     }
     get owners(): UserAccountResponseInterface[] {
         return this._owners;
@@ -111,6 +124,25 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
         } catch (e) {
             // ignore icon registration issues (tests, etc.)
         }
+
+        this.filteredOwners$ = this.ownerControl.valueChanges.pipe(
+            startWith(this.ownerControl.value),
+            map((value) => this.ownerQueryFromValue(value)),
+            map((query) => this.filterOwners(query))
+        );
+
+        this.ownerControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((value) => {
+            if (value && typeof value !== 'string') {
+                this.ownerIdControl.setValue(value.id, { emitEvent: false });
+                this.ownerIdControl.updateValueAndValidity({ emitEvent: false });
+            } else if (typeof value === 'string') {
+                this.ownerIdControl.setValue(null, { emitEvent: false });
+                this.ownerIdControl.updateValueAndValidity({ emitEvent: false });
+            } else if (!value) {
+                this.ownerIdControl.setValue(null, { emitEvent: false });
+                this.ownerIdControl.updateValueAndValidity({ emitEvent: false });
+            }
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -126,6 +158,8 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     }
 
     ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
         try {
             this.dueDatePicker?.destroy();
         } catch {}
@@ -146,6 +180,8 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     }
 
     openCalendar(): void {
+        const minDate = this.computeMinDueDate();
+        this.dueDatePicker?.set('minDate', minDate);
         this.dueDatePicker?.open();
     }
 
@@ -163,11 +199,24 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
         const dueDateBackend = toBackendDateTimeString(raw.dueDate) ?? raw.dueDate ?? '';
         const statusControlValue = raw.status ?? ActionStatusEnum.TODO;
         const status = this.mode === 'create' ? ActionStatusEnum.TODO : statusControlValue;
+        const resolvedOwnerId = this.resolveOwnerId(raw.owner ?? null, raw.ownerId ?? null);
+
+        if (!resolvedOwnerId) {
+            if (this._owners.length) {
+                this.ownerControl.markAsTouched();
+                this.ownerControl.updateValueAndValidity();
+            } else {
+                this.ownerIdControl.markAsTouched();
+                this.ownerIdControl.updateValueAndValidity();
+            }
+            this.form.markAllAsTouched();
+            return;
+        }
 
         const actionItem: ActionItemInterface = {
             type: raw.type!,
-            description: raw.description!.trim(),
-            ownerId: Number(raw.ownerId!),
+            description: raw.description?.trim() ?? '',
+            ownerId: Number(resolvedOwnerId),
             dueDate: dueDateBackend,
             status,
             evidenceLink: raw.evidenceLink?.trim() ? raw.evidenceLink.trim() : null,
@@ -177,15 +226,17 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     }
 
     private patchFormFromInputs(): void {
-        const sourceDate = this.action?.dueDate ?? new Date();
-        const normalized = normalizeToDate(sourceDate) ?? new Date();
-        const inputValue = toLocalInputDateTime(normalized) ?? toLocalInputDateTime(new Date())!;
+        const initialDueDate = this.computeInitialDueDate();
+        const ownerFromAction = this.findOwnerById(this.action?.owner?.id ?? null);
+        const ownerId = ownerFromAction?.id ?? this.action?.owner?.id ?? null;
+        const inputValue = toLocalInputDateTime(initialDueDate) ?? '';
 
         this.form.reset(
             {
                 type: this.action?.type ?? ActionTypeEnum.CORRECTIVE,
                 description: this.action?.description ?? '',
-                ownerId: this.action?.owner?.id ?? null,
+                owner: ownerFromAction,
+                ownerId,
                 dueDate: inputValue,
                 status: this.action?.status ?? ActionStatusEnum.TODO,
                 evidenceLink: this.action?.evidenceLink ?? '',
@@ -199,6 +250,9 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
         } else {
             this.form.get('status')?.enable({ emitEvent: false });
         }
+
+        this.syncOwnerControls();
+        this.emitOwnerFilterRefresh();
     }
 
     private initializeDueDatePicker(): void {
@@ -210,7 +264,15 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
             this.dueDatePicker?.destroy();
         } catch {}
 
-        const defaultDate = normalizeToDate(this.form.get('dueDate')?.value ?? null) ?? new Date();
+        const minDate = this.computeMinDueDate();
+        const rawDate = normalizeToDate(this.form.get('dueDate')?.value ?? null);
+        const defaultDate = this.clampToMin(rawDate ?? minDate);
+        if (!rawDate || rawDate < minDate) {
+            this.form.patchValue(
+                { dueDate: toLocalInputDateTime(defaultDate) ?? '' },
+                { emitEvent: false }
+            );
+        }
 
         this.dueDatePicker = (flatpickr as any)(this.dueDateInput.nativeElement, {
             enableTime: true,
@@ -222,16 +284,22 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
             locale: Portuguese,
             allowInput: true,
             clickOpens: true,
+            minDate,
             defaultDate,
             onChange: (selectedDates: Date[], dateStr: string) => {
                 const selected = selectedDates?.[0] ?? normalizeToDate(dateStr);
-                const iso = toLocalInputDateTime(selected) ?? '';
+                const clamped = this.clampToMin(selected ?? minDate);
+                const iso = toLocalInputDateTime(clamped) ?? '';
                 this.form.patchValue({ dueDate: iso }, { emitEvent: false });
             },
             onClose: (selectedDates: Date[], dateStr: string) => {
                 const selected = selectedDates?.[0] ?? normalizeToDate(dateStr);
-                const iso = toLocalInputDateTime(selected) ?? '';
+                const clamped = this.clampToMin(selected ?? minDate);
+                const iso = toLocalInputDateTime(clamped) ?? '';
                 this.form.patchValue({ dueDate: iso }, { emitEvent: false });
+            },
+            onOpen: () => {
+                this.dueDatePicker?.set('minDate', this.computeMinDueDate());
             },
         });
     }
@@ -248,5 +316,128 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
                 this.dueDatePicker.clear();
             }
         } catch {}
+    }
+
+    private syncOwnerControls(): void {
+        const ownerCtrl = this.ownerControl;
+        const ownerIdCtrl = this.ownerIdControl;
+        const currentOwner = ownerCtrl.value;
+        const fallbackOwnerId = ownerIdCtrl.value ?? this.action?.owner?.id ?? null;
+
+        if (this._owners.length) {
+            ownerCtrl.setValidators([Validators.required]);
+            ownerCtrl.updateValueAndValidity({ emitEvent: false });
+
+            ownerIdCtrl.clearValidators();
+            ownerIdCtrl.updateValueAndValidity({ emitEvent: false });
+
+            const matchedOwner =
+                (currentOwner && typeof currentOwner !== 'string'
+                    ? currentOwner
+                    : this.findOwnerById(fallbackOwnerId)) ?? null;
+            if (matchedOwner) {
+                ownerCtrl.setValue(matchedOwner, { emitEvent: false });
+                ownerIdCtrl.setValue(matchedOwner.id ?? null, { emitEvent: false });
+            } else {
+                ownerIdCtrl.setValue(null, { emitEvent: false });
+            }
+        } else {
+            ownerCtrl.clearValidators();
+            ownerCtrl.setValue(null, { emitEvent: false });
+            ownerCtrl.updateValueAndValidity({ emitEvent: false });
+
+            ownerIdCtrl.setValidators([Validators.required]);
+            ownerIdCtrl.setValue(fallbackOwnerId, { emitEvent: false });
+            ownerIdCtrl.updateValueAndValidity({ emitEvent: false });
+        }
+    }
+
+    private emitOwnerFilterRefresh(): void {
+        if (!this._owners.length) {
+            return;
+        }
+        this.ownerControl.setValue(this.ownerControl.value, { emitEvent: true });
+    }
+
+    private ownerQueryFromValue(
+        value: UserAccountResponseInterface | string | null | undefined
+    ): string {
+        if (!value) {
+            return '';
+        }
+        if (typeof value === 'string') {
+            return value;
+        }
+        return this.displayOwner(value);
+    }
+
+    private filterOwners(query: string): UserAccountResponseInterface[] {
+        if (!this._owners.length) {
+            return [];
+        }
+        const normalized = query?.toLocaleLowerCase?.() ?? '';
+        if (!normalized) {
+            return this._owners.slice(0, 50);
+        }
+        return this._owners
+            .filter((owner) => {
+                const name = owner.name?.toLocaleLowerCase?.() ?? '';
+                const email = owner.email?.toLocaleLowerCase?.() ?? '';
+                return name.includes(normalized) || email.includes(normalized);
+            })
+            .slice(0, 50);
+    }
+
+    readonly displayOwner = (
+        owner: UserAccountResponseInterface | string | null | undefined
+    ): string => {
+        if (!owner) {
+            return '';
+        }
+        if (typeof owner === 'string') {
+            return owner;
+        }
+        const segments = [owner.name, owner.email].filter(Boolean);
+        return segments.join(' · ');
+    };
+
+    onOwnerOptionSelected(owner: UserAccountResponseInterface): void {
+        this.ownerControl.setValue(owner, { emitEvent: true });
+        this.ownerControl.markAsDirty();
+    }
+
+    private findOwnerById(id: number | null | undefined): UserAccountResponseInterface | null {
+        if (id === null || id === undefined) {
+            return null;
+        }
+        return this._owners.find((owner) => owner.id === id) ?? null;
+    }
+
+    private computeInitialDueDate(): Date {
+        const source = normalizeToDate(this.action?.dueDate ?? null) ?? new Date();
+        return this.clampToMin(source);
+    }
+
+    private computeMinDueDate(): Date {
+        return new Date(Date.now() + 15 * 60 * 1000);
+    }
+
+    private clampToMin(date: Date): Date {
+        const minDate = this.computeMinDueDate();
+        return date < minDate ? minDate : date;
+    }
+
+    private resolveOwnerId(
+        owner: UserAccountResponseInterface | string | null,
+        ownerId: number | null
+    ): number | null {
+        if (this._owners.length) {
+            return typeof owner === 'object' && owner ? owner.id ?? null : null;
+        }
+        if (ownerId === null || ownerId === undefined) {
+            return null;
+        }
+        const parsed = Number(ownerId);
+        return Number.isNaN(parsed) ? null : parsed;
     }
 }

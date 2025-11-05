@@ -43,6 +43,7 @@ import { ActionStatusEnum } from '../../../domain/enums/action-status-enum';
 import { ToastService } from '../../../shared/toast.service';
 import { ActionItemDialogComponent } from './action-item-dialog-component/action-item-dialog-component';
 import { UserAccountResponseInterface } from '../../../domain/interfaces/response/user-account-response-interface';
+import { UserAccountService } from '../../../services/user-account-service';
 import { formatDateToDisplay } from '../../../shared/date-utils';
 
 interface ActionItemFiltersForm {
@@ -94,6 +95,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
 
     actionItems: ActionItemResponseInterface[] = [];
     owners: UserAccountResponseInterface[] = [];
+    private allOwners: UserAccountResponseInterface[] = [];
     totalItems = 0;
     pageIndex = 0;
     pageSize = 5;
@@ -110,12 +112,21 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
     constructor(
         private readonly actionItemService: ActionItemService,
         private readonly toast: ToastService,
+        private readonly userAccountService: UserAccountService,
         private readonly faLibrary: FaIconLibrary,
         private readonly route: ActivatedRoute,
         private readonly cdr: ChangeDetectorRef
     ) {
         try {
-            this.faLibrary.addIcons(faPlus, faPen, faTrash, faLink, faLinkSlash, faUser, faCalendarDay);
+            this.faLibrary.addIcons(
+                faPlus,
+                faPen,
+                faTrash,
+                faLink,
+                faLinkSlash,
+                faUser,
+                faCalendarDay
+            );
         } catch {
             // ignore icon registration issues (e.g., in tests)
         }
@@ -129,7 +140,18 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
     readonly ownerIcon = faUser;
     readonly dueIcon = faCalendarDay;
     readonly formatDateToDisplayFn = formatDateToDisplay;
+    readonly truncatedDescription = (value: string | null | undefined, limit = 120): string => {
+        if (!value) {
+            return '';
+        }
+        const trimmed = value.trim();
+        if (trimmed.length <= limit) {
+            return trimmed;
+        }
+        return `${trimmed.slice(0, limit)}…`;
+    };
     ngOnInit(): void {
+        this.loadOwners();
         this.filterForm.valueChanges
             .pipe(debounceTime(300), takeUntil(this.destroy$))
             .subscribe(() => {
@@ -343,17 +365,8 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private updateOwnersCache(items: ActionItemResponseInterface[]): void {
-        const ownersMap = new Map<number, UserAccountResponseInterface>();
-        items.forEach((item) => {
-            if (item.owner?.id !== undefined && item.owner !== null) {
-                ownersMap.set(item.owner.id, item.owner);
-            }
-        });
-        this.owners = Array.from(ownersMap.values()).sort((a, b) => {
-            const nameA = a.name?.toLocaleLowerCase?.() ?? '';
-            const nameB = b.name?.toLocaleLowerCase?.() ?? '';
-            return nameA.localeCompare(nameB);
-        });
+        const ownersFromItems = this.extractOwnersFromItems(items);
+        this.owners = this.combineOwnersFromSources(ownersFromItems);
     }
 
     private initializeIncidentIdListeners(): void {
@@ -386,10 +399,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
         });
     }
 
-    private openDrawer(
-        mode: 'create' | 'edit',
-        action?: ActionItemResponseInterface
-    ): void {
+    private openDrawer(mode: 'create' | 'edit', action?: ActionItemResponseInterface): void {
         this.isDrawerEdit = mode === 'edit';
         this.editingActionId = action?.id ?? null;
         this.drawerAction = action ? { ...action } : null;
@@ -404,5 +414,72 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
         this.isDrawerOpen = false;
         this.actionDrawer?.close();
         this.cdr.markForCheck();
+    }
+
+    private loadOwners(): void {
+        this.userAccountService
+            .list()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (users) => {
+                    this.allOwners = this.sortOwners(users ?? []);
+                    this.owners = this.combineOwnersFromSources(
+                        this.extractOwnersFromItems(this.actionItems)
+                    );
+                    this.cdr.markForCheck();
+                },
+                error: () => {
+                    this.cdr.markForCheck();
+                },
+            });
+    }
+
+    private combineOwnersFromSources(
+        additionalOwners: UserAccountResponseInterface[] = []
+    ): UserAccountResponseInterface[] {
+        const merged = new Map<number, UserAccountResponseInterface>();
+
+        this.allOwners.forEach((owner) => {
+            if (owner?.id !== undefined && owner !== null) {
+                merged.set(owner.id, owner);
+            }
+        });
+
+        additionalOwners.forEach((owner) => {
+            if (owner?.id !== undefined && owner !== null) {
+                merged.set(owner.id, owner);
+            }
+        });
+
+        return Array.from(merged.values()).sort((a, b) => this.compareOwners(a, b));
+    }
+
+    private sortOwners(owners: UserAccountResponseInterface[]): UserAccountResponseInterface[] {
+        return owners.slice().sort((a, b) => this.compareOwners(a, b));
+    }
+
+    private compareOwners(
+        a: UserAccountResponseInterface,
+        b: UserAccountResponseInterface
+    ): number {
+        const nameA = a.name?.toLocaleLowerCase?.() ?? '';
+        const nameB = b.name?.toLocaleLowerCase?.() ?? '';
+        if (nameA === nameB) {
+            const emailA = a.email?.toLocaleLowerCase?.() ?? '';
+            const emailB = b.email?.toLocaleLowerCase?.() ?? '';
+            return emailA.localeCompare(emailB);
+        }
+        return nameA.localeCompare(nameB);
+    }
+
+    private extractOwnersFromItems(
+        items: ActionItemResponseInterface[]
+    ): UserAccountResponseInterface[] {
+        return items
+            .map((item) => item.owner)
+            .filter(
+                (owner): owner is UserAccountResponseInterface =>
+                    !!owner && owner.id !== undefined && owner !== null
+            );
     }
 }

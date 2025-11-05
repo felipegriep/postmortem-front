@@ -30,10 +30,14 @@
                     matInput
                     formControlName="description"
                     required
+                    maxlength="4000"
                     cdkTextareaAutosize
                     cdkAutosizeMinRows="3"
                     cdkAutosizeMaxRows="6"
                 ></textarea>
+                <mat-hint class="description-counter" align="end">
+                    {{ form.get('description')?.value?.length || 0 }}/4000
+                </mat-hint>
                 <mat-error *ngIf="form.get('description')?.hasError('required')">
                     Descreva a ação.
                 </mat-error>
@@ -42,19 +46,34 @@
             <ng-container *ngIf="owners.length; else ownerIdFallback">
                 <mat-form-field appearance="fill" class="full-width">
                     <mat-label>Responsável</mat-label>
-                    <mat-select formControlName="ownerId" required>
-                        <mat-option *ngFor="let owner of owners" [value]="owner.id">
-                            {{ owner.name }} · {{ owner.email }}
+                    <input
+                        type="text"
+                        matInput
+                        formControlName="owner"
+                        [matAutocomplete]="ownerAutocomplete"
+                        autocomplete="off"
+                        required
+                    />
+                    <mat-autocomplete
+                        #ownerAutocomplete="matAutocomplete"
+                        [displayWith]="displayOwner"
+                        (optionSelected)="onOwnerOptionSelected($event.option.value)"
+                    >
+                        <mat-option
+                            *ngFor="let option of filteredOwners$ | async"
+                            [value]="option"
+                        >
+                            {{ displayOwner(option) }}
                         </mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="form.get('ownerId')?.hasError('required')">
+                    </mat-autocomplete>
+                    <mat-error *ngIf="form.get('owner')?.hasError('required')">
                         Selecione o responsável.
                     </mat-error>
                 </mat-form-field>
             </ng-container>
             <ng-template #ownerIdFallback>
                 <mat-form-field appearance="fill" class="full-width">
-                    <mat-label>ID do Responsável</mat-label>
+                    <mat-label>Responsável</mat-label>
                     <input matInput type="number" formControlName="ownerId" required />
                     <mat-error *ngIf="form.get('ownerId')?.hasError('required')">
                         Informe o responsável.

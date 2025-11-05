@@ -2,13 +2,13 @@
     <mat-drawer-content class="action-drawer-content dark:bg-gray-800">
         <div class="w-full action-tab-wrapper">
             <div class="mt-6">
-                <div class="action-header-card bg-white dark:bg-gray-800">
+                <div class="action-header-card bg-slate-900 dark:bg-gray-800">
                     <header class="action-header flex items-center justify-between">
                         <div>
-                            <h2 class="action-title text-gray-800 dark:text-gray-100">
+                            <h2 class="action-title text-white">
                                 Ações do incidente
                             </h2>
-                            <p class="action-subtitle">
+                            <p class="action-subtitle text-white/80">
                                 Gerencie atividades corretivas e preventivas.
                             </p>
                         </div>
@@ -107,7 +107,9 @@
                             </div>
 
                             <div class="action-card__body">
-                                <h3 class="action-card__title">{{ item.description }}</h3>
+                            <h3 class="action-card__title">
+                                {{ truncatedDescription(item.description, 120) }}
+                            </h3>
                                 <div class="action-card__meta">
                                     <span class="meta-entry">
                                         <fa-icon [icon]="dueIcon" aria-hidden="true"></fa-icon>

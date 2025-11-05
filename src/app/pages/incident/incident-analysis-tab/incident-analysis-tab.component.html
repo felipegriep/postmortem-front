@@ -36,7 +36,7 @@
             floatLabel="always"
             matTooltip="Registre o evento inicial observado e como ele foi detectado."
             matTooltipPosition="above"
-            [ngClass]="{ 'has-error': (why1.dirty || why1.touched) && !rca?.why1?.trim() }"
+            [ngClass]="{ 'has-error': (why1.dirty || why1.touched) && !hasWhy1Value }"
           >
             <mat-label>Por quê 1</mat-label>
             <textarea
@@ -49,9 +49,9 @@
               required
               placeholder="Ex: Serviço de pagamentos indisponível às 14h (monitoramento)."
             ></textarea>
-            <mat-error *ngIf="(why1.dirty || why1.touched) && !rca?.why1?.trim()">
-              O primeiro porquê é obrigatório.
-            </mat-error>
+            <mat-error *ngIf="(why1.dirty || why1.touched) && !hasWhy1Value">
+            O primeiro porquê é obrigatório.
+          </mat-error>
             <mat-hint align="end" class="char-counter">{{ why1.value?.length || 0 }} / 500</mat-hint>
           </mat-form-field>
           <mat-form-field
@@ -238,7 +238,7 @@
           class="incident-primary-button"
           type="button"
           (click)="onSave()"
-          [disabled]="isBusy || !rca?.why1?.trim()"
+          [disabled]="isBusy || !hasWhy1Value"
         >
           Salvar alterações
         </button>

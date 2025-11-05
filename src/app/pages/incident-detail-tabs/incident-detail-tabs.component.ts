@@ -46,6 +46,7 @@ export class IncidentDetailTabsComponent implements OnInit, OnDestroy {
         { label: 'Detalhes', commands: [], requiresExisting: false },
         { label: 'Timeline', commands: ['timeline'], requiresExisting: true },
         { label: 'Análise', commands: ['analysis'], requiresExisting: true },
+        { label: 'Ações', commands: ['actions'], requiresExisting: true },
     ];
 
     selectedIndex = 0;
@@ -79,7 +80,8 @@ export class IncidentDetailTabsComponent implements OnInit, OnDestroy {
                 map(() => this.route.firstChild?.snapshot.routeConfig?.path ?? '')
             )
             .subscribe((path) => {
-                const newIndex = path === 'timeline' ? 1 : path === 'analysis' ? 2 : 0;
+                const newIndex =
+                    path === 'timeline' ? 1 : path === 'analysis' ? 2 : path === 'actions' ? 3 : 0;
                 if (this.selectedIndex !== newIndex) {
                     this.selectedIndex = newIndex;
                     this.cdr.markForCheck();

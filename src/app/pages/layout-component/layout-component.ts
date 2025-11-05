@@ -185,22 +185,35 @@ export class LayoutComponent implements OnInit, OnDestroy {
         try {
             const token =
                 localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-            if (!token) {
-                this.user = null;
-                return;
+            let payload = token ? this.decodeJwtPayload(token) : null;
+
+            if (!payload) {
+                const fallbackToken =
+                    localStorage.getItem('token') || sessionStorage.getItem('token');
+                if (fallbackToken && fallbackToken.includes('.')) {
+                    payload = this.decodeJwtPayload(fallbackToken);
+                }
             }
-            const payload = this.decodeJwtPayload(token);
+
             if (payload) {
                 this.user = {
                     picture: payload.picture || payload.photoUrl || payload.avatar || undefined,
                     name: payload.name || payload.given_name || payload.family_name || undefined,
                     email: payload.email || undefined,
                 };
+                return;
+            }
+
+            // If still no payload but user is logged in, provide a placeholder object so UI renders initials
+            if (this.isLoggedIn) {
+                this.user = { picture: undefined, name: undefined, email: undefined };
             } else {
                 this.user = null;
             }
         } catch (e) {
-            this.user = null;
+            this.user = this.isLoggedIn
+                ? { picture: undefined, name: undefined, email: undefined }
+                : null;
         }
     }
 

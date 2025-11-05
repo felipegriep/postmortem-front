@@ -114,6 +114,10 @@ export class IncidentAnalysisTabComponent implements OnInit, OnChanges {
         return !!(this.rca.rootCauseText?.trim() && this.rca.contributingFactors?.trim());
     }
 
+    get hasWhy1Value(): boolean {
+        return !!this.rca?.why1?.trim();
+    }
+
     // --- Métodos de Dados ---
     loadRca(): void {
         if (!this.incidentId) return;

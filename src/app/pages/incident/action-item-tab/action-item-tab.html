@@ -1,0 +1,136 @@
+<div class="w-full">
+  <div class="mt-6">
+    <header class="mb-4 flex items-center justify-between border-b pb-4 dark:border-gray-600">
+      <div>
+        <h2 class="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100">Ações do incidente</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gerencie atividades corretivas e preventivas.</p>
+      </div>
+      <button
+        mat-flat-button
+        color="primary"
+        class="btn-primary add-event-button"
+        type="button"
+        (click)="onCreateAction()"
+        [disabled]="isLoading"
+      >
+        <fa-icon [icon]="plusIcon" aria-hidden="true"></fa-icon>
+        <span class="ml-2">Nova ação</span>
+      </button>
+    </header>
+
+    <section class="action-filter-card bg-slate-900 text-white dark:bg-gray-800">
+      <form class="action-filter-grid" [formGroup]="filterForm">
+        <mat-form-field appearance="fill" class="filter-field">
+          <mat-label>Tipo</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let type of typeOptions" [value]="type">
+              {{ getTypeLabel(type) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="filter-field">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let status of statusOptions" [value]="status">
+              {{ getStatusLabel(status) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="filter-field">
+          <mat-label>Buscar</mat-label>
+          <input matInput formControlName="query" placeholder="Descrição ou link" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            *ngIf="filterForm.value.query"
+            (click)="filterForm.get('query')?.setValue('')"
+            aria-label="Limpar busca"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-checkbox color="primary" formControlName="overdue" class="filter-checkbox">
+          Somente atrasadas
+        </mat-checkbox>
+      </form>
+    </section>
+
+    <section class="action-content" *ngIf="!isLoading && actionItems.length">
+      <mat-card class="action-card" *ngFor="let item of actionItems">
+        <div class="action-card__header">
+          <div>
+          <span class="action-card__badge" [ngClass]="'action-card__badge--' + getStatusBadge(item)">
+            {{ getStatusLabel(getStatusBadge(item)) }}
+          </span>
+          <span class="action-card__type" [ngClass]="'action-card__type--' + item.type">
+            {{ getTypeLabel(item.type) }}
+          </span>
+          </div>
+          <div class="action-card__actions">
+            <button mat-icon-button matTooltip="Editar" (click)="onEditAction(item)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Excluir" (click)="onDeleteAction(item)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="action-card__body">
+          <h3 class="action-card__title">{{ item.description }}</h3>
+          <div class="action-card__meta">
+            <span class="meta-entry">
+              <mat-icon>event</mat-icon>
+              <strong>Vence em</strong>
+              {{ item.dueDate | date: 'dd/MM/yyyy' }}
+            </span>
+            <span class="meta-entry">
+              <mat-icon>person</mat-icon>
+              <strong>Responsável</strong>
+              {{ item.owner?.name || 'Não informado' }}
+            </span>
+            <span class="meta-entry" *ngIf="item.evidenceLink; else noEvidence">
+              <mat-icon>link</mat-icon>
+              <strong>Evidência</strong>
+              <a [href]="item.evidenceLink" target="_blank" rel="noopener noreferrer">{{ item.evidenceLink }}</a>
+            </span>
+            <ng-template #noEvidence>
+              <span class="meta-entry"><mat-icon>link_off</mat-icon><strong>Evidência</strong> Não informada</span>
+            </ng-template>
+          </div>
+        </div>
+
+        <div class="action-card__footer" *ngIf="item.sla">
+          <span><strong>Criada em</strong> {{ item.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+          <span *ngIf="item.updatedAt"><strong>Atualizada em</strong> {{ item.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </mat-card>
+    </section>
+
+    <mat-card class="action-empty" *ngIf="!isLoading && !actionItems.length">
+      <mat-icon>flag</mat-icon>
+      <p>Nenhuma ação registrada para este incidente.</p>
+    </mat-card>
+
+    <div class="action-loading" *ngIf="isLoading">
+      <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
+    </div>
+
+    <div class="mt-4 w-full">
+      <mat-paginator
+        [length]="totalItems"
+        [pageIndex]="pageIndex"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+      ></mat-paginator>
+    </div>
+  </div>
+</div>

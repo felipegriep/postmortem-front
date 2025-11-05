@@ -1,14 +1,14 @@
 import { ProviderEnum } from '../../enums/provider-enum';
 
 export interface UserAccountResponseInterface {
-    id: string;
+    id: number;
     provider: ProviderEnum;
     externalId: string;
     email: string;
     name: string;
     pictureUrl: string;
     active: boolean;
-    lastLoginAt: Date;
-    createdAt: Date;
-    updatedAt: Date;
+    lastLoginAt: string | null;
+    createdAt: string;
+    updatedAt: string;
 }

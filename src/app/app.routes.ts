@@ -61,6 +61,13 @@ export const routes: Routes = [
                                 './pages/incident/incident-analysis-tab/incident-analysis-tab.component'
                             ).then((m) => m.IncidentAnalysisTabComponent),
                     },
+                    {
+                        path: 'actions',
+                        loadComponent: () =>
+                            import('./pages/incident/action-item-tab/action-item-tab').then(
+                                (m) => m.ActionItemTabComponent
+                            ),
+                    },
                 ],
             },
         ],

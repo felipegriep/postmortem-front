@@ -500,6 +500,10 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         };
     }
 
+    get impactShortLength(): number {
+        return (this.incident?.impactShort ?? '').length;
+    }
+
     get lastUpdatedDisplay(): string | null {
         return formatDateToDisplay(this.lastUpdatedAt);
     }

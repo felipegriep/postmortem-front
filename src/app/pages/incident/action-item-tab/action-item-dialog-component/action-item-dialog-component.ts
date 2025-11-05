@@ -19,6 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDialog } from '@angular/material/dialog';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faCalendarDay, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -40,6 +41,7 @@ import {
     toBackendDateTimeString,
     toLocalInputDateTime,
 } from '../../../../shared/date-utils';
+import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
 import { Observable, Subject } from 'rxjs';
 import { map, startWith, takeUntil } from 'rxjs/operators';
 
@@ -118,7 +120,10 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
 
     private _action: ActionItemResponseInterface | null = null;
 
-    constructor(private readonly faLibrary: FaIconLibrary) {
+    constructor(
+        private readonly faLibrary: FaIconLibrary,
+        private readonly dialog: MatDialog
+    ) {
         try {
             this.faLibrary.addIcons(faCalendarDay, faXmark);
         } catch (e) {
@@ -186,6 +191,24 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     }
 
     cancel(): void {
+        if (this.mode === 'edit') {
+            this.dialog
+                .open(ConfirmDialogComponent, {
+                    width: '420px',
+                    data: {
+                        message: 'Deseja cancelar? As alterações não salvas serão perdidas.',
+                    },
+                    disableClose: true,
+                })
+                .afterClosed()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe((confirmed) => {
+                    if (confirmed) {
+                        this.cancelled.emit();
+                    }
+                });
+            return;
+        }
         this.cancelled.emit();
     }
 

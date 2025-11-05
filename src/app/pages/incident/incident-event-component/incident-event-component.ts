@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { IncidentEventResponseInterface } from '../../../domain/interfaces/response/incident-event-response-interface';
 import { EventTypeEnum } from '../../../domain/enums/event-type-enum';
 import { IncidentEventService } from '../../../services/incident-event-service';
@@ -21,11 +22,13 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../../../shared/toast.service';
 import { DATE_DISPLAY_FORMAT } from '../../../shared/date.constants';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-incident-event-component',
     standalone: true,
-    imports: [CommonModule, MatTableModule, MatButtonModule, MatTooltipModule, FontAwesomeModule],
+    imports: [CommonModule, MatTableModule, MatButtonModule, MatTooltipModule, MatDialogModule, FontAwesomeModule],
     templateUrl: './incident-event-component.html',
     styleUrls: ['./incident-event-component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,7 +51,8 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         private incidentEventService: IncidentEventService,
         private readonly cdr: ChangeDetectorRef,
         private readonly faLibrary: FaIconLibrary,
-        private readonly toast: ToastService
+        private readonly toast: ToastService,
+        private readonly dialog: MatDialog
     ) {
         try {
             this.faLibrary.addIcons(faPlus, faPen, faTrash);
@@ -84,12 +88,25 @@ export class IncidentEventComponent implements OnInit, OnChanges {
     }
 
     deleteEvent(eventId: number): void {
-        // Adicionar um confirm aqui seria uma boa prática em um app real
-        if (!this.incidentId) return;
-        this.incidentEventService.delete(this.incidentId, eventId).subscribe(() => {
-            this.toast.success('Evento removido com sucesso!');
-            this.loadEvents();
-        });
+        this.dialog
+            .open(ConfirmDialogComponent, {
+                width: '420px',
+                data: {
+                    message: 'Esta ação é irreversível. Deseja excluir este evento?',
+                },
+                disableClose: true,
+            })
+            .afterClosed()
+            .pipe(take(1))
+            .subscribe((confirmed) => {
+                if (!confirmed || !this.incidentId) {
+                    return;
+                }
+                this.incidentEventService.delete(this.incidentId, eventId).subscribe(() => {
+                    this.toast.success('Evento removido com sucesso!');
+                    this.loadEvents();
+                });
+            });
     }
 
     requestCreateEvent(): void {

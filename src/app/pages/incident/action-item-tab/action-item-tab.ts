@@ -23,6 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
     faPlus,
@@ -35,6 +36,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { debounceTime, finalize, Subject, takeUntil } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ActionItemService, GetActionItemsParams } from '../../../services/action-item-service';
 import { ActionItemInterface } from '../../../domain/interfaces/request/action-item-interface';
 import { ActionItemResponseInterface } from '../../../domain/interfaces/response/action-item-response-interface';
@@ -45,6 +47,7 @@ import { ActionItemDialogComponent } from './action-item-dialog-component/action
 import { UserAccountResponseInterface } from '../../../domain/interfaces/response/user-account-response-interface';
 import { UserAccountService } from '../../../services/user-account-service';
 import { formatDateToDisplay } from '../../../shared/date-utils';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 
 interface ActionItemFiltersForm {
     type: ActionTypeEnum | '';
@@ -72,6 +75,7 @@ interface ActionItemFiltersForm {
         MatSidenavModule,
         MatPaginatorModule,
         MatProgressSpinnerModule,
+        MatDialogModule,
         FontAwesomeModule,
         ActionItemDialogComponent,
     ],
@@ -113,6 +117,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
         private readonly actionItemService: ActionItemService,
         private readonly toast: ToastService,
         private readonly userAccountService: UserAccountService,
+        private readonly dialog: MatDialog,
         private readonly faLibrary: FaIconLibrary,
         private readonly route: ActivatedRoute,
         private readonly cdr: ChangeDetectorRef
@@ -150,6 +155,14 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
         }
         return `${trimmed.slice(0, limit)}…`;
     };
+    private confirm(message: string) {
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '420px',
+            data: { message },
+            disableClose: true,
+        });
+        return dialogRef.afterClosed().pipe(map((result) => !!result));
+    }
     ngOnInit(): void {
         this.loadOwners();
         this.filterForm.valueChanges
@@ -212,27 +225,30 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     onDeleteAction(item: ActionItemResponseInterface): void {
-        const confirmed = window.confirm('Tem certeza que deseja excluir esta ação?');
-        if (!confirmed || !item.id) {
-            return;
-        }
-        this.isLoading = true;
-        this.actionItemService
-            .delete(this.incidentId, item.id)
-            .pipe(
-                finalize(() => {
-                    this.isLoading = false;
-                }),
-                takeUntil(this.destroy$)
-            )
-            .subscribe({
-                next: () => {
-                    this.toast.success('Ação excluída com sucesso.');
-                    this.loadActionItems();
-                },
-                error: () => {
-                    this.toast.error('Não foi possível excluir a ação. Tente novamente.');
-                },
+        this.confirm('Esta ação é irreversível. Deseja excluir esta ação?')
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((confirmed) => {
+                if (!confirmed || !item.id) {
+                    return;
+                }
+                this.isLoading = true;
+                this.actionItemService
+                    .delete(this.incidentId, item.id)
+                    .pipe(
+                        finalize(() => {
+                            this.isLoading = false;
+                        }),
+                        takeUntil(this.destroy$)
+                    )
+                    .subscribe({
+                        next: () => {
+                            this.toast.success('Ação excluída com sucesso.');
+                            this.loadActionItems();
+                        },
+                        error: () => {
+                            this.toast.error('Não foi possível excluir a ação. Tente novamente.');
+                        },
+                    });
             });
     }
 

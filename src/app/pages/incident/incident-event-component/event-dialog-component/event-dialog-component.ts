@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { TextFieldModule } from '@angular/cdk/text-field';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EventTypeEnum } from '../../../../domain/enums/event-type-enum';
 import { IncidentEventInterface } from '../../../../domain/interfaces/request/incident-event-interface';
 import { IncidentEventResponseInterface } from '../../../../domain/interfaces/response/incident-event-response-interface';
@@ -36,6 +37,9 @@ import {
     toBackendDateTimeString,
     toLocalInputDateTime,
 } from '../../../../shared/date-utils';
+import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-event-dialog-component',
@@ -47,6 +51,7 @@ import {
         MatInputModule,
         MatSelectModule,
         MatButtonModule,
+        MatDialogModule,
         TextFieldModule,
         FontAwesomeModule,
     ],
@@ -76,10 +81,12 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
     readonly datePlaceholder = DATE_PLACEHOLDER;
     readonly flatpickrValueFormat = FLATPICKR_VALUE_FORMAT;
     readonly flatpickrAltFormat = FLATPICKR_ALT_FORMAT;
+    private readonly destroy$ = new Subject<void>();
 
     constructor(
         private readonly faLibrary: FaIconLibrary,
-        private readonly cdr: ChangeDetectorRef
+        private readonly cdr: ChangeDetectorRef,
+        private readonly dialog: MatDialog
     ) {
         this.event = this.buildDefaultEvent();
 
@@ -106,6 +113,8 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
     }
 
     ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
         try {
             this.eventAtPicker?.destroy();
         } catch (e) {
@@ -116,6 +125,24 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
     }
 
     onCancel(): void {
+        if (this.isEdit) {
+            this.dialog
+                .open(ConfirmDialogComponent, {
+                    width: '420px',
+                    data: {
+                        message: 'Deseja cancelar? As alterações não salvas serão perdidas.',
+                    },
+                    disableClose: true,
+                })
+                .afterClosed()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe((confirmed) => {
+                    if (confirmed) {
+                        this.cancel.emit();
+                    }
+                });
+            return;
+        }
         this.cancel.emit();
     }
 

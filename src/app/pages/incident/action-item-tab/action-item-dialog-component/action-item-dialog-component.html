@@ -1,100 +1,110 @@
-<h1 mat-dialog-title class="dialog-title">
-  {{ mode === 'create' ? 'Nova Ação' : 'Editar Ação' }}
-</h1>
-<form class="dialog-form" [formGroup]="form" (ngSubmit)="submit()">
-  <div mat-dialog-content class="dialog-content">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Tipo</mat-label>
-      <mat-select formControlName="type" required>
-        <mat-option *ngFor="let type of typeOptions" [value]="type">
-          {{ getTypeLabel(type) }}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="form.get('type')?.hasError('required')">Selecione um tipo.</mat-error>
-    </mat-form-field>
+<div class="drawer-wrapper">
+    <header class="drawer-header">
+        <div class="drawer-header-text">
+            <h2 class="drawer-title">{{ mode === 'create' ? 'Nova Ação' : 'Editar Ação' }}</h2>
+            <p class="drawer-subtitle">
+                Preencha os detalhes da ação. Campos com * são obrigatórios.
+            </p>
+        </div>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Descrição</mat-label>
-      <textarea
-        matInput
-        formControlName="description"
-        required
-        cdkTextareaAutosize
-        cdkAutosizeMinRows="3"
-        cdkAutosizeMaxRows="6"
-      ></textarea>
-      <mat-error *ngIf="form.get('description')?.hasError('required')">
-        Descreva a ação.
-      </mat-error>
-    </mat-form-field>
+        <button type="button" aria-label="Fechar" (click)="cancel()" class="close-icon">
+            <fa-icon [icon]="closeIcon" aria-hidden="true"></fa-icon>
+        </button>
+    </header>
 
-    <ng-container *ngIf="owners.length; else ownerIdFallback">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Responsável</mat-label>
-        <mat-select formControlName="ownerId" required>
-          <mat-option *ngFor="let owner of owners" [value]="owner.id">
-            {{ owner.name }} · {{ owner.email }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="form.get('ownerId')?.hasError('required')">
-          Selecione o responsável.
-        </mat-error>
-      </mat-form-field>
-    </ng-container>
-    <ng-template #ownerIdFallback>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>ID do Responsável</mat-label>
-        <input matInput type="number" formControlName="ownerId" required />
-        <mat-error *ngIf="form.get('ownerId')?.hasError('required')">
-          Informe o responsável.
-        </mat-error>
-      </mat-form-field>
-    </ng-template>
+    <form class="drawer-form" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="drawer-body">
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Tipo</mat-label>
+                <mat-select formControlName="type" required>
+                    <mat-option *ngFor="let type of typeOptions" [value]="type">
+                        {{ getTypeLabel(type) }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('type')?.hasError('required')">Selecione um tipo.</mat-error>
+            </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Data de Vencimento</mat-label>
-      <input
-        #dueDateInput
-        matInput
-        formControlName="dueDate"
-        [placeholder]="datePlaceholder"
-        (focus)="openCalendar()"
-        autocomplete="off"
-      />
-      <button mat-icon-button matSuffix type="button" (click)="openCalendar()">
-        <fa-icon [icon]="calendarDay" aria-hidden="true"></fa-icon>
-      </button>
-      <mat-error *ngIf="form.get('dueDate')?.hasError('required')">
-        Informe uma data de vencimento.
-      </mat-error>
-    </mat-form-field>
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Descrição</mat-label>
+                <textarea
+                    matInput
+                    formControlName="description"
+                    required
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="3"
+                    cdkAutosizeMaxRows="6"
+                ></textarea>
+                <mat-error *ngIf="form.get('description')?.hasError('required')">
+                    Descreva a ação.
+                </mat-error>
+            </mat-form-field>
 
-    <mat-form-field
-      appearance="outline"
-      class="full-width"
-      *ngIf="mode === 'edit'"
-    >
-      <mat-label>Status</mat-label>
-      <mat-select formControlName="status" required>
-        <mat-option *ngFor="let status of statusOptions" [value]="status">
-          {{ getStatusLabel(status) }}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="form.get('status')?.hasError('required')">
-        Informe o status atual.
-      </mat-error>
-    </mat-form-field>
+            <ng-container *ngIf="owners.length; else ownerIdFallback">
+                <mat-form-field appearance="fill" class="full-width">
+                    <mat-label>Responsável</mat-label>
+                    <mat-select formControlName="ownerId" required>
+                        <mat-option *ngFor="let owner of owners" [value]="owner.id">
+                            {{ owner.name }} · {{ owner.email }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="form.get('ownerId')?.hasError('required')">
+                        Selecione o responsável.
+                    </mat-error>
+                </mat-form-field>
+            </ng-container>
+            <ng-template #ownerIdFallback>
+                <mat-form-field appearance="fill" class="full-width">
+                    <mat-label>ID do Responsável</mat-label>
+                    <input matInput type="number" formControlName="ownerId" required />
+                    <mat-error *ngIf="form.get('ownerId')?.hasError('required')">
+                        Informe o responsável.
+                    </mat-error>
+                </mat-form-field>
+            </ng-template>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Link de Evidência (opcional)</mat-label>
-      <input matInput formControlName="evidenceLink" />
-    </mat-form-field>
-  </div>
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Data de Vencimento</mat-label>
+                <input
+                    #dueDateInput
+                    matInput
+                    formControlName="dueDate"
+                    [placeholder]="datePlaceholder"
+                    (focus)="openCalendar()"
+                    autocomplete="off"
+                />
+                <button mat-icon-button matSuffix type="button" (click)="openCalendar()">
+                    <fa-icon [icon]="calendarDay" aria-hidden="true"></fa-icon>
+                </button>
+                <mat-error *ngIf="form.get('dueDate')?.hasError('required')">
+                    Informe uma data de vencimento.
+                </mat-error>
+            </mat-form-field>
 
-  <div mat-dialog-actions align="end" class="dialog-actions">
-    <button mat-stroked-button type="button" (click)="cancel()">Cancelar</button>
-    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-      {{ mode === 'create' ? 'Criar Ação' : 'Salvar Alterações' }}
-    </button>
-  </div>
-</form>
+            <mat-form-field appearance="fill" class="full-width" *ngIf="mode === 'edit'">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="status" required>
+                    <mat-option *ngFor="let status of statusOptions" [value]="status">
+                        {{ getStatusLabel(status) }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('status')?.hasError('required')">
+                    Informe o status atual.
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Link de Evidência (opcional)</mat-label>
+                <input matInput formControlName="evidenceLink" />
+            </mat-form-field>
+        </div>
+
+        <div class="drawer-actions">
+            <button type="button" class="btn-secondary drawer-cancel-button" (click)="cancel()">
+                Cancelar
+            </button>
+            <button type="submit" class="btn-primary drawer-primary-button" [disabled]="form.invalid">
+                {{ mode === 'create' ? 'Criar Ação' : 'Salvar Alterações' }}
+            </button>
+        </div>
+    </form>
+</div>

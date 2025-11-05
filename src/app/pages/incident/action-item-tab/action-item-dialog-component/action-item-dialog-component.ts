@@ -3,23 +3,24 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    Inject,
     OnDestroy,
     OnChanges,
     SimpleChanges,
     ViewChild,
     ElementRef,
     inject,
+    Input,
+    Output,
+    EventEmitter,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faCalendarDay } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDay, faXmark } from '@fortawesome/free-solid-svg-icons';
 import flatpickr from 'flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -39,16 +40,6 @@ import {
     toLocalInputDateTime,
 } from '../../../../shared/date-utils';
 
-export interface ActionItemDialogData {
-    mode: 'create' | 'edit';
-    action?: ActionItemResponseInterface;
-    owners: UserAccountResponseInterface[];
-}
-
-export interface ActionItemDialogResult {
-    actionItem: ActionItemInterface;
-}
-
 @Component({
     selector: 'app-action-item-dialog-component',
     standalone: true,
@@ -56,7 +47,6 @@ export interface ActionItemDialogResult {
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        MatDialogModule,
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
@@ -92,29 +82,40 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     readonly datePlaceholder = DATE_PLACEHOLDER;
     readonly flatpickrValueFormat = FLATPICKR_VALUE_FORMAT;
     readonly flatpickrAltFormat = FLATPICKR_ALT_FORMAT;
+    readonly closeIcon = faXmark;
 
     private dueDatePicker?: flatpickr.Instance;
 
-    constructor(
-        private readonly dialogRef: MatDialogRef<
-            ActionItemDialogComponent,
-            ActionItemDialogResult | undefined
-        >,
-        @Inject(MAT_DIALOG_DATA) public readonly data: ActionItemDialogData,
-        private readonly faLibrary: FaIconLibrary
-    ) {
+    private _owners: UserAccountResponseInterface[] = [];
+    @Input() mode: 'create' | 'edit' = 'create';
+    @Input() set action(value: ActionItemResponseInterface | null | undefined) {
+        this._action = value ?? null;
+    }
+    get action(): ActionItemResponseInterface | null {
+        return this._action;
+    }
+    @Input() set owners(value: UserAccountResponseInterface[] | null | undefined) {
+        this._owners = value ?? [];
+    }
+    get owners(): UserAccountResponseInterface[] {
+        return this._owners;
+    }
+    @Output() cancelled = new EventEmitter<void>();
+    @Output() submitted = new EventEmitter<ActionItemInterface>();
+
+    private _action: ActionItemResponseInterface | null = null;
+
+    constructor(private readonly faLibrary: FaIconLibrary) {
         try {
-            this.faLibrary.addIcons(faCalendarDay);
+            this.faLibrary.addIcons(faCalendarDay, faXmark);
         } catch (e) {
             // ignore icon registration issues (tests, etc.)
         }
-
-        this.patchFormFromData();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['data']) {
-            this.patchFormFromData();
+        if (changes['action'] || changes['mode']) {
+            this.patchFormFromInputs();
             this.syncPickerWithForm();
         }
     }
@@ -129,14 +130,6 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
             this.dueDatePicker?.destroy();
         } catch {}
         this.dueDatePicker = undefined;
-    }
-
-    get owners(): UserAccountResponseInterface[] {
-        return this.data.owners ?? [];
-    }
-
-    get mode(): 'create' | 'edit' {
-        return this.data.mode;
     }
 
     getTypeLabel(type: ActionTypeEnum): string {
@@ -157,7 +150,7 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     }
 
     cancel(): void {
-        this.dialogRef.close();
+        this.cancelled.emit();
     }
 
     submit(): void {
@@ -180,22 +173,22 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
             evidenceLink: raw.evidenceLink?.trim() ? raw.evidenceLink.trim() : null,
         };
 
-        this.dialogRef.close({ actionItem });
+        this.submitted.emit(actionItem);
     }
 
-    private patchFormFromData(): void {
-        const sourceDate = this.data.action?.dueDate ?? new Date();
+    private patchFormFromInputs(): void {
+        const sourceDate = this.action?.dueDate ?? new Date();
         const normalized = normalizeToDate(sourceDate) ?? new Date();
         const inputValue = toLocalInputDateTime(normalized) ?? toLocalInputDateTime(new Date())!;
 
-        this.form.patchValue(
+        this.form.reset(
             {
-                type: this.data.action?.type ?? ActionTypeEnum.CORRECTIVE,
-                description: this.data.action?.description ?? '',
-                ownerId: this.data.action?.owner?.id ?? null,
+                type: this.action?.type ?? ActionTypeEnum.CORRECTIVE,
+                description: this.action?.description ?? '',
+                ownerId: this.action?.owner?.id ?? null,
                 dueDate: inputValue,
-                status: this.data.action?.status ?? ActionStatusEnum.TODO,
-                evidenceLink: this.data.action?.evidenceLink ?? '',
+                status: this.action?.status ?? ActionStatusEnum.TODO,
+                evidenceLink: this.action?.evidenceLink ?? '',
             },
             { emitEvent: false }
         );

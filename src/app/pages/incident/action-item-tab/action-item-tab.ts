@@ -8,6 +8,7 @@ import {
     OnInit,
     SimpleChanges,
     inject,
+    ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -20,22 +21,29 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faPlus, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+    faPlus,
+    faPen,
+    faTrash,
+    faLink,
+    faLinkSlash,
+    faUser,
+    faCalendarDay,
+} from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { debounceTime, finalize, Subject, takeUntil } from 'rxjs';
 import { ActionItemService, GetActionItemsParams } from '../../../services/action-item-service';
+import { ActionItemInterface } from '../../../domain/interfaces/request/action-item-interface';
 import { ActionItemResponseInterface } from '../../../domain/interfaces/response/action-item-response-interface';
 import { ActionTypeEnum } from '../../../domain/enums/action-type-enum';
 import { ActionStatusEnum } from '../../../domain/enums/action-status-enum';
 import { ToastService } from '../../../shared/toast.service';
-import {
-    ActionItemDialogComponent,
-    ActionItemDialogResult,
-} from './action-item-dialog-component/action-item-dialog-component';
+import { ActionItemDialogComponent } from './action-item-dialog-component/action-item-dialog-component';
 import { UserAccountResponseInterface } from '../../../domain/interfaces/response/user-account-response-interface';
+import { formatDateToDisplay } from '../../../shared/date-utils';
 
 interface ActionItemFiltersForm {
     type: ActionTypeEnum | '';
@@ -60,10 +68,11 @@ interface ActionItemFiltersForm {
         MatSelectModule,
         MatCheckboxModule,
         MatTooltipModule,
-        MatDialogModule,
+        MatSidenavModule,
         MatPaginatorModule,
         MatProgressSpinnerModule,
         FontAwesomeModule,
+        ActionItemDialogComponent,
     ],
     templateUrl: './action-item-tab.html',
     styleUrl: './action-item-tab.scss',
@@ -92,17 +101,21 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
     isLoading = false;
 
     private readonly destroy$ = new Subject<void>();
+    @ViewChild('actionDrawer', { static: false }) actionDrawer?: MatDrawer;
+    isDrawerOpen = false;
+    isDrawerEdit = false;
+    drawerAction: ActionItemResponseInterface | null = null;
+    private editingActionId: number | null = null;
 
     constructor(
         private readonly actionItemService: ActionItemService,
-        private readonly dialog: MatDialog,
         private readonly toast: ToastService,
         private readonly faLibrary: FaIconLibrary,
         private readonly route: ActivatedRoute,
         private readonly cdr: ChangeDetectorRef
     ) {
         try {
-            this.faLibrary.addIcons(faPlus, faPen, faTrash);
+            this.faLibrary.addIcons(faPlus, faPen, faTrash, faLink, faLinkSlash, faUser, faCalendarDay);
         } catch {
             // ignore icon registration issues (e.g., in tests)
         }
@@ -111,6 +124,11 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
     readonly plusIcon = faPlus;
     readonly editIcon = faPen;
     readonly deleteIcon = faTrash;
+    readonly linkIcon = faLink;
+    readonly linkOffIcon = faLinkSlash;
+    readonly ownerIcon = faUser;
+    readonly dueIcon = faCalendarDay;
+    readonly formatDateToDisplayFn = formatDateToDisplay;
     ngOnInit(): void {
         this.filterForm.valueChanges
             .pipe(debounceTime(300), takeUntil(this.destroy$))
@@ -141,46 +159,34 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     onCreateAction(): void {
-        const dialogRef = this.dialog.open(ActionItemDialogComponent, {
-            width: '600px',
-            data: {
-                mode: 'create',
-                owners: this.owners,
-            },
-            disableClose: true,
-        });
-
-        dialogRef
-            .afterClosed()
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((result?: ActionItemDialogResult) => {
-                if (!result?.actionItem) {
-                    return;
-                }
-                this.createActionItem(result.actionItem);
-            });
+        this.openDrawer('create');
     }
 
     onEditAction(item: ActionItemResponseInterface): void {
-        const dialogRef = this.dialog.open(ActionItemDialogComponent, {
-            width: '600px',
-            data: {
-                mode: 'edit',
-                action: item,
-                owners: this.owners,
-            },
-            disableClose: true,
-        });
+        if (!item.id) {
+            return;
+        }
+        this.openDrawer('edit', item);
+    }
 
-        dialogRef
-            .afterClosed()
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((result?: ActionItemDialogResult) => {
-                if (!result?.actionItem || !item.id) {
-                    return;
-                }
-                this.updateActionItem(item.id, result.actionItem);
-            });
+    onDrawerCancel(): void {
+        this.closeDrawer();
+    }
+
+    onDrawerSubmit(action: ActionItemInterface): void {
+        if (this.isDrawerEdit && this.editingActionId != null) {
+            this.updateActionItem(this.editingActionId, action);
+        } else {
+            this.createActionItem(action);
+        }
+    }
+
+    onDrawerClosed(): void {
+        this.isDrawerOpen = false;
+        this.isDrawerEdit = false;
+        this.editingActionId = null;
+        this.drawerAction = null;
+        this.cdr.markForCheck();
     }
 
     onDeleteAction(item: ActionItemResponseInterface): void {
@@ -273,7 +279,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
             });
     }
 
-    private createActionItem(payload: ActionItemDialogResult['actionItem']): void {
+    private createActionItem(payload: ActionItemInterface): void {
         this.isLoading = true;
         this.actionItemService
             .create(this.incidentId, payload)
@@ -281,6 +287,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
             .subscribe({
                 next: () => {
                     this.toast.success('Ação criada com sucesso.');
+                    this.closeDrawer();
                     this.loadActionItems();
                 },
                 error: () => {
@@ -291,7 +298,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
             });
     }
 
-    private updateActionItem(id: number, payload: ActionItemDialogResult['actionItem']): void {
+    private updateActionItem(id: number, payload: ActionItemInterface): void {
         this.isLoading = true;
         this.actionItemService
             .update(this.incidentId, id, payload)
@@ -299,6 +306,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
             .subscribe({
                 next: () => {
                     this.toast.success('Ação atualizada com sucesso.');
+                    this.closeDrawer();
                     this.loadActionItems();
                 },
                 error: () => {
@@ -376,5 +384,25 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
         this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
             applyId(params.get('id'));
         });
+    }
+
+    private openDrawer(
+        mode: 'create' | 'edit',
+        action?: ActionItemResponseInterface
+    ): void {
+        this.isDrawerEdit = mode === 'edit';
+        this.editingActionId = action?.id ?? null;
+        this.drawerAction = action ? { ...action } : null;
+        this.isDrawerOpen = true;
+        this.cdr.markForCheck();
+        setTimeout(() => {
+            this.actionDrawer?.open();
+        });
+    }
+
+    private closeDrawer(): void {
+        this.isDrawerOpen = false;
+        this.actionDrawer?.close();
+        this.cdr.markForCheck();
     }
 }

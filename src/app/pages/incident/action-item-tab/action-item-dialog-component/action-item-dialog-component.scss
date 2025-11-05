@@ -1,20 +1,213 @@
-.dialog-title {
-    font-weight: 600;
+:host {
+    display: block;
+    height: 100%;
 }
 
-.dialog-content {
+.drawer-wrapper {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    background: #0f172a;
+    color: #e2e8f0;
+    box-shadow: -6px 0 28px rgba(15, 23, 42, 0.55);
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
-    padding-top: 0.5rem;
+    padding: 1.5rem 1.75rem 1.25rem;
+    background: rgba(15, 23, 42, 0.9);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.drawer-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.drawer-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.drawer-subtitle {
+    margin: 0.35rem 0 0;
+    color: rgba(226, 232, 240, 0.78);
+    font-size: 0.95rem;
+}
+
+.close-icon {
+    background: none;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: rgba(226, 232, 240, 0.7);
+    border-radius: 9999px;
+    transition: color 120ms ease, background-color 120ms ease, transform 120ms ease;
+    cursor: pointer;
+}
+
+.close-icon:hover,
+.close-icon:focus-visible {
+    color: #ffffff;
+    background-color: rgba(14, 165, 233, 0.2);
+    transform: scale(1.05);
+}
+
+.drawer-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.drawer-body {
+    flex: 1 1 auto;
+    padding: 1.25rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto;
+    background: rgba(15, 23, 42, 0.65);
+}
+
+.drawer-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.25rem 1.75rem 1.75rem;
+    background: rgba(15, 23, 42, 0.85);
+    border-top: 1px solid rgba(148, 163, 184, 0.35);
 }
 
 .full-width {
     width: 100%;
 }
 
-.dialog-actions {
-    padding: 1rem 0 0;
+:host ::ng-deep .mat-mdc-form-field {
+    width: 100%;
+    --mdc-filled-text-field-container-shape: 0.75rem;
+    --mdc-filled-text-field-container-color: #ffffff;
+    --mdc-filled-text-field-disabled-container-color: rgba(226, 232, 240, 0.12);
+    --mdc-filled-text-field-hover-label-text-color: #0f172a;
+    --mdc-filled-text-field-focus-label-text-color: #0f172a;
+    --mdc-filled-text-field-label-text-color: rgba(71, 85, 105, 0.95);
+    --mdc-filled-text-field-input-text-color: #0f172a;
+    --mdc-filled-text-field-focus-input-text-color: #0f172a;
+    --mdc-filled-text-field-active-indicator-color: transparent;
+    --mdc-filled-text-field-focus-active-indicator-color: transparent;
+    --mdc-filled-text-field-disabled-active-indicator-color: transparent;
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper {
+    border-radius: 0.75rem;
+    transition: box-shadow 160ms ease, background-color 160ms ease;
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+    background-color: #ffffff;
+}
+
+:host ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+    box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.5);
+}
+
+:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    box-shadow: inset 0 0 0 2px rgba(14, 165, 233, 0.95);
+    background-color: #ffffff;
+}
+
+:host ::ng-deep .mat-mdc-form-field.has-error .mat-mdc-text-field-wrapper {
+    box-shadow: inset 0 0 0 2px rgba(248, 113, 113, 0.95);
+}
+
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    margin: 0;
+    padding: 0 1rem;
+}
+
+:host ::ng-deep textarea[matInput] {
+    min-height: 6rem;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-hint-wrapper,
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-error-wrapper {
+    padding: 0 1rem;
+}
+
+:host ::ng-deep .mat-mdc-select-trigger {
     display: flex;
-    gap: 0.75rem;
+    align-items: center;
+    color: #0f172a;
+}
+
+:host ::ng-deep .mat-mdc-select-panel {
+    border-radius: 0.75rem !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
+    border: 1px solid rgba(203, 213, 225, 0.9) !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+}
+
+:host ::ng-deep .mat-mdc-option {
+    color: #0f172a !important;
+}
+
+:host ::ng-deep .mat-mdc-option.mat-mdc-option-active,
+:host ::ng-deep .mat-mdc-option.mat-mdc-option-highlighted:not(.mat-mdc-option-disabled) {
+    background: rgba(14, 165, 233, 0.15) !important;
+    color: #0f172a !important;
+}
+
+.drawer-actions .btn-primary,
+.drawer-actions .btn-secondary {
+    min-width: 9rem;
+}
+
+.drawer-actions .drawer-cancel-button {
+    background: rgba(226, 232, 240, 0.1);
+    color: rgba(226, 232, 240, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 999px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    transition: all 140ms ease;
+}
+
+.drawer-actions .drawer-cancel-button:hover,
+.drawer-actions .drawer-cancel-button:focus-visible {
+    color: #f8fafc;
+    border-color: rgba(148, 163, 184, 0.65);
+    background: rgba(51, 65, 85, 0.5);
+}
+
+.drawer-actions .drawer-primary-button {
+    border: none;
+    border-radius: 999px;
+    padding: 0.6rem 1.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #0ea5e9, #2563eb);
+    color: #ffffff;
+    box-shadow: 0 12px 24px rgba(14, 165, 233, 0.25);
+    transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+
+.drawer-actions .drawer-primary-button:hover,
+.drawer-actions .drawer-primary-button:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 32px rgba(37, 99, 235, 0.35);
+    filter: brightness(1.05);
+}
+
+.drawer-actions .drawer-primary-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    filter: grayscale(0.2);
 }

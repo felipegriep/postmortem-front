@@ -8,6 +8,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideEcharts } from 'ngx-echarts';
 
 import { routes } from './app.routes';
 import { AUTH_PROVIDER, GOOGLE_AUTH_CONFIG, LOGIN_URL } from './auth/auth.tokens';
@@ -25,6 +26,7 @@ export const appConfig: ApplicationConfig = {
         provideAnimations(),
         provideRouter(routes),
         provideHttpClient(withInterceptorsFromDi()),
+        provideEcharts(),
         // Provide the canonical, capitalized provider value expected by backend
         { provide: AUTH_PROVIDER, useValue: ProviderEnum.GOOGLE },
         {

@@ -1,0 +1,182 @@
+<div class="dashboard-wrapper">
+    <!-- Toolbar -->
+    <mat-toolbar color="primary" class="dashboard-toolbar">
+        <span>Postmortem — Dashboard</span>
+    </mat-toolbar>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8">
+        
+        <!-- Filtros -->
+        <mat-card class="mb-6">
+            <mat-card-header>
+                <mat-card-title>Filtros</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="grid md:grid-cols-4 gap-4 mb-4">
+                    <!-- Data inicial e final -->
+                    <mat-form-field appearance="fill" class="filter-field">
+                        <mat-label>Período</mat-label>
+                        <mat-date-range-input [rangePicker]="picker">
+                            <input matStartDate placeholder="DD/MM/YYYY" [(ngModel)]="filters.startDate" name="startDate">
+                            <input matEndDate placeholder="DD/MM/YYYY" [(ngModel)]="filters.endDate" name="endDate">
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+
+                    <!-- Campo de data -->
+                    <mat-form-field appearance="fill" class="filter-field">
+                        <mat-label>Campo de Data</mat-label>
+                        <mat-select [(ngModel)]="filters.dateField" name="dateField">
+                            <mat-option value="STARTED">Início</mat-option>
+                            <mat-option value="ENDED">Fim</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <!-- Severidades -->
+                    <div class="filter-field">
+                        <mat-label class="text-sm text-gray-600 mb-2 block">Severidade</mat-label>
+                        <mat-chip-listbox [(ngModel)]="filters.severities" name="severities" multiple>
+                            <mat-chip-option *ngFor="let severity of availableSeverities" [value]="severity">
+                                {{ severity }}
+                            </mat-chip-option>
+                        </mat-chip-listbox>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="filter-field">
+                        <mat-label class="text-sm text-gray-600 mb-2 block">Status</mat-label>
+                        <mat-button-toggle-group [(ngModel)]="filters.statuses" name="statuses" multiple>
+                            <mat-button-toggle *ngFor="let status of availableStatuses" [value]="status">
+                                {{ status }}
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+                </div>
+
+                <!-- Toggle e botões -->
+                <div class="flex items-center justify-between">
+                    <mat-slide-toggle [(ngModel)]="filters.includeOpenInMttr" name="includeOpenInMttr">
+                        Incluir abertos no MTTR
+                    </mat-slide-toggle>
+                    
+                    <div class="space-x-2">
+                        <button mat-raised-button color="primary" (click)="applyFilters()" type="button">
+                            Aplicar
+                        </button>
+                        <button mat-stroked-button (click)="clearFilters()" type="button">
+                            Limpar
+                        </button>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- KPI Cards -->
+        <div class="grid md:grid-cols-4 gap-4 mb-6" *ngIf="summaryData">
+            <!-- Incidentes -->
+            <mat-card class="kpi-card">
+                <mat-card-content>
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold text-gray-700">Incidentes</h3>
+                        <div class="text-3xl font-bold text-blue-600 mt-2">{{ summaryData.incidents.total }}</div>
+                        <div class="text-sm text-gray-500 mt-1">
+                            A: {{ summaryData.incidents.open }} | F: {{ summaryData.incidents.closed }}
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- MTTA médio -->
+            <mat-card class="kpi-card">
+                <mat-card-content>
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold text-gray-700">MTTA médio</h3>
+                        <div class="text-3xl font-bold text-green-600 mt-2">
+                            {{ summaryData.time.mtta.avgMin || '-' }} min
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1">
+                            p50: {{ summaryData.time.mtta.p50Min || '-' }}
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- MTTR médio -->
+            <mat-card class="kpi-card">
+                <mat-card-content>
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold text-gray-700">MTTR médio</h3>
+                        <div class="text-3xl font-bold text-orange-600 mt-2">
+                            {{ summaryData.time.mttr.avgMin || '-' }} min
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1">
+                            p50: {{ summaryData.time.mttr.p50Min || '-' }}
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- Score médio -->
+            <mat-card class="kpi-card">
+                <mat-card-content>
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold text-gray-700">Score médio</h3>
+                        <div class="text-3xl font-bold text-purple-600 mt-2">
+                            {{ summaryData.score.avg || '-' }}/100
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1">
+                            5 Whys: {{ (summaryData.score.checksCoveragePct.fiveWhys || 0) | number:'1.0-0' }}%
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid md:grid-cols-2 gap-6" *ngIf="seriesData">
+            <!-- Série MTTA / MTTR -->
+            <mat-card class="chart-card">
+                <mat-card-header>
+                    <mat-card-title>Série — MTTA / MTTR (min)</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="chart-container">
+                        <div 
+                            *ngIf="chartKey"
+                            echarts 
+                            [options]="timeChartOption" 
+                            [autoResize]="true"
+                            class="chart-echarts">
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- Série Score / On-time -->
+            <mat-card class="chart-card">
+                <mat-card-header>
+                    <mat-card-title>Série — Score médio / On-time ações (%)</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="chart-container">
+                        <div 
+                            *ngIf="chartKey"
+                            echarts 
+                            [options]="qualityChartOption" 
+                            [autoResize]="true"
+                            class="chart-echarts">
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="text-center text-red-600 py-8">
+            <mat-icon class="mr-2">error</mat-icon>
+            {{ errorMessage }}
+        </div>
+
+    </div>
+</div>

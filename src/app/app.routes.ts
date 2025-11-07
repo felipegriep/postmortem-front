@@ -11,6 +11,13 @@ export const routes: Routes = [
         children: [
             { path: '', component: HomeComponent, pathMatch: 'full' },
             {
+                path: 'dashboard',
+                loadComponent: () =>
+                    import('./pages/dashboard-component/dashboard-component').then(
+                        (m) => m.DashboardComponent
+                    ),
+            },
+            {
                 path: 'incidents',
                 loadComponent: () =>
                     import('./pages/incident-list-component/incident-list-component').then(

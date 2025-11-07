@@ -100,6 +100,7 @@
         </div>
 
         <nav class="sidebar-nav space-y-3">
+            <a routerLink="/dashboard" (click)="closeMenu()" class="block py-2 px-3 nav-link">Dashboard</a>
             <a routerLink="/incidents" (click)="closeMenu()" class="block py-2 px-3 nav-link">Incidentes</a>
             <a (click)="logout($event)" class="block py-2 px-3 nav-link" href="#">Logout</a>
         </nav>

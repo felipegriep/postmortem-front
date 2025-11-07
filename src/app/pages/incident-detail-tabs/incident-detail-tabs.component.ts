@@ -47,6 +47,7 @@ export class IncidentDetailTabsComponent implements OnInit, OnDestroy {
         { label: 'Timeline', commands: ['timeline'], requiresExisting: true },
         { label: 'Análise', commands: ['analysis'], requiresExisting: true },
         { label: 'Ações', commands: ['actions'], requiresExisting: true },
+        { label: 'Documento', commands: ['document'], requiresExisting: true },
     ];
 
     selectedIndex = 0;
@@ -81,7 +82,15 @@ export class IncidentDetailTabsComponent implements OnInit, OnDestroy {
             )
             .subscribe((path) => {
                 const newIndex =
-                    path === 'timeline' ? 1 : path === 'analysis' ? 2 : path === 'actions' ? 3 : 0;
+                    path === 'timeline'
+                        ? 1
+                        : path === 'analysis'
+                        ? 2
+                        : path === 'actions'
+                        ? 3
+                        : path === 'document'
+                        ? 4
+                        : 0;
                 if (this.selectedIndex !== newIndex) {
                     this.selectedIndex = newIndex;
                     this.cdr.markForCheck();

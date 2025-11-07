@@ -1,0 +1,63 @@
+<div class="postmortem-doc-shell bg-slate-900 text-white dark:bg-gray-800">
+    <div class="doc-grid p-6 space-y-6">
+        <header class="doc-header">
+            <div>
+                <h2 class="doc-title">Documento do Incidente</h2>
+                <p class="doc-subtitle">
+                    Consulte versões anteriores e gere novas iterações do documento de postmortem.
+                </p>
+            </div>
+        </header>
+
+        <section class="doc-controls-row">
+            <mat-form-field appearance="fill" class="doc-select-field">
+                <mat-label>Versões</mat-label>
+                <mat-select [(ngModel)]="selectedVersion" (selectionChange)="loadContent()" [disabled]="isLoadingVersions">
+                    <mat-option *ngFor="let v of versions" [value]="v.version">
+                        v{{ v.version }} (Score: {{ v.completenessScore }}) - {{ v.generatedAt | date: 'dd/MM/yyyy HH:mm:ss' }}
+                    </mat-option>
+                </mat-select>
+                <mat-progress-spinner *ngIf="isLoadingVersions" matSuffix diameter="18" mode="indeterminate"></mat-progress-spinner>
+            </mat-form-field>
+
+            <div class="doc-actions">
+                <button mat-flat-button color="primary"
+                    class="incident-primary-button doc-primary-action flex items-center gap-2"
+                    (click)="generateNewVersion()" [disabled]="isCreating || isLoadingVersions">
+                    <fa-icon [icon]="newVersionIcon" aria-hidden="true"></fa-icon>
+                    <span>Gerar nova versão</span>
+                    <span class="doc-spinner-container" aria-hidden="true">
+                        <mat-progress-spinner *ngIf="isCreating" diameter="18" mode="indeterminate"></mat-progress-spinner>
+                    </span>
+                </button>
+
+                <button mat-stroked-button color="primary" class="doc-secondary-button flex items-center gap-2"
+                    (click)="onDownload()" [disabled]="!selectedVersion">
+                    <fa-icon [icon]="downloadIcon" aria-hidden="true"></fa-icon>
+                    <span>Baixar .md</span>
+                </button>
+
+                <button mat-stroked-button color="primary" class="doc-secondary-button flex items-center gap-2"
+                    (click)="onCopy()" [disabled]="!markdownContent">
+                    <fa-icon [icon]="copyIcon" aria-hidden="true"></fa-icon>
+                    <span>Copiar</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="doc-preview-wrapper">
+            <h3 class="doc-preview-title text-xl font-semibold mb-3">Preview (Markdown)</h3>
+            <div class="doc-preview bg-white text-gray-900">
+                <div *ngIf="isLoadingContent" class="doc-preview__overlay">
+                    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+                </div>
+
+                <pre *ngIf="!isLoadingContent && markdownContent" class="doc-preview__content">{{ markdownContent }}</pre>
+
+                <div *ngIf="!isLoadingContent && !markdownContent" class="doc-preview__placeholder">
+                    Selecione uma versão para visualizar o conteúdo.
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

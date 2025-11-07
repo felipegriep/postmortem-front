@@ -16,6 +16,7 @@ import { AuthLoginService } from './services/auth-login.service';
 import { AuthService } from './auth/auth.service';
 import { LoadingInterceptor } from './shared/loading.interceptor';
 import { ErrorInterceptor } from './shared/error.interceptor';
+import { PostmortemDocService } from './services/postmortem-doc-service';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -71,5 +72,6 @@ export const appConfig: ApplicationConfig = {
         // Register global interceptors to control loading state and surface errors
         { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+        { provide: 'PostmortemDocService', useExisting: PostmortemDocService },
     ],
 };

@@ -68,6 +68,13 @@ export const routes: Routes = [
                                 (m) => m.ActionItemTabComponent
                             ),
                     },
+                    {
+                        path: 'document',
+                        loadComponent: () =>
+                            import(
+                                './pages/incident/postmortem-doc-component/postmortem-doc-component'
+                            ).then((m) => m.PostmortemDocComponent),
+                    },
                 ],
             },
         ],

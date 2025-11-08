@@ -42,7 +42,7 @@
     }
 }
 
-// Cartões de incidente mais destacados e separados
+/* Cartões de incidente mais destacados e separados */
 .border.rounded-lg {
     @apply rounded-2xl border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-shadow bg-white/90 dark:bg-gray-800/90 backdrop-blur;
 }
@@ -55,36 +55,109 @@ section + section {
     @apply mt-8;
 }
 
-// Badges
+/* Badges */
 span.rounded {
     @apply rounded-full px-3 py-1;
 }
 
-// Botão de ação (editar)
-button {
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
-}
-
-// Action-icon style for icon buttons that combine with .btn-primary
-button.btn-icon {
-    @apply inline-flex items-center justify-center w-10 h-10 p-0 rounded-full text-white shadow-md transition-transform transform hover:scale-105;
-    /* Ensure icon inside centers and doesn't overflow */
-    line-height: 0;
-}
-
-/* If combined with btn-primary, inherit its background and text color */
-button.btn-primary.btn-icon {
-    @apply bg-blue-600 hover:bg-blue-700 text-white; /* fallback in case btn-primary isn't present */
-    padding: 0;
-}
-
-/* Adjust fa-icon inside to a comfortable size */
-button.btn-icon fa-icon, button.btn-icon svg {
-    width: 1rem; /* 16px */
-    height: 1rem;
-}
-
-/* Make mat-tooltip respect newlines in the bound string (pre-line). Use ::ng-deep because tooltip is rendered in overlay container. */
+/* Tooltips com multi-line */
 ::ng-deep .mat-tooltip {
   white-space: pre-line;
+}
+
+/* === TABELA DE INCIDENTES - COLUNAS COMPRIMIDAS === */
+
+/* Tabela com colunas otimizadas para evitar quebra de linha */
+.mat-mdc-table {
+  width: 100%;
+  table-layout: fixed; /* Força o controle manual das larguras */
+  
+  .mat-mdc-header-row,
+  .mat-mdc-row {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  
+  /* Definição de larguras das colunas */
+  .mat-column-id {
+    width: 60px; /* ID pequeno */
+    flex: 0 0 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .mat-column-title {
+    width: 200px; /* Título - mantém espaço razoável */
+    flex: 0 0 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .mat-column-service {
+    width: 140px; /* Serviço comprimido */
+    flex: 0 0 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .mat-column-severity {
+    width: 100px; /* Badge de severidade */
+    flex: 0 0 100px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  
+  .mat-column-status {
+    width: 110px; /* Badge de status */
+    flex: 0 0 110px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  
+  .mat-column-startedAt,
+  .mat-column-endedAt {
+    width: 140px; /* Datas comprimidas */
+    flex: 0 0 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem; /* Texto menor para datas */
+  }
+  
+  .mat-column-mttr {
+    width: 90px; /* MTTR pequeno */
+    flex: 0 0 90px;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 0.875rem;
+  }
+  
+  .mat-column-score {
+    width: 80px; /* Score pequeno */
+    flex: 0 0 80px;
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  
+  .mat-column-actions {
+    width: 100px; /* Ações (botão Ver) */
+    flex: 0 0 100px;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+/* Badges compactos */
+.mat-mdc-table span.rounded {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
 }

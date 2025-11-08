@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BucketEnum } from '../domain/enums/bucket-enum';
 import { DataFieldEnum } from '../domain/enums/data-field-enum';
@@ -7,6 +7,7 @@ import { SeverityEnum } from '../domain/enums/severity-enum';
 import { StatusEnum } from '../domain/enums/status-enum';
 import { MetricsSummaryResponseInterface } from '../domain/interfaces/response/metrics-summary-response-interface';
 import { MetricsSeriesResponseInterface } from '../domain/interfaces/response/metrics-series-response-interface';
+import { HttpUtilsService } from '../shared/http-utils.service';
 
 export interface GetMetricsSummaryParams {
     from: string; // LocalDate no formato yyyy-MM-dd
@@ -29,14 +30,13 @@ export interface GetMetricsSeriesParams {
     providedIn: 'root',
 })
 export class MetricsService {
-    private readonly baseUrl: string = (window as any)['NG_API_DNS'] ?? 'http://localhost:8081';
+    private readonly baseUrl: string;
 
-    constructor(private readonly http: HttpClient) {}
-
-    private getHeaders(): HttpHeaders {
-        const rawToken = localStorage.getItem('token') || '';
-        const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
-        return new HttpHeaders({ Authorization: token });
+    constructor(
+        private readonly http: HttpClient,
+        private readonly httpUtils: HttpUtilsService
+    ) {
+        this.baseUrl = this.httpUtils.getBaseUrl();
     }
 
     summary(params: GetMetricsSummaryParams): Observable<MetricsSummaryResponseInterface> {
@@ -67,7 +67,7 @@ export class MetricsService {
         const url = `${this.baseUrl}/api/metrics/summary`;
         return this.http.get<MetricsSummaryResponseInterface>(url, {
             params: httpParams,
-            headers: this.getHeaders(),
+            headers: this.httpUtils.getAuthHeaders(),
         });
     }
 
@@ -93,7 +93,7 @@ export class MetricsService {
         const url = `${this.baseUrl}/api/metrics/series`;
         return this.http.get<MetricsSeriesResponseInterface>(url, {
             params: httpParams,
-            headers: this.getHeaders(),
+            headers: this.httpUtils.getAuthHeaders(),
         });
     }
 }

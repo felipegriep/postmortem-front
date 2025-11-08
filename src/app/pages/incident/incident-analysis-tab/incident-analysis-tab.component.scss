@@ -197,19 +197,6 @@
   }
 }
 
-.char-counter {
-  background: #ffffff;
-  color: #111827 !important;
-  padding: 0.1rem 0.5rem;
-  border-radius: 9999px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  margin-top: 0.35rem;
-}
-
 .analysis-loading {
   display: flex;
   align-items: center;
@@ -217,84 +204,7 @@
   padding: 4rem 0;
 }
 
-:host ::ng-deep .mat-mdc-form-field {
-  width: 100%;
-  --mdc-filled-text-field-container-shape: 0.75rem;
-  --mdc-filled-text-field-container-color: #ffffff;
-  --mdc-filled-text-field-label-text-color: rgba(71, 85, 105, 0.95);
-  --mdc-filled-text-field-focus-label-text-color: var(--app-primary, #0ea5e9);
-  --mdc-filled-text-field-hover-label-text-color: rgba(71, 85, 105, 0.95);
-  --mdc-filled-text-field-input-text-color: #0f172a;
-  --mdc-filled-text-field-focus-input-text-color: #0f172a;
-  --mdc-filled-text-field-active-indicator-color: transparent;
-  --mdc-filled-text-field-focus-active-indicator-color: var(--app-primary, #0ea5e9);
-  --mdc-filled-text-field-disabled-active-indicator-color: transparent;
-  --mdc-filled-text-field-placeholder-text-color: rgba(100, 116, 139, 0.75);
-}
-
-:host ::ng-deep .mat-mdc-text-field-wrapper {
-  border-radius: 0.75rem;
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
-  transition: box-shadow 180ms ease, background-color 180ms ease;
-  background-color: #ffffff;
-}
-
-:host ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--app-primary, #0ea5e9) 30%, white 70%);
-  background-color: #ffffff;
-}
-
-:host ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
-  box-shadow: inset 0 0 0 2px var(--app-primary, #0ea5e9);
-  background-color: #ffffff;
-}
-
+/* Form fields já são gerenciados globalmente, mantém apenas específicos */
 :host ::ng-deep textarea.mat-mdc-input-element::placeholder {
   color: rgba(100, 116, 139, 0.75);
-}
-
-:host ::ng-deep .mat-mdc-form-field.has-error .mat-mdc-text-field-wrapper {
-  box-shadow: inset 0 0 0 2px rgba(248, 113, 113, 0.9);
-  background-color: #ffffff;
-}
-
-:host ::ng-deep .mat-mdc-form-field.has-error .mdc-floating-label {
-  color: rgba(239, 68, 68, 0.95) !important;
-}
-
-:host ::ng-deep .mat-mdc-form-field.has-error .mat-mdc-form-field-hint-wrapper,
-:host ::ng-deep .mat-mdc-form-field.has-error mat-error {
-  color: rgba(239, 68, 68, 0.95) !important;
-}
-
-:host ::ng-deep button[mat-flat-button],
-:host ::ng-deep button[mat-stroked-button] {
-  border-radius: 0.75rem;
-  padding-left: 1.75rem;
-  padding-right: 1.75rem;
-  min-height: 2.75rem;
-}
-
-:host ::ng-deep button[mat-stroked-button].cancel-button {
-  background-color: #fee2e2;
-  border-color: #fee2e2;
-  color: #991b1b;
-}
-
-:host ::ng-deep button[mat-stroked-button].cancel-button:hover,
-:host ::ng-deep button[mat-stroked-button].cancel-button:focus-visible {
-  background-color: #fca5a5;
-  border-color: #fca5a5;
-  color: #7f1d1d;
-}
-
-:host ::ng-deep button[mat-stroked-button].cancel-button:disabled {
-  background-color: rgba(254, 226, 226, 0.6);
-  border-color: rgba(254, 226, 226, 0.6);
-  color: rgba(255, 255, 255, 0.75);
-}
-
-:host-context(.dark) ::ng-deep button[mat-stroked-button] {
-  border-color: rgba(148, 163, 184, 0.6);
-  color: rgba(226, 232, 240, 0.85);
 }

@@ -5,9 +5,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* You can add global styles to this file, and also import other style files */
+/* ========================================
+   ESTILOS GLOBAIS - POSTMORTEM APP
+   ========================================
+   
+   Organização:
+   1. Base & Overrides
+   2. Variáveis CSS
+   3. Botões padronizados
+   4. Form Fields padronizados
+   5. Abas padronizadas
+   6. Toasts/Snackbars
+   7. Utilitários diversos
+   
+   ======================================== */
 
-/* Global styles and shared theme moved out from component SCSS to keep component bundles small */
+/* ========================================
+   1. BASE & OVERRIDES
+   ======================================== */
 
 html,
 body {
@@ -197,41 +212,121 @@ button {
   @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
 }
 
-.incident-primary-button {
-  font-weight: 600;
-}
+/* === BOTÕES PADRONIZADOS === */
 
-.incident-primary-button.mat-mdc-unelevated-button {
-  --mdc-filled-button-container-color: #0ea5e9;
-  --mdc-filled-button-label-text-color: #ffffff;
-  --mdc-filled-button-container-shape: 0.75rem;
-  background-color: #0ea5e9 !important;
+/* Botão Primary - Ação principal (baseado em "Ver incidentes" do dashboard) */
+.btn-primary,
+.incident-primary-button {
+  font-weight: 700;
+  background-color: #3b82f6 !important; /* blue-500 */
   color: #ffffff !important;
+  border: none;
+  border-radius: 0.75rem !important; /* rounded-xl - mesmo do "Limpar filtros" */
+  padding: 0 1.5rem !important;
+  min-height: 2.75rem !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.75rem;
-  padding: 0 1.75rem;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
-  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: all 160ms ease;
+  text-transform: none !important;
+  letter-spacing: normal !important;
 }
 
-.incident-primary-button.mat-mdc-unelevated-button .mdc-button__label {
-  color: #ffffff !important;
+.btn-primary:hover:not(:disabled),
+.btn-primary:focus-visible:not(:disabled),
+.incident-primary-button:hover:not(:disabled),
+.incident-primary-button:focus-visible:not(:disabled) {
+  background-color: #2563eb !important; /* blue-600 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
 }
 
-.incident-primary-button.mat-mdc-unelevated-button:not(.mat-mdc-button-disabled):hover,
-.incident-primary-button.mat-mdc-unelevated-button:not(.mat-mdc-button-disabled):focus-visible {
-  background-color: #0284c7 !important;
-  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
-}
-
-.incident-primary-button.mat-mdc-unelevated-button.mat-mdc-button-disabled {
-  background-color: rgba(14, 165, 233, 0.35) !important;
+.btn-primary:disabled,
+.incident-primary-button:disabled {
+  background-color: rgba(59, 130, 246, 0.5) !important;
   color: rgba(255, 255, 255, 0.75) !important;
   box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
 }
 
+/* Material Button overrides para .incident-primary-button */
+.incident-primary-button.mat-mdc-unelevated-button,
+.incident-primary-button.mat-mdc-flat-button {
+  --mdc-filled-button-container-color: #3b82f6;
+  --mdc-filled-button-label-text-color: #ffffff;
+  --mdc-filled-button-container-shape: 0.75rem;
+  min-height: 2.75rem !important;
+  padding: 0 1.5rem !important;
+}
+
+.incident-primary-button.mat-mdc-unelevated-button .mdc-button__label,
+.incident-primary-button.mat-mdc-flat-button .mdc-button__label {
+  color: #ffffff !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-weight: 700 !important;
+}
+
+/* Botão Cancel/Secondary - Ações secundárias (baseado em "Limpar filtros" do dashboard) */
+.btn-cancel,
+.btn-secondary,
+.dashboard-clear-button {
+  font-weight: 500;
+  background-color: transparent !important;
+  color: #64748b !important; /* slate-500 */
+  border: 1px solid #cbd5e1 !important; /* slate-300 */
+  border-radius: 0.75rem !important; /* rounded-xl - mesmo do "Limpar filtros" */
+  padding: 0 1.5rem !important;
+  min-height: 2.75rem !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 160ms ease;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+.btn-cancel:hover:not(:disabled),
+.btn-cancel:focus-visible:not(:disabled),
+.btn-secondary:hover:not(:disabled),
+.btn-secondary:focus-visible:not(:disabled),
+.dashboard-clear-button:hover:not(:disabled),
+.dashboard-clear-button:focus-visible:not(:disabled) {
+  background-color: #f8fafc !important; /* slate-50 */
+  border-color: #94a3b8 !important; /* slate-400 */
+  color: #475569 !important; /* slate-600 */
+}
+
+.btn-cancel:disabled,
+.btn-secondary:disabled,
+.dashboard-clear-button:disabled {
+  background-color: transparent !important;
+  border-color: rgba(203, 213, 225, 0.5) !important; /* slate-300 with opacity */
+  color: rgba(100, 116, 139, 0.5) !important; /* slate-500 with opacity */
+  cursor: not-allowed;
+}
+
+/* Material Button overrides para stroked buttons */
+.dashboard-clear-button.mat-mdc-outlined-button,
+.dashboard-clear-button.mat-mdc-stroked-button {
+  --mdc-outlined-button-outline-color: #cbd5e1;
+  --mdc-outlined-button-label-text-color: #64748b;
+  --mdc-outlined-button-container-shape: 0.75rem;
+  min-height: 2.75rem !important;
+  padding: 0 1.5rem !important;
+}
+
+.dashboard-clear-button.mat-mdc-outlined-button .mdc-button__label,
+.dashboard-clear-button.mat-mdc-stroked-button .mdc-button__label {
+  color: #64748b !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-weight: 500 !important;
+}
+
+/* Botão Clear/Limpar do Dashboard */
 .dashboard-clear-button,
 .dashboard-clear-button.mat-mdc-outlined-button,
 .dashboard-clear-button.mat-mdc-stroked-button {
@@ -252,6 +347,166 @@ button {
   border-color: #ffffff !important;
 }
 
+/* Ícones puros - Botões icon-only */
+button.btn-icon {
+  @apply inline-flex items-center justify-center rounded-full transition-transform transform;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  background-color: transparent;
+  color: var(--app-primary, #0ea5e9);
+  line-height: 0;
+  box-shadow: none;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+
+  &:hover:not(:disabled) {
+    background-color: rgba(14, 165, 233, 0.1);
+    border-color: rgba(14, 165, 233, 0.45);
+    color: color-mix(in srgb, var(--app-primary, #0ea5e9) 85%, black 15%);
+    transform: scale(1.05);
+  }
+
+  &:active:not(:disabled) {
+    background-color: rgba(14, 165, 233, 0.2);
+    transform: scale(1.0);
+  }
+
+  fa-icon,
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* Botão icon com estilo delete */
+button.btn-icon.delete-icon {
+  color: #ef4444;
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #dc2626;
+    background-color: rgba(239, 68, 68, 0.1);
+  }
+}
+
+/* Botão de editar específico */
+/* Específico para o botão editar (poderia reaproveitar em outros, tipo excluir etc.) */
+button.edit-icon fa-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #0ea5e9;
+  /* azul padrão */
+}
+
+/* === ESTILOS GLOBAIS DE FORM FIELDS === */
+
+/* Material Form Field - Estilo base consistente */
+.form-field-base,
+.mat-mdc-form-field {
+  width: 100%;
+  --mdc-filled-text-field-container-shape: 0.75rem;
+  --mdc-filled-text-field-container-color: #ffffff;
+  --mdc-filled-text-field-label-text-color: rgba(71, 85, 105, 0.95);
+  --mdc-filled-text-field-focus-label-text-color: var(--app-primary, #0ea5e9);
+  --mdc-filled-text-field-hover-label-text-color: var(--app-primary, #0ea5e9);
+  --mdc-filled-text-field-input-text-color: #0f172a;
+  --mdc-filled-text-field-focus-input-text-color: #0f172a;
+  --mdc-filled-text-field-active-indicator-color: transparent;
+  --mdc-filled-text-field-focus-active-indicator-color: transparent;
+  --mdc-filled-text-field-disabled-active-indicator-color: transparent;
+  --mdc-filled-text-field-placeholder-text-color: rgba(100, 116, 139, 0.75);
+}
+
+.mat-mdc-text-field-wrapper {
+  border-radius: 0.75rem;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+  transition: box-shadow 180ms ease, background-color 180ms ease;
+  background-color: #ffffff;
+}
+
+.mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--app-primary, #0ea5e9) 30%, white 70%);
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  box-shadow: inset 0 0 0 2px var(--app-primary, #0ea5e9);
+  background-color: #ffffff;
+}
+
+.mat-mdc-form-field.has-error .mat-mdc-text-field-wrapper {
+  box-shadow: inset 0 0 0 2px rgba(248, 113, 113, 0.95);
+  background-color: #ffffff;
+}
+
+.mat-mdc-form-field.has-error .mdc-floating-label,
+.mat-mdc-form-field.has-error.mat-focused .mdc-floating-label {
+  color: rgba(220, 38, 38, 0.95) !important;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  margin: 0;
+  padding: 0 0.75rem 0.25rem;
+}
+
+textarea.mat-mdc-input-element,
+textarea[matInput] {
+  min-height: 8rem;
+}
+
+/* Select field specific styles */
+.mat-mdc-select-trigger {
+  align-items: center;
+}
+
+.mat-mdc-select-panel {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  background: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.mat-mdc-option.mat-mdc-option-active,
+.mat-mdc-option.mat-mdc-option-highlighted:not(.mat-mdc-option-disabled) {
+  background: rgba(14, 165, 233, 0.12) !important;
+  color: #0f172a !important;
+}
+
+/* Dark mode para form fields */
+:host-context(.dark) .mat-mdc-form-field,
+.dark .mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: #ffffff;
+  --mdc-filled-text-field-label-text-color: rgba(30, 41, 59, 0.85);
+  --mdc-filled-text-field-input-text-color: #0f172a;
+  --mdc-filled-text-field-focus-input-text-color: #0f172a;
+}
+
+:host-context(.dark) .mat-mdc-text-field-wrapper,
+.dark .mat-mdc-text-field-wrapper {
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+  background-color: #ffffff;
+}
+
+:host-context(.dark) .mat-mdc-select-panel,
+.dark .mat-mdc-select-panel {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.28) !important;
+}
+
+/* Contador de caracteres */
+.char-counter {
+  background: #ffffff;
+  color: #111827 !important;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* === ESTILOS DE SNACKBAR (TOAST) === */
 .mat-mdc-snack-bar-container {
   border-radius: 0.75rem !important;
   box-shadow: 0 24px 45px rgba(15, 23, 42, 0.28) !important;
@@ -337,35 +592,117 @@ button {
   color: #f1feff;
 }
 
-/* Ícones puros */
-button.btn-icon {
-  @apply inline-flex items-center justify-center w-8 h-8 p-0 rounded-full transition-transform transform;
-  background-color: transparent;
-  /* fundo limpo */
-  color: #0ea5e9;
-  /* azul leve */
-  line-height: 0;
+/* === ESTILOS DE ABAS PADRONIZADAS === */
+
+/* Tab Group com fundo escuro e texto branco */
+.modern-tab-group,
+.incident-tab-group {
+  border-radius: 1.5rem !important; /* Cantos bem arredondados */
+  background: #1e293b !important; /* slate-800 */
+  padding: 0.5rem 0.75rem 0 0.75rem; /* Padding para dar espaço às bordas */
   box-shadow: none;
-
-  &:hover {
-    background-color: rgba(59, 130, 246, 0.1);
-    /* leve highlight */
-    transform: scale(1.1);
-  }
-
-  &:active {
-    background-color: rgba(59, 130, 246, 0.2);
-    transform: scale(1.0);
-  }
+  border-bottom: 2px solid #ffffff !important; /* Barra branca */
+  overflow: hidden; /* Garante que as abas respeitem o border-radius do container */
 }
 
-/* Específico para o botão editar (poderia reaproveitar em outros, tipo excluir etc.) */
-button.edit-icon fa-icon {
-  width: 1rem;
-  height: 1rem;
-  color: #0ea5e9;
-  /* azul padrão */
+.modern-tab-group ::ng-deep .mat-mdc-tab-label-container,
+.incident-tab-group ::ng-deep .mat-mdc-tab-label-container {
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
 }
+
+.modern-tab-group ::ng-deep .mat-mdc-tab-list,
+.incident-tab-group ::ng-deep .mat-mdc-tab-list {
+  gap: 0.5rem; /* Espaço entre as abas */
+}
+
+.modern-tab-group ::ng-deep .mat-mdc-tab,
+.incident-tab-group ::ng-deep .mat-mdc-tab {
+  min-height: 3rem;
+  transition: all 160ms ease;
+  background: transparent;
+  border-radius: 0.75rem !important; /* Cantos arredondados em cada aba */
+  margin: 0 0.25rem; /* Pequena margem lateral */
+}
+
+/* TEXTO BRANCO EM TODAS AS ABAS */
+.modern-tab-group ::ng-deep .mat-mdc-tab,
+.incident-tab-group ::ng-deep .mat-mdc-tab,
+.modern-tab-group ::ng-deep .mdc-tab__text-label,
+.incident-tab-group ::ng-deep .mdc-tab__text-label,
+.modern-tab-group ::ng-deep .mat-mdc-tab-label-content,
+.incident-tab-group ::ng-deep .mat-mdc-tab-label-content {
+  color: #ffffff !important;
+}
+
+/* Aba não ativa - texto branco normal */
+.modern-tab-group ::ng-deep .mat-mdc-tab:not(.mdc-tab--active),
+.incident-tab-group ::ng-deep .mat-mdc-tab:not(.mdc-tab--active) {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+.modern-tab-group ::ng-deep .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label,
+.incident-tab-group ::ng-deep .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+/* Aba ativa - texto branco NEGRITO */
+.modern-tab-group ::ng-deep .mat-mdc-tab.mdc-tab--active,
+.incident-tab-group ::ng-deep .mat-mdc-tab.mdc-tab--active {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.modern-tab-group ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label,
+.incident-tab-group ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Hover */
+.modern-tab-group ::ng-deep .mat-mdc-tab:hover,
+.incident-tab-group ::ng-deep .mat-mdc-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff !important;
+}
+
+/* Indicador branco */
+.modern-tab-group ::ng-deep .mat-mdc-tab-indicator .mdc-tab-indicator__content--underline,
+.incident-tab-group ::ng-deep .mat-mdc-tab-indicator .mdc-tab-indicator__content--underline {
+  border-color: #ffffff !important;
+  border-top-width: 3px !important;
+}
+
+.modern-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::before,
+.modern-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::after,
+.incident-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::before,
+.incident-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::after {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Conteúdo das abas com cantos arredondados */
+.modern-tab-group ::ng-deep .mat-mdc-tab-body-content,
+.incident-tab-group ::ng-deep .mat-mdc-tab-body-content {
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+/* Wrappers de conteúdo com cantos arredondados */
+.incident-form-wrapper,
+.action-item-tab-wrapper,
+.incident-analysis-wrapper,
+.timeline-wrapper {
+  border-radius: 1.5rem !important;
+  overflow: hidden;
+}
+.incident-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::before,
+.incident-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::after {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 
 .mat-mdc-form-field-flex {
   border-style: none !important;

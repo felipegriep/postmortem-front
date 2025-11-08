@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ActionItemInterface } from '../domain/interfaces/request/action-item-interface';
 import { ActionItemResponseInterface } from '../domain/interfaces/response/action-item-response-interface';
 import { PageResponse } from '../domain/interfaces/response/page-response';
 import { ActionStatusEnum } from '../domain/enums/action-status-enum';
 import { ActionTypeEnum } from '../domain/enums/action-type-enum';
+import { HttpUtilsService } from '../shared/http-utils.service';
 
 export interface GetActionItemsParams {
     actionType?: ActionTypeEnum | keyof typeof ActionTypeEnum;
@@ -23,9 +24,14 @@ export interface GetActionItemsParams {
     providedIn: 'root',
 })
 export class ActionItemService {
-    private readonly baseUrl: string = (window as any)['NG_API_DNS'] ?? 'http://localhost:8081';
+    private readonly baseUrl: string;
 
-    constructor(private readonly http: HttpClient) {}
+    constructor(
+        private readonly http: HttpClient,
+        private readonly httpUtils: HttpUtilsService
+    ) {
+        this.baseUrl = this.httpUtils.getBaseUrl();
+    }
 
     list(
         incidentId: number,
@@ -63,7 +69,7 @@ export class ActionItemService {
             }
         }
 
-        const headers = this.getAuthHeaders();
+        const headers = this.httpUtils.getAuthHeaders();
         const url = `${this.baseUrl}/api/incidents/${incidentId}/actions`;
         return this.http.get<PageResponse<ActionItemResponseInterface>>(url, {
             params: httpParams,
@@ -72,7 +78,7 @@ export class ActionItemService {
     }
 
     create(incidentId: number, actionItem: ActionItemInterface): Observable<void> {
-        const headers = this.getAuthHeaders();
+        const headers = this.httpUtils.getAuthHeaders();
         const url = `${this.baseUrl}/api/incidents/${incidentId}/actions`;
         return this.http.post<void>(url, actionItem, {
             headers,
@@ -85,20 +91,14 @@ export class ActionItemService {
         id: number,
         actionItem: ActionItemInterface
     ): Observable<ActionItemResponseInterface> {
-        const headers = this.getAuthHeaders();
+        const headers = this.httpUtils.getAuthHeaders();
         const url = `${this.baseUrl}/api/incidents/${incidentId}/actions/${id}`;
         return this.http.put<ActionItemResponseInterface>(url, actionItem, { headers });
     }
 
     delete(incidentId: number, id: number): Observable<void> {
-        const headers = this.getAuthHeaders();
+        const headers = this.httpUtils.getAuthHeaders();
         const url = `${this.baseUrl}/api/incidents/${incidentId}/actions/${id}`;
         return this.http.delete<void>(url, { headers });
-    }
-
-    private getAuthHeaders(): HttpHeaders {
-        const rawToken = localStorage.getItem('token') || '';
-        const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
-        return new HttpHeaders({ Authorization: token });
     }
 }

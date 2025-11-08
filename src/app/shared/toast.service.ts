@@ -29,6 +29,9 @@ export class ToastService {
             verticalPosition = 'top',
         } = options;
 
+        // Fechar qualquer toast anterior para evitar sobreposição
+        this.snackBar.dismiss();
+
         const config: MatSnackBarConfig = {
             duration: durationMs ?? undefined,
             panelClass: [`toast-${kind}`],
@@ -39,19 +42,19 @@ export class ToastService {
         this.snackBar.open(message, action ?? undefined, config);
     }
 
-    success(message: string, durationMs?: number): void {
+    success(message: string, durationMs: number = 6000): void {
         this.show(message, { kind: 'success', durationMs });
     }
 
-    error(message: string, durationMs?: number): void {
+    error(message: string, durationMs: number = 8000): void {
         this.show(message, { kind: 'error', durationMs });
     }
 
-    info(message: string, durationMs?: number): void {
+    info(message: string, durationMs: number = 5000): void {
         this.show(message, { kind: 'info', durationMs });
     }
 
-    warning(message: string, durationMs?: number): void {
+    warning(message: string, durationMs: number = 6000): void {
         this.show(message, { kind: 'warning', durationMs });
     }
 }

@@ -558,28 +558,39 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         if (this.isEditMode && this.incident.id != null) {
-            this.incidentService.update(String(this.incident.id), payload).subscribe(() => {
-                this.toast.success('Incidente atualizado com sucesso!');
-                if (typeof window !== 'undefined') {
-                    window.location.reload();
+            this.incidentService.update(String(this.incident.id), payload).subscribe({
+                next: (updatedIncident) => {
+                    this.toast.success('Incidente atualizado com sucesso!', 6000);
+                    // Recarregar os dados do incidente atualizado
+                    this.ngOnInit();
+                },
+                error: (error) => {
+                    console.error('Erro ao atualizar incidente:', error);
+                    // O erro já é tratado pelo ErrorInterceptor
                 }
             });
         } else {
-            this.incidentService.create(payload).subscribe((created) => {
-                this.toast.success('Incidente criado com sucesso!');
-                const targetId =
-                    created && typeof created === 'object'
-                        ? (created as any)?.id ?? created
-                        : created;
-
-                if (targetId !== undefined && targetId !== null) {
-                    this.router.navigate(['/incidents/edit', targetId]).then(() => {
-                        if (typeof window !== 'undefined') {
-                            window.location.reload();
+            this.incidentService.create(payload).subscribe({
+                next: (response) => {
+                    this.toast.success('Incidente criado com sucesso!', 6000);
+                    
+                    // Extrair ID do header Location
+                    const locationHeader = response.headers.get('Location');
+                    if (locationHeader) {
+                        const match = locationHeader.match(/\/incidents\/(\d+)$/);
+                        if (match) {
+                            const incidentId = parseInt(match[1], 10);
+                            this.router.navigate(['/incidents/edit', incidentId]);
+                            return;
                         }
-                    });
-                } else if (typeof window !== 'undefined') {
-                    window.location.reload();
+                    }
+                    
+                    // Fallback: voltar para a listagem
+                    this.router.navigate(['/incidents']);
+                },
+                error: (error) => {
+                    console.error('Erro ao criar incidente:', error);
+                    // O erro já é tratado pelo ErrorInterceptor, não precisamos mostrar toast aqui
                 }
             });
         }

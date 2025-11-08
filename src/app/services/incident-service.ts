@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SeverityEnum } from '../domain/enums/severity-enum';
 import { StatusEnum } from '../domain/enums/status-enum';
@@ -70,12 +70,15 @@ export class IncidentService {
         return this.http.get<IncidentResponseInterface>(url, { headers });
     }
 
-    create(incident: IncidentInterface): Observable<number> {
+    create(incident: IncidentInterface): Observable<HttpResponse<any>> {
         const rawToken = localStorage.getItem('token') || '';
         const token = rawToken && !rawToken.startsWith('Bearer ') ? `Bearer ${rawToken}` : rawToken;
         const headers = new HttpHeaders({ Authorization: token });
         const url = `${this.baseUrl}/api/incidents`;
-        return this.http.post<number>(url, incident, { headers });
+        return this.http.post<any>(url, incident, { 
+            headers,
+            observe: 'response'
+        });
     }
 
     update(id: string, incident: IncidentInterface): Observable<IncidentResponseInterface> {

@@ -118,7 +118,15 @@
                     <!-- Service Column -->
                     <ng-container matColumnDef="service">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>Serviço</th>
-                        <td mat-cell *matCellDef="let row">{{ row.service }}</td>
+                        <td 
+                            mat-cell 
+                            *matCellDef="let row"
+                            [matTooltip]="row.service || ''"
+                            matTooltipPosition="above"
+                            matTooltipShowDelay="300"
+                        >
+                            {{ row.service }}
+                        </td>
                     </ng-container>
 
                     <!-- Severity Column -->

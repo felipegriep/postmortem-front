@@ -97,56 +97,58 @@ span.rounded {
   }
   
   .mat-column-service {
-    width: 140px; /* Serviço comprimido */
-    flex: 0 0 140px;
+    width: 150px; /* Serviço com tooltip */
+    flex: 0 0 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   
   .mat-column-severity {
-    width: 100px; /* Badge de severidade */
-    flex: 0 0 100px;
+    width: 130px; /* Badge de severidade - mais largo */
+    flex: 0 0 130px;
     text-align: center;
     white-space: nowrap;
+    padding: 0 0.5rem;
   }
   
   .mat-column-status {
-    width: 110px; /* Badge de status */
-    flex: 0 0 110px;
+    width: 120px; /* Badge de status - mais largo */
+    flex: 0 0 120px;
     text-align: center;
     white-space: nowrap;
+    padding: 0 0.5rem;
   }
   
   .mat-column-startedAt,
   .mat-column-endedAt {
-    width: 140px; /* Datas comprimidas */
-    flex: 0 0 140px;
+    width: 130px; /* Datas */
+    flex: 0 0 130px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 0.875rem; /* Texto menor para datas */
+    font-size: 0.875rem;
   }
   
   .mat-column-mttr {
-    width: 90px; /* MTTR pequeno */
-    flex: 0 0 90px;
+    width: 70px; /* MTTR compacto */
+    flex: 0 0 70px;
     text-align: center;
     white-space: nowrap;
     font-size: 0.875rem;
   }
   
   .mat-column-score {
-    width: 80px; /* Score pequeno */
-    flex: 0 0 80px;
+    width: 70px; /* Score compacto */
+    flex: 0 0 70px;
     text-align: center;
     white-space: nowrap;
     font-weight: 600;
   }
   
   .mat-column-actions {
-    width: 100px; /* Ações (botão Ver) */
-    flex: 0 0 100px;
+    width: 80px; /* Ações mais próximas */
+    flex: 0 0 80px;
     text-align: center;
     white-space: nowrap;
   }

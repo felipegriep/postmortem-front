@@ -597,12 +597,12 @@ textarea[matInput] {
 /* Tab Group com fundo escuro e texto branco */
 .modern-tab-group,
 .incident-tab-group {
-  border-radius: 1.5rem !important; /* Cantos bem arredondados */
+  border-radius: 1.5rem 1.5rem 0 0 !important; /* Arredondado só no topo */
   background: #1e293b !important; /* slate-800 */
-  padding: 0.5rem 0.75rem 0 0.75rem; /* Padding para dar espaço às bordas */
+  padding: 0;
   box-shadow: none;
-  border-bottom: 2px solid #ffffff !important; /* Barra branca */
-  overflow: hidden; /* Garante que as abas respeitem o border-radius do container */
+  border-bottom: 2px solid #475569 !important; /* Barra cinza separadora */
+  overflow: visible;
 }
 
 .modern-tab-group ::ng-deep .mat-mdc-tab-label-container,
@@ -614,7 +614,7 @@ textarea[matInput] {
 
 .modern-tab-group ::ng-deep .mat-mdc-tab-list,
 .incident-tab-group ::ng-deep .mat-mdc-tab-list {
-  gap: 0.5rem; /* Espaço entre as abas */
+  gap: 0; /* Sem espaço entre as abas */
 }
 
 .modern-tab-group ::ng-deep .mat-mdc-tab,
@@ -622,8 +622,9 @@ textarea[matInput] {
   min-height: 3rem;
   transition: all 160ms ease;
   background: transparent;
-  border-radius: 0.75rem !important; /* Cantos arredondados em cada aba */
-  margin: 0 0.25rem; /* Pequena margem lateral */
+  border-radius: 0 !important; /* SEM cantos arredondados nas abas */
+  margin: 0;
+  padding: 0 1.5rem;
 }
 
 /* TEXTO BRANCO EM TODAS AS ABAS */
@@ -665,15 +666,21 @@ textarea[matInput] {
 /* Hover */
 .modern-tab-group ::ng-deep .mat-mdc-tab:hover,
 .incident-tab-group ::ng-deep .mat-mdc-tab:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   color: #ffffff !important;
 }
 
-/* Indicador branco */
+/* Indicador colorido na aba ativa - linha azul destacada */
 .modern-tab-group ::ng-deep .mat-mdc-tab-indicator .mdc-tab-indicator__content--underline,
 .incident-tab-group ::ng-deep .mat-mdc-tab-indicator .mdc-tab-indicator__content--underline {
-  border-color: #ffffff !important;
-  border-top-width: 3px !important;
+  border-color: #3b82f6 !important; /* Azul vibrante - blue-500 */
+  border-top-width: 4px !important; /* Linha mais grossa */
+}
+
+.modern-tab-group ::ng-deep .mat-mdc-tab-indicator,
+.incident-tab-group ::ng-deep .mat-mdc-tab-indicator {
+  height: 4px;
+  background-color: transparent;
 }
 
 .modern-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::before,

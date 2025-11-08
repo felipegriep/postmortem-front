@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,13 +9,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
-import { MatChipsModule } from '@angular/material/chips';
-import { Platform } from '@angular/cdk/platform';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxEchartsModule } from 'ngx-echarts';
 import type { EChartsOption } from 'echarts';
 
@@ -72,6 +71,7 @@ interface DashboardFilters {
     imports: [
         CommonModule,
         FormsModule,
+        RouterModule,
         MatToolbarModule,
         MatCardModule,
         MatFormFieldModule,
@@ -79,13 +79,12 @@ interface DashboardFilters {
         MatSelectModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatChipsModule,
-        MatButtonToggleModule,
-        MatSlideToggleModule,
+        MatCheckboxModule,
         MatButtonModule,
         MatProgressSpinnerModule,
         MatIconModule,
         NgxEchartsModule,
+        MatTooltipModule,
     ],
     providers: [
         { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },

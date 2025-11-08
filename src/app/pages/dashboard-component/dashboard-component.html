@@ -1,20 +1,30 @@
 <div class="dashboard-wrapper">
     <!-- Toolbar -->
-    <mat-toolbar color="primary" class="dashboard-toolbar">
-        <span>Postmortem — Dashboard</span>
+    <mat-toolbar class="dashboard-toolbar bg-gray-900 dark:bg-gray-800 text-white">
+        <div class="dashboard-toolbar__content">
+            <span class="dashboard-toolbar__title">Postmortem — Dashboard</span>
+            <button
+                mat-flat-button
+                color="primary"
+                class="incident-primary-button dashboard-toolbar__cta"
+                routerLink="/incidents"
+                type="button">
+                Ver incidentes
+            </button>
+        </div>
     </mat-toolbar>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8">
         
         <!-- Filtros -->
-        <mat-card class="mb-6">
+        <mat-card class="mb-6 filter-card bg-white dark:bg-gray-800">
             <mat-card-header>
-                <mat-card-title>Filtros</mat-card-title>
+                <mat-card-title class="text-white">Filtros</mat-card-title>
             </mat-card-header>
             <mat-card-content>
                 <div class="grid md:grid-cols-4 gap-4 mb-4">
                     <!-- Data inicial e final -->
-                    <mat-form-field appearance="fill" class="filter-field">
+                    <mat-form-field appearance="fill" class="filter-field period-field">
                         <mat-label>Período</mat-label>
                         <mat-date-range-input [rangePicker]="picker">
                             <input matStartDate placeholder="DD/MM/YYYY" [(ngModel)]="filters.startDate" name="startDate">
@@ -25,7 +35,7 @@
                     </mat-form-field>
 
                     <!-- Campo de data -->
-                    <mat-form-field appearance="fill" class="filter-field">
+                    <mat-form-field appearance="fill" class="filter-field date-field">
                         <mat-label>Campo de Data</mat-label>
                         <mat-select [(ngModel)]="filters.dateField" name="dateField">
                             <mat-option value="STARTED">Início</mat-option>
@@ -34,38 +44,38 @@
                     </mat-form-field>
 
                     <!-- Severidades -->
-                    <div class="filter-field">
-                        <mat-label class="text-sm text-gray-600 mb-2 block">Severidade</mat-label>
-                        <mat-chip-listbox [(ngModel)]="filters.severities" name="severities" multiple>
-                            <mat-chip-option *ngFor="let severity of availableSeverities" [value]="severity">
+                    <mat-form-field appearance="fill" class="filter-field severity-field">
+                        <mat-label>Severidade</mat-label>
+                        <mat-select [(ngModel)]="filters.severities" name="severities" multiple>
+                            <mat-option *ngFor="let severity of availableSeverities" [value]="severity">
                                 {{ severity }}
-                            </mat-chip-option>
-                        </mat-chip-listbox>
-                    </div>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
 
                     <!-- Status -->
-                    <div class="filter-field">
-                        <mat-label class="text-sm text-gray-600 mb-2 block">Status</mat-label>
-                        <mat-button-toggle-group [(ngModel)]="filters.statuses" name="statuses" multiple>
-                            <mat-button-toggle *ngFor="let status of availableStatuses" [value]="status">
+                    <mat-form-field appearance="fill" class="filter-field status-field">
+                        <mat-label>Status</mat-label>
+                        <mat-select [(ngModel)]="filters.statuses" name="statuses" multiple>
+                            <mat-option *ngFor="let status of availableStatuses" [value]="status">
                                 {{ status }}
-                            </mat-button-toggle>
-                        </mat-button-toggle-group>
-                    </div>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
 
                 <!-- Toggle e botões -->
                 <div class="flex items-center justify-between">
-                    <mat-slide-toggle [(ngModel)]="filters.includeOpenInMttr" name="includeOpenInMttr">
+                    <mat-checkbox class="filter-checkbox" [(ngModel)]="filters.includeOpenInMttr" name="includeOpenInMttr">
                         Incluir abertos no MTTR
-                    </mat-slide-toggle>
+                    </mat-checkbox>
                     
                     <div class="space-x-2">
-                        <button mat-raised-button color="primary" (click)="applyFilters()" type="button">
+                        <button mat-flat-button color="primary" class="incident-primary-button" (click)="applyFilters()" type="button">
                             Aplicar
                         </button>
-                        <button mat-stroked-button (click)="clearFilters()" type="button">
-                            Limpar
+                        <button mat-stroked-button class="dashboard-clear-button" (click)="clearFilters()" type="button">
+                            Limpar filtros
                         </button>
                     </div>
                 </div>
@@ -75,20 +85,20 @@
         <!-- KPI Cards -->
         <div class="grid md:grid-cols-4 gap-4 mb-6" *ngIf="summaryData">
             <!-- Incidentes -->
-            <mat-card class="kpi-card">
+            <mat-card class="kpi-card" matTooltip="Total de incidentes no período (A = aberto, F = fechado)." matTooltipPosition="above">
                 <mat-card-content>
                     <div class="text-center">
                         <h3 class="text-lg font-semibold text-gray-700">Incidentes</h3>
                         <div class="text-3xl font-bold text-blue-600 mt-2">{{ summaryData.incidents.total }}</div>
                         <div class="text-sm text-gray-500 mt-1">
-                            A: {{ summaryData.incidents.open }} | F: {{ summaryData.incidents.closed }}
+                            Abertos: {{ summaryData.incidents.open }} | Fechados: {{ summaryData.incidents.closed }}
                         </div>
                     </div>
                 </mat-card-content>
             </mat-card>
 
             <!-- MTTA médio -->
-            <mat-card class="kpi-card">
+            <mat-card class="kpi-card" matTooltip="Tempo médio até reconhecimento (MTTA), ou seja, quando o incidente é identificado e confirmado pela equipe. p50 = mediana (metade dos casos fica abaixo desse valor)." matTooltipPosition="above">
                 <mat-card-content>
                     <div class="text-center">
                         <h3 class="text-lg font-semibold text-gray-700">MTTA médio</h3>
@@ -103,7 +113,7 @@
             </mat-card>
 
             <!-- MTTR médio -->
-            <mat-card class="kpi-card">
+            <mat-card class="kpi-card" matTooltip="Tempo médio até resolução (MTTR). p50 = mediana, indicando que metade dos incidentes fecha abaixo desse tempo." matTooltipPosition="above">
                 <mat-card-content>
                     <div class="text-center">
                         <h3 class="text-lg font-semibold text-gray-700">MTTR médio</h3>
@@ -118,7 +128,7 @@
             </mat-card>
 
             <!-- Score médio -->
-            <mat-card class="kpi-card">
+            <mat-card class="kpi-card" matTooltip="Score médio e cobertura dos checklists. p50 = mediana do score." matTooltipPosition="above">
                 <mat-card-content>
                     <div class="text-center">
                         <h3 class="text-lg font-semibold text-gray-700">Score médio</h3>
@@ -126,7 +136,7 @@
                             {{ summaryData.score.avg || '-' }}/100
                         </div>
                         <div class="text-sm text-gray-500 mt-1">
-                            5 Whys: {{ (summaryData.score.checksCoveragePct.fiveWhys || 0) | number:'1.0-0' }}%
+                            5 Porquês: {{ (summaryData.score.checksCoveragePct.fiveWhys || 0) | number:'1.0-0' }}%
                         </div>
                     </div>
                 </mat-card-content>

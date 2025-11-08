@@ -9,20 +9,71 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    font-family: 'Exo 2', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    color: #0f172a;
+
+    * {
+        font-family: inherit !important;
+    }
 }
 
 .dashboard-toolbar {
     margin-bottom: 1rem;
     border-radius: 0.75rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background-color: #1f2937;
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+
+    &__title {
+        font-size: 30px;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    &__content {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+    }
+
+    &__cta {
+        font-size: 1rem;
+        min-width: 190px;
+        justify-content: center;
+    }
+}
+
+.filter-card {
+    background-color: #1f2937;
+    border-radius: 1rem;
+
+    mat-card-header {
+        padding-bottom: 0.5rem;
+    }
+
+    mat-card-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: #ffffff;
+    }
+
+    mat-card-content {
+        color: #ffffff;
+    }
 }
 
 .filter-field {
     width: 100%;
+    font-family: inherit;
 
     .mat-mdc-text-field-wrapper {
         background-color: #ffffff;
         border-radius: 0.75rem;
+        min-height: 64px;
     }
 
     .mat-mdc-form-field-focus-overlay,
@@ -45,6 +96,120 @@
 
     .mat-mdc-select-trigger {
         color: #000000;
+    }
+}
+
+:host ::ng-deep .filter-checkbox {
+    display: flex;
+    align-items: center;
+    padding-left: 0.5rem;
+    color: #ffffff;
+
+    .mdc-form-field,
+    .mdc-label,
+    .mat-mdc-checkbox label {
+        color: rgba(255, 255, 255, 0.96) !important;
+        font-weight: 500;
+    }
+}
+
+:host ::ng-deep .filter-checkbox.mat-mdc-checkbox {
+    --mdc-checkbox-unselected-icon-color: #ffffff;
+    --mdc-checkbox-unselected-hover-icon-color: #ffffff;
+    --mdc-checkbox-unselected-focus-icon-color: #ffffff;
+    --mdc-checkbox-unselected-pressed-icon-color: #ffffff;
+    --mdc-checkbox-selected-icon-color: #ffffff;
+    --mdc-checkbox-selected-hover-icon-color: #ffffff;
+    --mdc-checkbox-selected-focus-icon-color: #ffffff;
+    --mdc-checkbox-selected-pressed-icon-color: #ffffff;
+    --mdc-checkbox-selected-checkmark-color: #0f172a;
+    --mdc-checkbox-unselected-focus-state-layer-color: transparent;
+    --mdc-checkbox-unselected-hover-state-layer-color: transparent;
+    --mdc-checkbox-selected-focus-state-layer-color: transparent;
+    --mdc-checkbox-selected-hover-state-layer-color: transparent;
+}
+
+:host ::ng-deep .filter-checkbox .mdc-checkbox__background,
+:host ::ng-deep .filter-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background,
+:host ::ng-deep .filter-checkbox.mat-mdc-checkbox-indeterminate .mdc-checkbox__background,
+:host ::ng-deep .filter-checkbox.mat-mdc-checkbox.mat-mdc-checkbox-focused .mdc-checkbox__background {
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+:host ::ng-deep .filter-checkbox .mdc-checkbox__checkmark-path {
+    stroke: #0f172a !important;
+}
+
+:host ::ng-deep .filter-checkbox .mdc-form-field > label {
+    color: rgba(255, 255, 255, 0.96);
+    font-weight: 500;
+}
+
+:host ::ng-deep .filter-checkbox.mat-mdc-checkbox.mat-mdc-checkbox-focused .mdc-checkbox__background {
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
+
+.period-field,
+.date-field,
+.severity-field,
+.status-field {
+    .mat-mdc-text-field-wrapper {
+        min-height: 72px !important;
+        height: 72px !important;
+    }
+
+    .mat-mdc-form-field-infix {
+        min-height: 50px !important;
+        padding-top: 22px !important;
+        padding-bottom: 6px !important;
+    }
+
+    .mat-mdc-floating-label {
+        top: 14px !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+    }
+
+    &.mat-mdc-form-field-should-float .mat-mdc-floating-label {
+        transform: translateY(-10px) scale(0.75) !important;
+    }
+
+    .mat-mdc-input-element,
+    .mat-mdc-select-value,
+    .mat-date-range-input {
+        margin-top: 10px !important;
+    }
+}
+
+.period-field {
+    mat-date-range-input,
+    .mat-date-range-input-container {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        height: 100%;
+    }
+
+    mat-date-range-input input,
+    .mat-date-range-input-container input {
+        margin-top: 0 !important;
+        padding-top: 0;
+        padding-bottom: 0;
+        height: 30px;
+        line-height: 30px;
+        transform: translateY(-4px);
+    }
+
+    .mat-date-range-input-inner,
+    .mat-date-range-input-start-wrapper,
+    .mat-date-range-input-end-wrapper,
+    .mat-date-range-input-separator {
+        display: flex;
+        align-items: center;
+        height: 100%;
     }
 }
 
@@ -88,84 +253,6 @@
         width: 100%;
         height: 400px;
         min-height: 300px;
-    }
-}
-
-// Chip listbox styling
-mat-chip-listbox {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-
-    mat-chip-option {
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        
-        &.mdc-evolution-chip--selected {
-            background-color: #3b82f6;
-            color: white;
-        }
-    }
-}
-
-// Button toggle group styling
-mat-button-toggle-group {
-    border-radius: 0.5rem;
-    overflow: hidden;
-
-    mat-button-toggle {
-        border: none;
-        
-        &.mat-button-toggle-checked {
-            background-color: #3b82f6;
-            color: white;
-        }
-    }
-}
-
-// Slide toggle styling
-mat-slide-toggle {
-    .mat-mdc-slide-toggle-checked .mdc-switch__track {
-        background-color: #3b82f6;
-    }
-    
-    .mat-mdc-slide-toggle-checked .mdc-switch__handle {
-        background-color: white;
-    }
-}
-
-// Ajustes específicos para mat-form-field para evitar sobreposição do label
-::ng-deep .dashboard-wrapper {
-    .mat-mdc-form-field.filter-field {
-        .mat-mdc-text-field-wrapper {
-            min-height: 72px !important; // Altura suficiente para label + valor
-            height: 72px !important;
-        }
-        
-        .mat-mdc-form-field-infix {
-            min-height: 48px !important;
-            padding-top: 20px !important; // Espaço para o label
-            padding-bottom: 4px !important;
-        }
-        
-        // Label posicionamento correto
-        .mat-mdc-floating-label {
-            top: 12px !important;
-            font-size: 12px !important;
-        }
-        
-        // Quando o label está "flutuando"
-        &.mat-mdc-form-field-should-float .mat-mdc-floating-label {
-            transform: translateY(-8px) scale(0.75) !important;
-            top: 12px !important;
-        }
-        
-        // Input text positioning
-        .mat-mdc-input-element,
-        .mat-mdc-select-value,
-        .mat-date-range-input {
-            margin-top: 8px !important;
-        }
     }
 }
 

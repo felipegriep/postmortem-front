@@ -1,8 +1,14 @@
 import { Routes } from '@angular/router';
-// Incident components will be lazy-loaded via `loadComponent` to keep initial bundle small
-// (they import Angular Material and other heavier libs).
+// Most top-level feature areas still use lazy `loadComponent`, but nested tabs that caused
+// chunk-loading issues are referenced directly here to keep navigation stable.
 import { LayoutComponent } from './pages/layout-component/layout-component';
 import { HomeComponent } from './pages/home-component/home-component';
+import { IncidentDetailTabsComponent } from './pages/incident-detail-tabs/incident-detail-tabs.component';
+import { IncidentFormComponent } from './pages/incident-form-component/incident-form-component';
+import { IncidentTimelineTabComponent } from './pages/incident/incident-timeline-tab/incident-timeline-tab.component';
+import { IncidentAnalysisTabComponent } from './pages/incident/incident-analysis-tab/incident-analysis-tab.component';
+import { ActionItemTabComponent } from './pages/incident/action-item-tab/action-item-tab';
+import { PostmortemDocComponent } from './pages/incident/postmortem-doc-component/postmortem-doc-component';
 
 export const routes: Routes = [
     {
@@ -26,61 +32,37 @@ export const routes: Routes = [
             },
             {
                 path: 'incidents/new',
-                loadComponent: () =>
-                    import('./pages/incident-detail-tabs/incident-detail-tabs.component').then(
-                        (m) => m.IncidentDetailTabsComponent
-                    ),
+                component: IncidentDetailTabsComponent,
                 children: [
                     {
                         path: '',
-                        loadComponent: () =>
-                            import('./pages/incident-form-component/incident-form-component').then(
-                                (m) => m.IncidentFormComponent
-                            ),
+                        component: IncidentFormComponent,
                     },
                 ],
             },
             {
                 path: 'incidents/edit/:id',
-                loadComponent: () =>
-                    import('./pages/incident-detail-tabs/incident-detail-tabs.component').then(
-                        (m) => m.IncidentDetailTabsComponent
-                    ),
+                component: IncidentDetailTabsComponent,
                 children: [
                     {
                         path: '',
-                        loadComponent: () =>
-                            import('./pages/incident-form-component/incident-form-component').then(
-                                (m) => m.IncidentFormComponent
-                            ),
+                        component: IncidentFormComponent,
                     },
                     {
                         path: 'timeline',
-                        loadComponent: () =>
-                            import(
-                                './pages/incident/incident-timeline-tab/incident-timeline-tab.component'
-                            ).then((m) => m.IncidentTimelineTabComponent),
+                        component: IncidentTimelineTabComponent,
                     },
                     {
                         path: 'analysis',
-                        loadComponent: () =>
-                            import(
-                                './pages/incident/incident-analysis-tab/incident-analysis-tab.component'
-                            ).then((m) => m.IncidentAnalysisTabComponent),
+                        component: IncidentAnalysisTabComponent,
                     },
                     {
                         path: 'actions',
-                        loadComponent: () =>
-                            import('./pages/incident/action-item-tab/action-item-tab').then(
-                                (m) => m.ActionItemTabComponent
-                            ),
+                        component: ActionItemTabComponent,
                     },
                     {
                         path: 'document',
-                        loadComponent: () =>
-                            import(
-                                './pages/incident/postmortem-doc-component/postmortem-doc-component'
-                            ).then((m) => m.PostmortemDocComponent),
+                        component: PostmortemDocComponent,
                     },
                 ],
             },

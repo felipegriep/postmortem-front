@@ -17,7 +17,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Font Awesome
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Subscription } from 'rxjs';
 import { SeverityEnum } from '../../domain/enums/severity-enum';
@@ -86,7 +86,7 @@ export class IncidentListComponent implements OnInit, OnDestroy {
     ) {
         // register pencil icon
         try {
-            this.faLibrary.addIcons(faPencil);
+            this.faLibrary.addIcons(faPencil, faPlus);
         } catch (e) {
             // ignore if library not available
         }
@@ -94,6 +94,7 @@ export class IncidentListComponent implements OnInit, OnDestroy {
 
     // expose the icon to the template to use <fa-icon [icon]="pencil"></fa-icon>
     public pencil = faPencil;
+    public plus = faPlus;
 
     ngOnInit(): void {
         this.loadIncidents();

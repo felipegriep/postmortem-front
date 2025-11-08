@@ -12,6 +12,7 @@
                 type="button"
                 class="incident-primary-button"
             >
+                <fa-icon [icon]="plus" class="mr-2" aria-hidden="true"></fa-icon>
                 Novo Incidente
             </button>
         </header>
@@ -59,9 +60,14 @@
                     </mat-form-field>
                 </div>
             </div>
-            <div class="mt-3 text-right">
-                <button (click)="resetFilters()" class="text-sm text-gray-600 hover:text-gray-800 underline"
-                        type="button">Limpar filtros
+            <div class="mt-4 flex justify-end">
+                <button
+                    type="button"
+                    (click)="resetFilters()"
+                    mat-stroked-button
+                    class="dashboard-clear-button"
+                >
+                    Limpar filtros
                 </button>
             </div>
         </section>

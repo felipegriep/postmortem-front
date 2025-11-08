@@ -38,6 +38,7 @@ import {
     toLocalInputDateTime,
     formatDateToDisplay,
 } from '../../shared/date-utils';
+import { SEVERITY_OPTIONS, STATUS_OPTIONS } from '../../domain/constants/incident-display';
 
 @Component({
     selector: 'app-incident-form-component',
@@ -64,6 +65,8 @@ export class IncidentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly flatpickrValueFormat = FLATPICKR_VALUE_FORMAT;
     readonly flatpickrAltFormat = FLATPICKR_ALT_FORMAT;
     readonly dateDisplayFormat = DATE_DISPLAY_FORMAT;
+    readonly severityOptions = SEVERITY_OPTIONS;
+    readonly statusOptions = STATUS_OPTIONS;
 
     @ViewChild('startedAtInput', { static: false }) startedAtInput?: ElementRef<HTMLInputElement>;
     @ViewChild('endedAtInput', { static: false }) endedAtInput?: ElementRef<HTMLInputElement>;

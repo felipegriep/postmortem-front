@@ -14,6 +14,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { DATE_DISPLAY_FORMAT } from '../../shared/date.constants';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { getSeverityLabel as getSeverityDisplayLabel, getStatusLabel as getStatusDisplayLabel } from '../../domain/constants/incident-display';
 
 interface IncidentSummary {
     id?: string;
@@ -54,6 +55,8 @@ export class IncidentDetailTabsComponent implements OnInit, OnDestroy {
     isNewIncident = false;
     summary: IncidentSummary = {};
     readonly dateDisplayFormat = DATE_DISPLAY_FORMAT;
+    readonly severityLabel = getSeverityDisplayLabel;
+    readonly statusLabel = getStatusDisplayLabel;
 
     private destroy$ = new Subject<void>();
 

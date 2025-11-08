@@ -47,8 +47,8 @@
                     <mat-form-field appearance="fill" class="filter-field severity-field">
                         <mat-label>Severidade</mat-label>
                         <mat-select [(ngModel)]="filters.severities" name="severities" multiple>
-                            <mat-option *ngFor="let severity of availableSeverities" [value]="severity">
-                                {{ severity }}
+                            <mat-option *ngFor="let severity of severityOptions" [value]="severity.value">
+                                {{ severity.label }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -57,8 +57,8 @@
                     <mat-form-field appearance="fill" class="filter-field status-field">
                         <mat-label>Status</mat-label>
                         <mat-select [(ngModel)]="filters.statuses" name="statuses" multiple>
-                            <mat-option *ngFor="let status of availableStatuses" [value]="status">
-                                {{ status }}
+                            <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                                {{ status.label }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>

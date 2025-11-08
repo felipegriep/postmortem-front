@@ -55,6 +55,10 @@ import { BucketEnum } from '../../domain/enums/bucket-enum';
 import { MetricsService, GetMetricsSummaryParams, GetMetricsSeriesParams } from '../../services/metrics-service';
 import { MetricsSummaryResponseInterface } from '../../domain/interfaces/response/metrics-summary-response-interface';
 import { MetricsSeriesResponseInterface } from '../../domain/interfaces/response/metrics-series-response-interface';
+import {
+    SEVERITY_OPTIONS,
+    STATUS_OPTIONS,
+} from '../../domain/constants/incident-display';
 
 interface DashboardFilters {
     startDate: Date | null;
@@ -114,8 +118,8 @@ export class DashboardComponent implements OnInit {
     };
 
     // Opções disponíveis
-    availableSeverities = Object.values(SeverityEnum);
-    availableStatuses = Object.values(StatusEnum);
+    severityOptions = SEVERITY_OPTIONS;
+    statusOptions = STATUS_OPTIONS;
 
     // Configurações dos gráficos
     timeChartOption: EChartsOption = {};

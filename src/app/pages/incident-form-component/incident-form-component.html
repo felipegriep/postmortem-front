@@ -66,10 +66,9 @@
             >
               <mat-label>Severidade</mat-label>
               <mat-select id="severity" name="severity" #severity="ngModel" [(ngModel)]="incident.severity" required>
-                <mat-option value="SEV-1">SEV-1 (Crítico)</mat-option>
-                <mat-option value="SEV-2">SEV-2 (Alto)</mat-option>
-                <mat-option value="SEV-3">SEV-3 (Médio)</mat-option>
-                <mat-option value="SEV-4">SEV-4 (Baixo)</mat-option>
+                <mat-option *ngFor="let option of severityOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
               </mat-select>
               <mat-error *ngIf="severity.invalid && (severity.dirty || severity.touched)">
                 A severidade é obrigatória.
@@ -86,9 +85,9 @@
             >
               <mat-label>Status</mat-label>
               <mat-select id="status" name="status" #status="ngModel" [(ngModel)]="incident.status" required>
-                <mat-option value="Open">Aberto</mat-option>
-                <mat-option value="In Analysis">Em Análise</mat-option>
-                <mat-option value="Closed">Resolvido</mat-option>
+                <mat-option *ngFor="let option of statusOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
               </mat-select>
               <mat-error *ngIf="status.invalid && (status.dirty || status.touched)">
                 O status é obrigatório.

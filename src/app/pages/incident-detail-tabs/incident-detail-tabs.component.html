@@ -19,11 +19,11 @@
         </div>
         <div class="summary-block">
           <p class="summary-label">Severidade</p>
-          <p class="summary-value">{{ summary.severity || '—' }}</p>
+          <p class="summary-value">{{ summary.severity ? severityLabel(summary.severity) : '—' }}</p>
         </div>
         <div class="summary-block">
           <p class="summary-label">Status</p>
-          <p class="summary-value">{{ summary.status || '—' }}</p>
+          <p class="summary-value">{{ summary.status ? statusLabel(summary.status) : '—' }}</p>
         </div>
         <div class="summary-block">
           <p class="summary-label">Início</p>

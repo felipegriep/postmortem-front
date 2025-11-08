@@ -23,6 +23,14 @@ import { Subscription } from 'rxjs';
 import { SeverityEnum } from '../../domain/enums/severity-enum';
 import { StatusEnum } from '../../domain/enums/status-enum';
 import { DATE_DISPLAY_FORMAT } from '../../shared/date.constants';
+import {
+    SEVERITY_OPTIONS,
+    STATUS_OPTIONS,
+    getSeverityLabel as getSeverityDisplayLabel,
+    getStatusLabel as getStatusDisplayLabel,
+    toSeverityEnum,
+    toStatusEnum,
+} from '../../domain/constants/incident-display';
 
 @Component({
     selector: 'app-incident-list-component',
@@ -60,8 +68,8 @@ export class IncidentListComponent implements OnInit, OnDestroy {
 
     @ViewChild(MatPaginator) paginator?: MatPaginator;
 
-    readonly availableSeverities = Object.values(SeverityEnum);
-    readonly availableStatus = Object.values(StatusEnum);
+    readonly severityOptions = SEVERITY_OPTIONS;
+    readonly statusOptions = STATUS_OPTIONS;
     readonly dateDisplayFormat = DATE_DISPLAY_FORMAT;
 
     totalItems = 0;
@@ -231,22 +239,12 @@ export class IncidentListComponent implements OnInit, OnDestroy {
         value?: string
     ): SeverityEnum | keyof typeof SeverityEnum | undefined {
         if (!value) return undefined;
-        const enumKey = Object.entries(SeverityEnum).find(([, label]) => label === value)?.[0];
-        if (enumKey && enumKey in SeverityEnum) {
-            return enumKey as keyof typeof SeverityEnum;
-        }
-        const enumValue = Object.values(SeverityEnum).find((label) => label === value);
-        return enumValue ?? undefined;
+        return toSeverityEnum(value) ?? undefined;
     }
 
     private mapStatusToQuery(value?: string): StatusEnum | keyof typeof StatusEnum | undefined {
         if (!value) return undefined;
-        const enumKey = Object.entries(StatusEnum).find(([, label]) => label === value)?.[0];
-        if (enumKey && enumKey in StatusEnum) {
-            return enumKey as keyof typeof StatusEnum;
-        }
-        const enumValue = Object.values(StatusEnum).find((label) => label === value);
-        return enumValue ?? undefined;
+        return toStatusEnum(value) ?? undefined;
     }
 
     private resolveSortField(column: string): string {
@@ -265,24 +263,19 @@ export class IncidentListComponent implements OnInit, OnDestroy {
 
     private normalizeSeverity(value: any): string {
         if (value === undefined || value === null || String(value).trim() === '') return '';
-        const s = String(value).toUpperCase().trim();
-        if (s.includes('SEV1') || s.includes('SEV-1') || s.includes('SEV_1')) return 'SEV-1';
-        if (s.includes('SEV2') || s.includes('SEV-2') || s.includes('SEV_2')) return 'SEV-2';
-        if (s.includes('SEV3') || s.includes('SEV-3') || s.includes('SEV_3')) return 'SEV-3';
-        if (s.includes('SEV4') || s.includes('SEV-4') || s.includes('SEV_4')) return 'SEV-4';
-        return String(value);
+        return toSeverityEnum(value as any) ?? String(value ?? '');
     }
 
     private normalizeStatus(value: any): string {
         if (value === undefined || value === null || String(value).trim() === '') return '';
-        const s = String(value).toUpperCase().trim();
-        if (s === 'OPEN' || s === 'OPENED') return 'Open';
-        if (s === 'IN_ANALYSIS' || s === 'IN ANALYSIS' || s === 'INANALYSIS' || s === 'IN-ANALYSIS')
-            return 'In Analysis';
-        if (s === 'CLOSED' || s === 'CLOSE') return 'Closed';
-        if (s.includes('OPEN')) return 'Open';
-        if (s.includes('CLOSED') || s.includes('CLOSE')) return 'Closed';
-        if (s.includes('ANALYS')) return 'In Analysis';
-        return String(value);
+        return toStatusEnum(value as any) ?? String(value ?? '');
+    }
+
+    getSeverityLabel(value: IncidentResponseInterface['severity']): string {
+        return getSeverityDisplayLabel(value);
+    }
+
+    getStatusLabel(value: IncidentResponseInterface['status']): string {
+        return getStatusDisplayLabel(value);
     }
 }

@@ -46,8 +46,9 @@ import { ToastService } from '../../../shared/toast.service';
 import { ActionItemDialogComponent } from './action-item-dialog-component/action-item-dialog-component';
 import { UserAccountResponseInterface } from '../../../domain/interfaces/response/user-account-response-interface';
 import { UserAccountService } from '../../../services/user-account-service';
-import { formatDateToDisplay } from '../../../shared/date-utils';
+import { formatDateToDisplay, normalizeToDate } from '../../../shared/date-utils';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { IncidentService } from '../../../services/incident-service';
 
 interface ActionItemFiltersForm {
     type: ActionTypeEnum | '';
@@ -112,6 +113,8 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
     isDrawerEdit = false;
     drawerAction: ActionItemResponseInterface | null = null;
     private editingActionId: number | null = null;
+    incidentStartedAt: Date | null = null;
+    drawerResetToken = 0;
 
     constructor(
         private readonly actionItemService: ActionItemService,
@@ -120,7 +123,8 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
         private readonly dialog: MatDialog,
         private readonly faLibrary: FaIconLibrary,
         private readonly route: ActivatedRoute,
-        private readonly cdr: ChangeDetectorRef
+        private readonly cdr: ChangeDetectorRef,
+        private readonly incidentService: IncidentService
     ) {
         try {
             this.faLibrary.addIcons(
@@ -179,6 +183,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
         if (changes['incidentId'] && this.incidentId) {
             this.pageIndex = 0;
             this.loadActionItems();
+            this.loadIncidentMetadata();
         }
     }
 
@@ -397,6 +402,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
             this.incidentId = parsed;
             this.pageIndex = 0;
             this.loadActionItems();
+            this.loadIncidentMetadata();
         };
 
         // Attempt snapshot resolution immediately (covers first render)
@@ -420,6 +426,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
         this.editingActionId = action?.id ?? null;
         this.drawerAction = action ? { ...action } : null;
         this.isDrawerOpen = true;
+        this.drawerResetToken++;
         this.cdr.markForCheck();
         setTimeout(() => {
             this.actionDrawer?.open();
@@ -497,5 +504,26 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
                 (owner): owner is UserAccountResponseInterface =>
                     !!owner && owner.id !== undefined && owner !== null
             );
+    }
+
+    private loadIncidentMetadata(): void {
+        if (!this.incidentId) {
+            this.incidentStartedAt = null;
+            return;
+        }
+
+        this.incidentService
+            .get(this.incidentId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (incident) => {
+                    this.incidentStartedAt = normalizeToDate(incident?.startedAt ?? null);
+                    this.cdr.markForCheck();
+                },
+                error: () => {
+                    this.incidentStartedAt = null;
+                    this.cdr.markForCheck();
+                },
+            });
     }
 }

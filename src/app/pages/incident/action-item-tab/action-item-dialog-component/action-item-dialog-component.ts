@@ -115,6 +115,8 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     get owners(): UserAccountResponseInterface[] {
         return this._owners;
     }
+    @Input() incidentStartedAt: Date | string | null = null;
+    @Input() resetToken = 0;
     @Output() cancelled = new EventEmitter<void>();
     @Output() submitted = new EventEmitter<ActionItemInterface>();
 
@@ -151,9 +153,12 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['action'] || changes['mode']) {
+        if (changes['action'] || changes['mode'] || changes['resetToken']) {
             this.patchFormFromInputs();
             this.syncPickerWithForm();
+        }
+        if (changes['incidentStartedAt']) {
+            this.ensureDueDateRespectsMin();
         }
     }
 
@@ -442,12 +447,34 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     }
 
     private computeMinDueDate(): Date {
-        return new Date(Date.now() + 15 * 60 * 1000);
+        const incidentStart = normalizeToDate(this.incidentStartedAt ?? null);
+        const base = incidentStart ?? new Date();
+        return new Date(base.getTime() + 15 * 60 * 1000);
     }
 
     private clampToMin(date: Date): Date {
         const minDate = this.computeMinDueDate();
         return date < minDate ? minDate : date;
+    }
+
+    private ensureDueDateRespectsMin(): void {
+        const minDate = this.computeMinDueDate();
+        const current = normalizeToDate(this.form.get('dueDate')?.value ?? null);
+        const clamped = this.clampToMin(current ?? minDate);
+
+        if (!current || current < minDate) {
+            this.form.patchValue(
+                { dueDate: toLocalInputDateTime(clamped) ?? '' },
+                { emitEvent: false }
+            );
+        }
+
+        if (this.dueDatePicker) {
+            this.dueDatePicker.set('minDate', minDate);
+            try {
+                this.dueDatePicker.setDate(clamped, false);
+            } catch {}
+        }
     }
 
     private resolveOwnerId(

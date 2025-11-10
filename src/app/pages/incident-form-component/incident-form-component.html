@@ -191,17 +191,17 @@
                 #impactShortModel="ngModel"
                 class="impact-textarea"
                 [(ngModel)]="incident.impactShort"
-                maxlength="500"
+                maxlength="4000"
                 placeholder="Descreva o impacto de forma concisa. O que foi afetado, quantos clientes, por quanto tempo?"
                 cdkTextareaAutosize
                 cdkAutosizeMinRows="4"
                 cdkAutosizeMaxRows="8"
               ></textarea>
               <mat-hint align="end" class="char-counter">
-                {{ impactShortLength }}/500
+                {{ impactShortLength }}/4000
               </mat-hint>
               <mat-error *ngIf="impactShortModel.errors?.['maxlength']">
-                Limite máximo de 500 caracteres.
+                Limite máximo de 4000 caracteres.
               </mat-error>
             </mat-form-field>
           </div>

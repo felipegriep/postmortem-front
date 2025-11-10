@@ -186,6 +186,8 @@
             [mode]="isDrawerEdit ? 'edit' : 'create'"
             [action]="drawerAction"
             [owners]="owners"
+            [incidentStartedAt]="incidentStartedAt"
+            [resetToken]="drawerResetToken"
             (cancelled)="onDrawerCancel()"
             (submitted)="onDrawerSubmit($event)"
         ></app-action-item-dialog-component>

@@ -697,14 +697,14 @@ textarea[matInput] {
   overflow: hidden;
 }
 
-/* Wrappers de conteúdo com cantos arredondados */
-.incident-form-wrapper,
-.action-item-tab-wrapper,
-.incident-analysis-wrapper,
-.timeline-wrapper {
-  border-radius: 1.5rem !important;
-  overflow: hidden;
-}
+// /* Wrappers de conteúdo com cantos arredondados */
+// .incident-form-wrapper,
+// .action-item-tab-wrapper,
+// .incident-analysis-wrapper,
+// .timeline-wrapper {
+//   border-radius: 1.5rem !important;
+//   overflow: hidden !important;
+// }
 .incident-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::before,
 .incident-tab-group ::ng-deep .mat-mdc-tab .mdc-tab__ripple::after {
   background-color: rgba(255, 255, 255, 0.1);

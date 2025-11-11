@@ -99,7 +99,7 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="fill" class="full-width" *ngIf="mode === 'edit'">
+            <mat-form-field appearance="fill" class="full-width">
                 <mat-label>Status</mat-label>
                 <mat-select formControlName="status" required>
                     <mat-option *ngFor="let status of statusOptions" [value]="status">

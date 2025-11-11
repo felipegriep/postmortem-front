@@ -1,5 +1,6 @@
 <div class="incident-form-wrapper">
-  <div class="w-full p-4 md:p-8 dark:bg-gray-800">
+  <form #incidentForm="ngForm" (ngSubmit)="onSubmit()" class="incident-form">
+    <div class="form-panel w-full p-4 md:p-8 dark:bg-gray-800">
     <header class="mb-8 border-b pb-4 dark:border-gray-600">
       <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
         {{ isEditMode ? 'Editar Incidente #' + incident.id : 'Registrar Novo Incidente' }}
@@ -8,9 +9,7 @@
         Preencha os detalhes do incidente abaixo.
       </p>
     </header>
-
-    <form #incidentForm="ngForm" (ngSubmit)="onSubmit()">
-      <div class="grid gap-6 md:grid-cols-2">
+      <div class="grid gap-6 md:grid-cols-2 form-grid">
         <div class="md:col-span-2">
             <mat-form-field
               appearance="fill"
@@ -206,29 +205,26 @@
             </mat-form-field>
           </div>
       </div>
-      <footer class="form-footer">
-        <div class="form-footer__status">
-          <span class="form-footer__label">Última atualização</span>
-          <span class="form-footer__value">{{ lastUpdatedDisplay || 'Sem registro' }}</span>
-          <span class="form-footer__hint">
-            {{ incidentForm?.dirty ? 'Alterações não salvas' : 'Tudo sincronizado' }}
-          </span>
-        </div>
-        <div class="form-footer__actions">
-          <button mat-stroked-button color="accent" type="button" class="cancel-button" (click)="onCancel()">
-            Cancelar
-          </button>
-          <button
-            mat-flat-button
-            color="primary"
-            class="incident-primary-button"
-            [disabled]="incidentForm?.invalid || !isDateRangeValid()"
-            type="submit"
-          >
-            {{ isEditMode ? 'Salvar Alterações' : 'Criar Incidente' }}
-          </button>
-        </div>
-      </footer>
-    </form>
-  </div>
+    </div>
+    <footer class="form-footer">
+      <div class="form-footer__status">
+        <span class="form-footer__label">Última atualização</span>
+        <span class="form-footer__value">{{ lastUpdatedDisplay || 'Sem registro' }}</span>
+      </div>
+      <div class="form-footer__actions">
+        <button mat-stroked-button color="accent" type="button" class="cancel-button" (click)="onCancel()">
+          Cancelar
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          class="incident-primary-button"
+          [disabled]="incidentForm?.invalid || !isDateRangeValid()"
+          type="submit"
+        >
+          {{ isEditMode ? 'Salvar Alterações' : 'Criar Incidente' }}
+        </button>
+      </div>
+    </footer>
+  </form>
 </div>

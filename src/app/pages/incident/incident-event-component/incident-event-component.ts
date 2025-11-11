@@ -123,11 +123,7 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         }
         this.incidentEventService.create(this.incidentId, event).subscribe(() => {
             this.toast.success('Evento adicionado na linha do tempo!');
-            if (typeof window !== 'undefined') {
-                window.location.reload();
-            } else {
-                this.loadEvents();
-            }
+            this.loadEvents();
         });
     }
 
@@ -137,11 +133,7 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         }
         this.incidentEventService.update(this.incidentId, eventId, event).subscribe(() => {
             this.toast.success('Evento atualizado com sucesso!');
-            if (typeof window !== 'undefined') {
-                window.location.reload();
-            } else {
-                this.loadEvents();
-            }
+            this.loadEvents();
         });
     }
 

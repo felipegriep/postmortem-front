@@ -27,6 +27,7 @@ import { RootCauseInterface } from '../../../domain/interfaces/request/root-caus
 import { RootCauseResponseInterface } from '../../../domain/interfaces/response/root-cause-response-interface';
 import { formatDateToDisplay } from '../../../shared/date-utils';
 import { faHandHoldingHeart } from '@fortawesome/free-solid-svg-icons';
+import { ToastService } from '../../../shared/toast.service';
 
 @Component({
     selector: 'app-incident-analysis-tab',
@@ -62,7 +63,8 @@ export class IncidentAnalysisTabComponent implements OnInit, OnChanges {
     constructor(
         private readonly rcaService: RootCauseService,
         private readonly cdr: ChangeDetectorRef,
-        private readonly route: ActivatedRoute
+        private readonly route: ActivatedRoute,
+        private readonly toast: ToastService
     ) {}
 
     ngOnInit(): void {
@@ -167,15 +169,24 @@ export class IncidentAnalysisTabComponent implements OnInit, OnChanges {
             ? this.rcaService.update(this.incidentId, payload)
             : this.rcaService.create(this.incidentId, payload);
 
+        let saveFailed = false;
+
         save$
             .pipe(
                 switchMap(() => this.rcaService.get(this.incidentId)),
                 take(1),
-                catchError(() => of(null))
+                catchError(() => {
+                    saveFailed = true;
+                    this.toast.error('Não foi possível salvar a análise.');
+                    return of(null);
+                })
             )
             .subscribe({
                 next: (data: RootCauseResponseInterface | null) => {
                     this.applyRcaResponse(data);
+                    if (!saveFailed) {
+                        this.toast.success('Análise salva com sucesso!');
+                    }
                     this.cdr.markForCheck();
                 },
                 error: () => {

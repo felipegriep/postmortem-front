@@ -217,9 +217,9 @@
   </div>
 
     <footer class="analysis-footer" *ngIf="rca">
-      <div class="analysis-footer__status" *ngIf="lastUpdatedDisplay">
+      <div class="analysis-footer__status">
         <span class="analysis-footer__label">Última atualização:</span>
-        <span class="analysis-footer__value">{{ lastUpdatedDisplay }}</span>
+        <span class="analysis-footer__value">{{ lastUpdatedDisplay || 'Sem registro' }}</span>
       </div>
       <div class="analysis-footer__actions">
         <button

@@ -83,7 +83,6 @@
 .tab-content {
   padding-bottom: 2rem;
   border-radius: 1.5rem; /* Cantos arredondados no conteúdo */
-  overflow: hidden; /* Garante que o conteúdo respeite o border-radius */
 }
 
 /* Usa a classe global .incident-tab-group do styles.scss */

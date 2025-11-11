@@ -13,7 +13,7 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormControl, FormGroupDirective } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -66,6 +66,7 @@ import { map, startWith, takeUntil } from 'rxjs/operators';
 export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDestroy {
     private readonly fb = inject(FormBuilder);
     @ViewChild('dueDateInput', { static: false }) dueDateInput?: ElementRef<HTMLInputElement>;
+    @ViewChild(FormGroupDirective, { static: false }) formDirective?: FormGroupDirective;
 
     readonly form = this.fb.group({
         type: this.fb.control<ActionTypeEnum>(ActionTypeEnum.CORRECTIVE, {
@@ -225,8 +226,7 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
 
         const raw = this.form.getRawValue();
         const dueDateBackend = toBackendDateTimeString(raw.dueDate) ?? raw.dueDate ?? '';
-        const statusControlValue = raw.status ?? ActionStatusEnum.TODO;
-        const status = this.mode === 'create' ? ActionStatusEnum.TODO : statusControlValue;
+        const status = raw.status ?? ActionStatusEnum.TODO;
         const resolvedOwnerId = this.resolveOwnerId(raw.owner ?? null, raw.ownerId ?? null);
 
         if (!resolvedOwnerId) {
@@ -272,15 +272,11 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
             { emitEvent: false }
         );
 
-        if (this.mode === 'create') {
-            this.form.get('status')?.disable({ emitEvent: false });
-            this.form.patchValue({ status: ActionStatusEnum.TODO }, { emitEvent: false });
-        } else {
-            this.form.get('status')?.enable({ emitEvent: false });
-        }
+        this.form.get('status')?.enable({ emitEvent: false });
 
         this.syncOwnerControls();
         this.emitOwnerFilterRefresh();
+        this.clearValidationState();
     }
 
     private initializeDueDatePicker(): void {
@@ -330,6 +326,15 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
                 this.dueDatePicker?.set('minDate', this.computeMinDueDate());
             },
         });
+    }
+
+    private clearValidationState(): void {
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
+        this.form.updateValueAndValidity({ emitEvent: false });
+        if (this.formDirective) {
+            this.formDirective.resetForm(this.form.getRawValue());
+        }
     }
 
     private syncPickerWithForm(): void {

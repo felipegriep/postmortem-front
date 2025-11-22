@@ -12,7 +12,23 @@
 
     <form #eventForm="ngForm" class="drawer-form" (ngSubmit)="onSubmit(eventForm)">
         <div class="drawer-body">
+            <div class="drawer-blameless-banner" role="note" aria-label="Dicas de escrita sem culpabilizar">
+                <div class="drawer-banner-icon">
+                    <fa-icon [icon]="infoIcon" aria-hidden="true"></fa-icon>
+                </div>
+                <div class="drawer-banner-content">
+                    <p class="drawer-banner-title">Cultura sem culpabilização</p>
+                    <ul class="drawer-banner-list">
+                        <li>Descreva sinais, decisões e hipóteses observáveis.</li>
+                        <li>Evite nomes ou julgamentos; foque no comportamento do sistema.</li>
+                        <li>Conte a história do que ocorreu e o que foi tentado em seguida.</li>
+                    </ul>
+                </div>
+            </div>
+
             <mat-form-field appearance="fill" floatLabel="always" class="w-full event-datetime-field"
+                            matTooltip="Use a data/hora do fato observado, não do reporte. Evite associar a pessoas."
+                            matTooltipPosition="above"
                             [ngClass]="{ 'has-error': eventAtModel.invalid && (eventAtModel.dirty || eventAtModel.touched) }">
                 <mat-label>Data e Hora do Evento</mat-label>
                 <input
@@ -45,6 +61,7 @@
                     <mat-option value="">Selecione</mat-option>
                     <mat-option *ngFor="let type of eventTypes" [value]="type.id">{{ type.name }}</mat-option>
                 </mat-select>
+                <mat-hint align="start" class="blameless-hint">Escolha o que aconteceu no sistema, não quem estava.</mat-hint>
                 <mat-error *ngIf="typeModel.invalid && (typeModel.dirty || typeModel.touched)">
                     O tipo de evento é obrigatório.
                 </mat-error>
@@ -55,7 +72,11 @@
                 <mat-label>Descrição</mat-label>
                 <textarea matInput id="description" name="description" [(ngModel)]="event.description"
                           #descriptionModel="ngModel" required maxlength="4000"
+                          placeholder="Relate sinais, impacto e tentativas. Evite nomes e julgamentos."
                           cdkTextareaAutosize cdkAutosizeMinRows="3" cdkAutosizeMaxRows="6"></textarea>
+                <mat-hint align="start" class="blameless-hint">
+                    Use frases neutras: "O serviço X começou a responder 500" em vez de "Fulano quebrou".
+                </mat-hint>
                 <mat-hint align="end">{{ event.description.length || 0 }}/4000</mat-hint>
                 <mat-error *ngIf="descriptionModel.invalid && (descriptionModel.dirty || descriptionModel.touched)">
                     A descrição é obrigatória.

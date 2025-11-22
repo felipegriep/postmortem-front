@@ -19,10 +19,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faCalendarDay, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDay, faHandHoldingHeart, faXmark } from '@fortawesome/free-solid-svg-icons';
 import flatpickr from 'flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -56,6 +57,7 @@ import { map, startWith, takeUntil } from 'rxjs/operators';
         MatInputModule,
         MatSelectModule,
         MatAutocompleteModule,
+        MatTooltipModule,
         MatButtonModule,
         TextFieldModule,
         FontAwesomeModule,
@@ -91,6 +93,7 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
     readonly flatpickrValueFormat = FLATPICKR_VALUE_FORMAT;
     readonly flatpickrAltFormat = FLATPICKR_ALT_FORMAT;
     readonly closeIcon = faXmark;
+    readonly infoIcon = faHandHoldingHeart;
     readonly ownerControl = this.form.get('owner') as FormControl<
         UserAccountResponseInterface | string | null
     >;
@@ -128,7 +131,7 @@ export class ActionItemDialogComponent implements OnChanges, AfterViewInit, OnDe
         private readonly dialog: MatDialog
     ) {
         try {
-            this.faLibrary.addIcons(faCalendarDay, faXmark);
+            this.faLibrary.addIcons(faCalendarDay, faXmark, faHandHoldingHeart);
         } catch (e) {
             // ignore icon registration issues (tests, etc.)
         }

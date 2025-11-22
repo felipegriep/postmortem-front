@@ -19,7 +19,7 @@ import { EventTypeEnum } from '../../../domain/enums/event-type-enum';
 import { IncidentEventService } from '../../../services/incident-event-service';
 import { IncidentEventInterface } from '../../../domain/interfaces/request/incident-event-interface';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faHandHoldingHeart, faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../../../shared/toast.service';
 import { DATE_DISPLAY_FORMAT } from '../../../shared/date.constants';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
@@ -45,6 +45,7 @@ export class IncidentEventComponent implements OnInit, OnChanges {
     public readonly plus = faPlus;
     public readonly edit = faPen;
     public readonly trash = faTrash;
+    public readonly info = faHandHoldingHeart;
     readonly dateDisplayFormat = DATE_DISPLAY_FORMAT;
 
     constructor(
@@ -55,7 +56,7 @@ export class IncidentEventComponent implements OnInit, OnChanges {
         private readonly dialog: MatDialog
     ) {
         try {
-            this.faLibrary.addIcons(faPlus, faPen, faTrash);
+            this.faLibrary.addIcons(faPlus, faPen, faTrash, faHandHoldingHeart);
         } catch (e) {
             // noop - library unavailable
         }

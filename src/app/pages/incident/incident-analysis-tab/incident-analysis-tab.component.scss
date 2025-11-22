@@ -29,39 +29,7 @@
 }
 
 .analysis-blameless-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
   margin-bottom: 2rem;
-  padding: 1.25rem 1.5rem;
-  border-radius: 1.25rem;
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  color: #e8f7ef;
-}
-
-.analysis-blameless-banner fa-icon {
-  font-size: 1.75rem;
-  color: #bbf7d0;
-}
-
-.analysis-blameless-banner__copy h2 {
-  margin: 0 0 0.35rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.analysis-blameless-banner__copy p {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: rgba(226, 232, 240, 0.9);
-}
-
-:host-context(.dark) .analysis-blameless-banner {
-  background: rgba(34, 197, 94, 0.18);
-  border-color: rgba(34, 197, 94, 0.5);
 }
 
 .analysis-header {

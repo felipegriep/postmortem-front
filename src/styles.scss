@@ -201,6 +201,48 @@ body {
   text-align: left;
 }
 
+/* ========================================
+   Blameless banners (global)
+   ======================================== */
+.blameless-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1.1rem;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: rgba(226, 232, 240, 0.9);
+  width: 100%;
+}
+
+.blameless-banner__icon,
+.blameless-banner fa-icon {
+  font-size: 1.75rem;
+  color: #bbf7d0;
+}
+
+.blameless-banner__title,
+.blameless-banner .blameless-title,
+.blameless-banner .banner-title {
+  margin: 0 0 0.35rem;
+  font-size: 17.6px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.blameless-banner__desc,
+.blameless-banner .blameless-desc,
+.blameless-banner .banner-list,
+.blameless-banner .banner-list li,
+.blameless-banner .action-blameless-description,
+.blameless-banner .doc-blameless-description {
+  margin: 0;
+  font-size: 15.2px;
+  color: rgba(226, 232, 240, 0.9);
+  line-height: 1.5;
+}
+
 /* Seta/caret do tooltip (se habilitada pela lib) */
 .mat-mdc-tooltip .mdc-tooltip__caret-surface-top,
 .mat-mdc-tooltip .mdc-tooltip__caret-surface-bottom {

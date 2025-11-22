@@ -17,13 +17,14 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EventTypeEnum } from '../../../../domain/enums/event-type-enum';
 import { IncidentEventInterface } from '../../../../domain/interfaces/request/incident-event-interface';
 import { IncidentEventResponseInterface } from '../../../../domain/interfaces/response/incident-event-response-interface';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faCalendarDay, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDay, faHandHoldingHeart, faXmark } from '@fortawesome/free-solid-svg-icons';
 import flatpickr from 'flatpickr';
 import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -53,6 +54,7 @@ import { takeUntil } from 'rxjs/operators';
         MatButtonModule,
         MatDialogModule,
         TextFieldModule,
+        MatTooltipModule,
         FontAwesomeModule,
     ],
     templateUrl: './event-dialog-component.html',
@@ -76,6 +78,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
     ];
     public readonly xmark = faXmark;
     public readonly calendarDay = faCalendarDay;
+    public readonly infoIcon = faHandHoldingHeart;
     private eventAtPicker?: flatpickr.Instance;
     private incidentStartDate?: Date;
     readonly datePlaceholder = DATE_PLACEHOLDER;
@@ -91,7 +94,7 @@ export class EventDialogComponent implements OnChanges, AfterViewInit, OnDestroy
         this.event = this.buildDefaultEvent();
 
         try {
-            this.faLibrary.addIcons(faXmark, faCalendarDay);
+            this.faLibrary.addIcons(faXmark, faCalendarDay, faHandHoldingHeart);
         } catch (e) {
             // noop - library unavailable
         }

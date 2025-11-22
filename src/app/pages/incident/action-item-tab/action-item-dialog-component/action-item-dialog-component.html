@@ -14,6 +14,20 @@
 
     <form class="drawer-form" [formGroup]="form" (ngSubmit)="submit()">
         <div class="drawer-body">
+            <div class="drawer-blameless-banner" role="note" aria-label="Dicas de ação sem culpabilizar">
+                <div class="drawer-banner-icon">
+                    <fa-icon [icon]="infoIcon" aria-hidden="true"></fa-icon>
+                </div>
+                <div class="drawer-banner-content">
+                    <p class="drawer-banner-title">Cultura sem culpabilização</p>
+                    <ul class="drawer-banner-list">
+                        <li>Defina o problema a resolver, não quem causou.</li>
+                        <li>Responsável = quem acompanha e destrava, não quem leva culpa.</li>
+                        <li>Descreva o efeito esperado e como medir.</li>
+                    </ul>
+                </div>
+            </div>
+
             <mat-form-field appearance="fill" class="full-width">
                 <mat-label>Tipo</mat-label>
                 <mat-select formControlName="type" required>
@@ -24,7 +38,7 @@
                 <mat-error *ngIf="form.get('type')?.hasError('required')">Selecione um tipo.</mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="fill" class="full-width">
+            <mat-form-field appearance="fill" class="full-width" matTooltip="Descreva o que será feito, para que impacto, e como medir sucesso.">
                 <mat-label>Descrição</mat-label>
                 <textarea
                     matInput
@@ -34,6 +48,7 @@
                     cdkTextareaAutosize
                     cdkAutosizeMinRows="3"
                     cdkAutosizeMaxRows="6"
+                    placeholder="Ex: Reativar autoscaling e criar alerta de falha de reconfiguração (sem nomes)."
                 ></textarea>
                 <mat-hint class="description-counter" align="end">
                     {{ form.get('description')?.value?.length || 0 }}/4000
@@ -44,7 +59,7 @@
             </mat-form-field>
 
             <ng-container *ngIf="owners.length; else ownerIdFallback">
-                <mat-form-field appearance="fill" class="full-width">
+                <mat-form-field appearance="fill" class="full-width" matTooltip="Responsável por acompanhar e remover bloqueios, não por culpar.">
                     <mat-label>Responsável</mat-label>
                     <input
                         type="text"
@@ -66,15 +81,17 @@
                             {{ displayOwner(option) }}
                         </mat-option>
                     </mat-autocomplete>
+                    <mat-hint>Escolha quem coordenará a ação (follow-up), não quem errou.</mat-hint>
                     <mat-error *ngIf="form.get('owner')?.hasError('required')">
                         Selecione o responsável.
                     </mat-error>
                 </mat-form-field>
             </ng-container>
             <ng-template #ownerIdFallback>
-                <mat-form-field appearance="fill" class="full-width">
+                <mat-form-field appearance="fill" class="full-width" matTooltip="Responsável por acompanhar e remover bloqueios, não por culpar.">
                     <mat-label>Responsável</mat-label>
                     <input matInput type="number" formControlName="ownerId" required />
+                    <mat-hint>Indique quem coordena a entrega e comunicação.</mat-hint>
                     <mat-error *ngIf="form.get('ownerId')?.hasError('required')">
                         Informe o responsável.
                     </mat-error>

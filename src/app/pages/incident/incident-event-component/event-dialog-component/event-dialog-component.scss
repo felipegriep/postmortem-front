@@ -79,6 +79,64 @@
   background: rgba(17, 24, 39, 0.65);
 }
 
+.drawer-blameless-banner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 0.95rem;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: rgba(226, 232, 240, 0.9);
+  box-shadow: 0 14px 35px rgba(7, 21, 21, 0.45);
+  width: 100%;
+}
+
+.drawer-banner-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.8rem;
+  background: rgba(34, 197, 94, 0.4);
+  color: #bbf7d0;
+  font-size: 1.2rem;
+}
+
+.drawer-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.drawer-banner-title {
+  margin: 0;
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 17.6px;
+}
+
+.drawer-banner-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.2rem;
+  color: rgba(226, 232, 240, 0.9);
+  font-size: 15.2px;
+}
+
+.drawer-banner-list li {
+  line-height: 1.25rem;
+}
+
+.drawer-blameless-banner p,
+.drawer-blameless-banner ul,
+.drawer-blameless-banner li {
+  color: rgba(226, 232, 240, 0.9);
+  font-size: 15.2px;
+}
+
 .drawer-actions {
   display: flex;
   justify-content: flex-end;
@@ -146,6 +204,10 @@
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-hint-wrapper,
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-error-wrapper {
   padding: 0 1rem;
+}
+
+.blameless-hint {
+  color: #8be8c4;
 }
 
 :host ::ng-deep .mat-mdc-select-trigger {

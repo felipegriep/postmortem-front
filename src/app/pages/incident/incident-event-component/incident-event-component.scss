@@ -7,6 +7,10 @@
     font-weight: bold;
 }
 
+.blameless-note {
+    margin-top: 0.4rem;
+}
+
 /* Fix para o botão 'Novo Evento' dentro deste componente */
 :host ::ng-deep .add-event-button {
     display: inline-flex;

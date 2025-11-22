@@ -33,6 +33,7 @@ import {
     faLinkSlash,
     faUser,
     faCalendarDay,
+    faHandHoldingHeart,
 } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute } from '@angular/router';
 import { debounceTime, finalize, Subject, takeUntil } from 'rxjs';
@@ -134,7 +135,8 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
                 faLink,
                 faLinkSlash,
                 faUser,
-                faCalendarDay
+                faCalendarDay,
+                faHandHoldingHeart
             );
         } catch {
             // ignore icon registration issues (e.g., in tests)
@@ -148,6 +150,7 @@ export class ActionItemTabComponent implements OnInit, OnChanges, OnDestroy {
     readonly linkOffIcon = faLinkSlash;
     readonly ownerIcon = faUser;
     readonly dueIcon = faCalendarDay;
+    readonly infoIcon = faHandHoldingHeart;
     readonly formatDateToDisplayFn = formatDateToDisplay;
     readonly truncatedDescription = (value: string | null | undefined, limit = 120): string => {
         if (!value) {

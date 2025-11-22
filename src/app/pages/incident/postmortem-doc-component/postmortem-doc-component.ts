@@ -14,7 +14,7 @@ import { PostmortemDocService } from '../../../services/postmortem-doc-service';
 import { Subject, takeUntil } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faFileArrowDown, faCopy, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
+import { faFileArrowDown, faCopy, faWandMagicSparkles, faHandHoldingHeart } from '@fortawesome/free-solid-svg-icons';
 import { ToastService } from '../../../shared/toast.service';
 
 @Component({
@@ -42,6 +42,7 @@ export class PostmortemDocComponent implements OnInit, OnDestroy, OnChanges {
   readonly newVersionIcon = faWandMagicSparkles;
   readonly downloadIcon = faFileArrowDown;
   readonly copyIcon = faCopy;
+  readonly infoIcon = faHandHoldingHeart;
 
   constructor(
     // Injeta o serviço (seja o mock ou o real)

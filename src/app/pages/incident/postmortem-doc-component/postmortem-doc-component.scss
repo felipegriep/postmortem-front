@@ -21,19 +21,14 @@
   gap: 1rem;
 }
 
+/* Estilos de título e subtítulo movidos para styles.scss global */
+
 .doc-title {
-  font-size: 30px;
-  line-height: 1.2;
-  font-weight: 700;
   color: #f8fafc;
-  margin: 0;
 }
 
 .doc-subtitle {
-  font-size: 15px;
-  line-height: 1.4;
   color: rgba(226, 232, 240, 0.85);
-  margin: 0.5rem 0 0;
 }
 
 .doc-blameless-wrapper {

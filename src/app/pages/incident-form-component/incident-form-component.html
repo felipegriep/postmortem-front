@@ -1,7 +1,7 @@
 <div class="incident-form-wrapper">
   <form #incidentForm="ngForm" (ngSubmit)="onSubmit()" class="incident-form">
-    <div class="form-panel w-full p-4 md:p-8 dark:bg-gray-800">
-    <header class="mb-8 border-b pb-4 dark:border-gray-600">
+    <div class="form-panel w-full p-6 space-y-6 dark:bg-gray-800">
+    <header class="border-b pb-4 dark:border-gray-600">
       <h1 class="form-title text-gray-800 dark:text-gray-100">
         {{ isEditMode ? 'Editar Incidente #' + incident.id : 'Registrar Novo Incidente' }}
       </h1>

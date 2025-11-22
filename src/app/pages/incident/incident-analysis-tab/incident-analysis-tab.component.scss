@@ -37,15 +37,7 @@
   gap: 1.5rem;
 }
 
-.analysis-title {
-  font-size: 30px;
-  line-height: 1.2;
-}
-
-.analysis-subtitle {
-  font-size: 15px;
-  line-height: 1.4;
-}
+/* Estilos de título e subtítulo movidos para styles.scss global */
 
 @media (min-width: 768px) {
   .analysis-header {

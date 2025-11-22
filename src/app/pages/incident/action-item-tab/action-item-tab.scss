@@ -26,14 +26,12 @@
 .action-tab-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
 }
 
 .action-header-card {
     border-radius: 0.75rem;
     padding: 1.5rem;
     box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
-    margin-bottom: 1.5rem;
 }
 
 .action-header {
@@ -42,20 +40,7 @@
     flex-direction: column;
 }
 
-.action-title {
-    margin: 0;
-    font-size: 30px;
-    line-height: 1.2;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.action-subtitle {
-    margin: 0.5rem 0 0;
-    color: rgba(226, 232, 240, 0.75);
-    font-size: 15px;
-    line-height: 1.4;
-}
+/* Estilos de título e subtítulo movidos para styles.scss global */
 
 .action-blameless-note {
     margin-top: 1rem;
@@ -102,7 +87,6 @@
 }
 
 .action-content-wrapper {
-    margin-top: 1.5rem;
     background: #ffffff;
     border: 1px solid rgba(226, 232, 240, 0.9);
     border-radius: 0.75rem;
@@ -374,7 +358,6 @@
     box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
     text-align: center;
     font-size: 0.95rem;
-    margin-top: 1.5rem;
 }
 
 .dark .action-empty-card {

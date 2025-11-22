@@ -243,6 +243,34 @@ body {
   line-height: 1.5;
 }
 
+/* ========================================
+   Headers padronizados das abas
+   ======================================== */
+
+/* Títulos e subtítulos de headers (baseado em "Documento") */
+.tab-header-title,
+.timeline-title,
+.action-title,
+.doc-title,
+.form-title,
+.analysis-title {
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0;
+}
+
+.tab-header-subtitle,
+.timeline-subtitle,
+.action-subtitle,
+.doc-subtitle,
+.form-subtitle,
+.analysis-subtitle {
+  font-size: 15px;
+  line-height: 1.4;
+  margin: 0.5rem 0 0;
+}
+
 /* Seta/caret do tooltip (se habilitada pela lib) */
 .mat-mdc-tooltip .mdc-tooltip__caret-surface-top,
 .mat-mdc-tooltip .mdc-tooltip__caret-surface-bottom {

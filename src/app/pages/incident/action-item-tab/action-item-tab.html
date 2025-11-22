@@ -3,35 +3,37 @@
         <div class="w-full action-tab-wrapper">
             <div class="mt-6">
                 <div class="action-header-card bg-slate-900 dark:bg-gray-800">
-                    <header class="action-header flex items-center justify-between">
-                        <div>
-                            <h2 class="action-title text-white">
-                                Ações do incidente
-                            </h2>
-                            <p class="action-subtitle text-white/80">
-                                Gerencie atividades corretivas e preventivas.
-                            </p>
-                            <div class="action-blameless-note blameless-banner" role="note">
-                                <fa-icon class="blameless-banner__icon" [icon]="infoIcon" aria-hidden="true"></fa-icon>
-                                <div class="action-blameless-copy">
-                                    <p class="blameless-banner__title">Cultura sem culpabilização</p>
-                                    <p class="blameless-banner__desc">
-                                        Planeje melhorias sistêmicas e de processo. Este espaço é para aprender, não para atribuir culpa.
-                                    </p>
-                                </div>
+                    <header class="action-header">
+                        <div class="flex items-center justify-between pb-4 border-b dark:border-gray-600">
+                            <div>
+                                <h2 class="action-title text-white">
+                                    Ações do incidente
+                                </h2>
+                                <p class="action-subtitle text-white/80">
+                                    Gerencie atividades corretivas e preventivas.
+                                </p>
+                            </div>
+                            <button
+                                mat-flat-button
+                                color="primary"
+                                class="action-new-button"
+                                type="button"
+                                (click)="onCreateAction()"
+                                [disabled]="isLoading"
+                            >
+                                <fa-icon [icon]="plusIcon" aria-hidden="true"></fa-icon>
+                                <span>Nova Ação</span>
+                            </button>
+                        </div>
+                        <div class="action-blameless-note blameless-banner" role="note">
+                            <fa-icon class="blameless-banner__icon" [icon]="infoIcon" aria-hidden="true"></fa-icon>
+                            <div class="action-blameless-copy">
+                                <p class="blameless-banner__title">Cultura sem culpabilização</p>
+                                <p class="blameless-banner__desc">
+                                    Planeje melhorias sistêmicas e de processo. Este espaço é para aprender, não para atribuir culpa.
+                                </p>
                             </div>
                         </div>
-                        <button
-                            mat-flat-button
-                            color="primary"
-                            class="action-new-button"
-                            type="button"
-                            (click)="onCreateAction()"
-                            [disabled]="isLoading"
-                        >
-                            <fa-icon [icon]="plusIcon" aria-hidden="true"></fa-icon>
-                            <span>Nova ação</span>
-                        </button>
                     </header>
                 </div>
 

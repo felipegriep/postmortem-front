@@ -1,28 +1,30 @@
 <div class="w-full">
     <div class="mt-6">
-        <header class="mb-4 flex items-center justify-between border-b pb-4 dark:border-gray-600">
-            <div>
-                <h2 class="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100">Timeline do Incidente</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Registre eventos importantes relacionados a este incidente.</p>
-                <div class="blameless-note blameless-banner" role="note">
-                    <fa-icon class="blameless-banner__icon" [icon]="info" aria-hidden="true"></fa-icon>
-                    <div class="blameless-copy">
-                        <p class="blameless-banner__title">Cultura sem culpabilização</p>
-                        <p class="blameless-banner__desc">
-                            Conte a sequência de fatos observáveis; evite apontar pessoas. Foque em sinais, decisões e efeitos no sistema.
-                        </p>
-                    </div>
+        <header class="mb-4 dark:border-gray-600">
+            <div class="flex items-center justify-between pb-4 border-b dark:border-gray-600">
+                <div>
+                    <h2 class="timeline-title font-bold text-gray-800 dark:text-gray-100">Timeline do Incidente</h2>
+                    <p class="timeline-subtitle text-gray-500 dark:text-gray-400 mt-1">Registre eventos importantes relacionados a este incidente.</p>
+                </div>
+                <button
+                    mat-flat-button
+                    color="primary"
+                    type="button"
+                    (click)="requestCreateEvent()"
+                    class="btn-primary add-event-button">
+                    <fa-icon [icon]="plus" aria-hidden="true"></fa-icon>
+                    <span class="ml-2">Novo Evento</span>
+                </button>
+            </div>
+            <div class="blameless-note blameless-banner pb-4 border-b dark:border-gray-600" role="note">
+                <fa-icon class="blameless-banner__icon" [icon]="info" aria-hidden="true"></fa-icon>
+                <div class="blameless-copy">
+                    <p class="blameless-banner__title">Cultura sem culpabilização</p>
+                    <p class="blameless-banner__desc">
+                        Conte a sequência de fatos observáveis; evite apontar pessoas. Foque em sinais, decisões e efeitos no sistema.
+                    </p>
                 </div>
             </div>
-            <button
-                mat-flat-button
-                color="primary"
-                type="button"
-                (click)="requestCreateEvent()"
-                class="btn-primary add-event-button">
-                <fa-icon [icon]="plus" aria-hidden="true"></fa-icon>
-                <span class="ml-2">Novo Evento</span>
-            </button>
         </header>
 
         <div class="mat-elevation-z2 rounded-md overflow-hidden bg-white">

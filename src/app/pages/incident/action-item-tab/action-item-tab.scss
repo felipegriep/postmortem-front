@@ -38,12 +38,14 @@
 
 .action-header {
     gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .action-title {
     margin: 0;
-    font-size: 1.875rem;
-    line-height: 2.25rem;
+    font-size: 30px;
+    line-height: 1.2;
     font-weight: 700;
     color: #ffffff;
 }
@@ -51,10 +53,12 @@
 .action-subtitle {
     margin: 0.5rem 0 0;
     color: rgba(226, 232, 240, 0.75);
-    font-size: 0.95rem;
+    font-size: 15px;
+    line-height: 1.4;
 }
+
 .action-blameless-note {
-    margin-top: 0.65rem;
+    margin-top: 1rem;
 }
 
 .action-new-button {

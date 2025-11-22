@@ -30,13 +30,21 @@
 }
 
 .doc-subtitle {
-  font-size: 1rem;
+  font-size: 15px;
+  line-height: 1.4;
   color: rgba(226, 232, 240, 0.85);
   margin: 0.5rem 0 0;
 }
 
+.doc-blameless-wrapper {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
 .doc-blameless-note {
-  margin-top: 0.6rem;
+  margin: 0;
 }
 
 .doc-controls-row {

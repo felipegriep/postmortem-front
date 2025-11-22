@@ -19,7 +19,6 @@
 .analysis-shell {
   border-radius: 1.5rem;
   box-shadow: 0 24px 45px rgba(15, 23, 42, 0.08);
-  max-width: 1280px;
   margin: 0 auto;
   color: #f8fafc;
 }
@@ -36,6 +35,16 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.analysis-title {
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.analysis-subtitle {
+  font-size: 15px;
+  line-height: 1.4;
 }
 
 @media (min-width: 768px) {

@@ -22,7 +22,6 @@
 
 .form-panel {
     width: 100%;
-    max-width: 1280px;
     margin: 0 auto;
 }
 
@@ -37,6 +36,17 @@
     background-color: #ffffff !important;
     backdrop-filter: none !important;
     box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+}
+
+.form-title {
+    font-size: 30px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.form-subtitle {
+    font-size: 15px;
+    line-height: 1.4;
 }
 
 :host ::ng-deep .mat-mdc-form-field-subscript-wrapper {

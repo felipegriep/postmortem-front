@@ -1,218 +1,182 @@
 <div class="incident-list-wrapper">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 md:p-8">
-        <header class="mb-6 flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Incidentes</h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Liste, filtre e gerencie os incidentes.</p>
-            </div>
-            <button
-                mat-flat-button
-                color="primary"
-                (click)="createNewIncident()"
-                type="button"
-                class="incident-primary-button"
-            >
-                <fa-icon [icon]="plus" class="mr-2" aria-hidden="true"></fa-icon>
-                Novo Incidente
-            </button>
-        </header>
+    <div class="mt-6">
+        <div class="incident-header-card bg-slate-900 dark:bg-gray-800">
+            <header class="incident-header flex items-center justify-between">
+                <div>
+                    <h2 class="incident-title text-white">
+                        Incidentes
+                    </h2>
+                    <p class="incident-subtitle text-white/80">
+                        Liste, filtre e gerencie os incidentes.
+                    </p>
+                </div>
+                <button
+                    mat-flat-button
+                    color="primary"
+                    class="incident-new-button"
+                    type="button"
+                    (click)="createNewIncident()"
+                >
+                    <fa-icon [icon]="plus" aria-hidden="true"></fa-icon>
+                    <span>Novo Incidente</span>
+                </button>
+            </header>
+        </div>
 
-        <!-- Filtros -->
-        <section class="mb-6">
-            <div class="grid md:grid-cols-3 gap-4">
-                <div>
-                    <mat-form-field appearance="fill" class="filter-field">
-                        <mat-label>Serviço</mat-label>
-                        <input
-                            matInput
-                            [(ngModel)]="filters.service"
-                            (ngModelChange)="onServiceChange($event)"
-                            name="filterService"
-                            type="text"
-                            placeholder="Digite o serviço (ex: billing)"
-                        />
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field appearance="fill" class="filter-field">
-                        <mat-label>Severidade</mat-label>
-                        <mat-select
-                            (ngModelChange)="onSeverityChange($event)"
-                            [(ngModel)]="filters.severity"
-                            name="filterSeverity"
-                        >
-                            <mat-option value="">Todas</mat-option>
-                            <mat-option *ngFor="let option of severityOptions" [value]="option.value">
-                                {{ option.label }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field appearance="fill" class="filter-field">
-                        <mat-label>Status</mat-label>
-                        <mat-select
-                            (ngModelChange)="onStatusChange($event)"
-                            [(ngModel)]="filters.status"
-                            name="filterStatus"
-                        >
-                            <mat-option value="">Todos</mat-option>
-                            <mat-option *ngFor="let option of statusOptions" [value]="option.value">
-                                {{ option.label }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="mt-4 flex justify-end">
+        <section class="incident-filter-card bg-slate-900 text-white dark:bg-gray-800">
+            <div class="incident-filter-grid">
+                <mat-form-field appearance="fill" class="filter-field">
+                    <mat-label>Serviço</mat-label>
+                    <input
+                        matInput
+                        [(ngModel)]="filters.service"
+                        (ngModelChange)="onServiceChange($event)"
+                        name="filterService"
+                        type="text"
+                        placeholder="Digite o serviço"
+                    />
+                    <button
+                        mat-icon-button
+                        matSuffix
+                        type="button"
+                        *ngIf="filters.service"
+                        (click)="filters.service = ''; onServiceChange('')"
+                        aria-label="Limpar busca"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="filter-field">
+                    <mat-label>Severidade</mat-label>
+                    <mat-select
+                        (ngModelChange)="onSeverityChange($event)"
+                        [(ngModel)]="filters.severity"
+                        name="filterSeverity"
+                    >
+                        <mat-option value="">Todas</mat-option>
+                        <mat-option *ngFor="let option of severityOptions" [value]="option.value">
+                            {{ option.label }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="filter-field">
+                    <mat-label>Status</mat-label>
+                    <mat-select
+                        (ngModelChange)="onStatusChange($event)"
+                        [(ngModel)]="filters.status"
+                        name="filterStatus"
+                    >
+                        <mat-option value="">Todos</mat-option>
+                        <mat-option *ngFor="let option of statusOptions" [value]="option.value">
+                            {{ option.label }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="filter-field">
+                    <mat-label>Ordenar por</mat-label>
+                    <mat-select
+                        [(ngModel)]="selectedSort"
+                        (ngModelChange)="onSortChange($event)"
+                        name="sortField"
+                    >
+                        <mat-option *ngFor="let option of sortOptions" [value]="option.value">
+                            {{ option.label }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
                 <button
                     type="button"
                     (click)="resetFilters()"
                     mat-stroked-button
-                    class="dashboard-clear-button"
+                    class="filter-clear-button"
                 >
                     Limpar filtros
                 </button>
             </div>
         </section>
 
-        <!-- Lista de Incidentes -->
-        <section>
-            <div *ngIf="incidents.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
-                Nenhum incidente encontrado.
-            </div>
-
-            <!-- Angular Material Table -->
-            <div *ngIf="incidents.length > 0" class="mb-4">
-                <table
-                    mat-table
-                    [dataSource]="incidents"
-                    matSort
-                    [matSortActive]="matSortActiveField"
-                    [matSortDirection]="sortDirection"
-                    matSortDisableClear
-                    class="min-w-full"
-                    (matSortChange)="onSortChange($event)"
-                >
-
-                    <!-- ID Column -->
-                    <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-left">#</th>
-                        <td mat-cell *matCellDef="let row">{{ row.id }}</td>
-                    </ng-container>
-
-                    <!-- Title Column -->
-                    <ng-container matColumnDef="title">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-left">Título</th>
-                        <td
-                            mat-cell
-                            *matCellDef="let row"
-                            [matTooltip]="row.title || ''"
-                            matTooltipPosition="above"
-                            matTooltipShowDelay="200"
-                        >
-                            {{ (row.title || '') | slice:0:25 }}{{ (row.title || '').length > 25 ? '...' : '' }}
-                        </td>
-                    </ng-container>
-
-                    <!-- Service Column -->
-                    <ng-container matColumnDef="service">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Serviço</th>
-                        <td 
-                            mat-cell 
-                            *matCellDef="let row"
-                            [matTooltip]="row.service || ''"
-                            matTooltipPosition="above"
-                            matTooltipShowDelay="300"
-                        >
-                            {{ row.service }}
-                        </td>
-                    </ng-container>
-
-                    <!-- Severity Column -->
-                    <ng-container matColumnDef="severity">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Severidade</th>
-                        <td mat-cell *matCellDef="let row">
-                            <span [ngClass]="getSeverityClass(row.severity)" class="px-2 py-1 rounded text-xs font-semibold">
-                                {{ getSeverityLabel(row.severity) }}
+        <section class="incident-content-wrapper" *ngIf="incidents.length">
+            <div class="incident-content">
+                <mat-card class="incident-card" *ngFor="let incident of incidents">
+                    <div class="incident-card__header">
+                        <div>
+                            <span class="incident-card__id">#{{ incident.id }}</span>
+                            <span
+                                class="incident-card__badge"
+                                [ngClass]="'incident-card__badge--' + incident.severity"
+                            >
+                                {{ getSeverityLabel(incident.severity) }}
                             </span>
-                        </td>
-                    </ng-container>
-
-                    <!-- Status Column -->
-                    <ng-container matColumnDef="status">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-                        <td mat-cell *matCellDef="let row">
-                            <span [ngClass]="getStatusClass(row.status)" class="px-2 py-1 rounded text-xs font-semibold">
-                                {{ getStatusLabel(row.status) }}
+                            <span class="incident-card__status" [ngClass]="'incident-card__status--' + incident.status">
+                                {{ getStatusLabel(incident.status) }}
                             </span>
-                        </td>
-                    </ng-container>
-
-                    <!-- Started At Column -->
-                    <ng-container matColumnDef="startedAt">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Início</th>
-                        <td mat-cell *matCellDef="let row">{{ row.startedAt | date: dateDisplayFormat }}</td>
-                    </ng-container>
-
-                    <!-- Ended At Column -->
-                    <ng-container matColumnDef="endedAt">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fim</th>
-                        <td mat-cell *matCellDef="let row">
-                            {{ row.endedAt ? (row.endedAt | date: dateDisplayFormat) : '-' }}
-                        </td>
-                    </ng-container>
-
-                    <!-- MTTR Column -->
-                    <ng-container matColumnDef="mttr">
-                        <th mat-header-cell *matHeaderCellDef>MTTR</th>
-                        <td mat-cell *matCellDef="let row"> {{ row.mttrMinutes ? row.mttrMinutes : ' - ' }} </td>
-                    </ng-container>
-
-                    <!-- Score Column -->
-                    <ng-container matColumnDef="score">
-                        <th mat-header-cell *matHeaderCellDef>Score</th>
-                        <td mat-cell *matCellDef="let row">
-                            {{ row.completenessScore !== undefined && row.completenessScore !== null ? row.completenessScore : '-' }}
-                        </td>
-                    </ng-container>
-
-                    <!-- Actions Column -->
-                    <ng-container matColumnDef="actions">
-                        <th mat-header-cell *matHeaderCellDef></th>
-                        <td mat-cell *matCellDef="let row" class="text-right">
+                        </div>
+                        <div class="incident-card__actions">
                             <button
                                 type="button"
-                                aria-label="Editar incidente"
                                 class="btn-icon edit-icon"
-                                (click)="editIncident(+row.id)"
-                                [matTooltip]="'Editar incidente #' + row.id + '\nTítulo: ' + (row.title || '-') + '\nServiço: ' + (row.service || '-') + '\nSeveridade: ' + getSeverityLabel(row.severity)"
+                                matTooltip="Editar"
                                 matTooltipPosition="above"
-                                matTooltipShowDelay="200">
+                                (click)="editIncident(+incident.id)"
+                            >
                                 <fa-icon [icon]="pencil" aria-hidden="true"></fa-icon>
                             </button>
-                        </td>
-                    </ng-container>
+                        </div>
+                    </div>
 
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                    <tr class="mat-row" *matNoDataRow>
-                        <td class="mat-cell text-center text-gray-500 dark:text-gray-400 py-8" [attr.colspan]="displayedColumns.length">Nenhum incidente encontrado.</td>
-                    </tr>
-                </table>
-
-                <div class="mt-4">
-                    <mat-paginator
-                        [length]="totalItems"
-                        [pageSize]="pageSize"
-                        [pageIndex]="pageIndex"
-                        [pageSizeOptions]="pageSizeOptions"
-                        (page)="onPageChange($event)"
-                        showFirstLastButtons
-                    ></mat-paginator>
-                </div>
+                    <div class="incident-card__body">
+                        <h3 class="incident-card__title">
+                            {{ incident.title || 'Sem título' }}
+                        </h3>
+                        <div class="incident-card__service">
+                            <fa-icon [icon]="briefcaseIcon" aria-hidden="true"></fa-icon>
+                            <strong>Serviço:</strong>
+                            <span>{{ incident.service || 'Não informado' }}</span>
+                        </div>
+                        <div class="incident-card__meta">
+                            <span class="meta-entry">
+                                <fa-icon [icon]="clockIcon" aria-hidden="true"></fa-icon>
+                                <strong>Início</strong>
+                                {{ incident.startedAt | date: dateDisplayFormat }}
+                            </span>
+                            <span class="meta-entry">
+                                <fa-icon [icon]="calendarIcon" aria-hidden="true"></fa-icon>
+                                <strong>Fim</strong>
+                                {{ incident.endedAt ? (incident.endedAt | date: dateDisplayFormat) : 'Em andamento' }}
+                            </span>
+                            <span class="meta-entry">
+                                <fa-icon [icon]="stopwatchIcon" aria-hidden="true"></fa-icon>
+                                <strong>MTTR</strong>
+                                {{ incident.mttrMinutes ? incident.mttrMinutes + ' min' : 'N/A' }}
+                            </span>
+                            <span class="meta-entry">
+                                <fa-icon [icon]="starIcon" aria-hidden="true"></fa-icon>
+                                <strong>Score</strong>
+                                {{ incident.completenessScore !== undefined && incident.completenessScore !== null ? incident.completenessScore : 'N/A' }}
+                            </span>
+                        </div>
+                    </div>
+                </mat-card>
             </div>
-
         </section>
+
+        <mat-card class="incident-empty-card" *ngIf="!incidents.length">
+            <p>Nenhum incidente encontrado.</p>
+        </mat-card>
+
+        <div class="mt-4 w-full">
+            <mat-paginator
+                [length]="totalItems"
+                [pageIndex]="pageIndex"
+                [pageSize]="pageSize"
+                [pageSizeOptions]="pageSizeOptions"
+                (page)="onPageChange($event)"
+                showFirstLastButtons
+            ></mat-paginator>
+        </div>
     </div>
 </div>

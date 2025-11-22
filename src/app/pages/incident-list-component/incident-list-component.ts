@@ -14,10 +14,20 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 
 // Font Awesome
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { 
+    faPencil, 
+    faPlus, 
+    faBriefcase, 
+    faClock, 
+    faCalendarCheck, 
+    faStopwatch, 
+    faStar 
+} from '@fortawesome/free-solid-svg-icons';
 
 import { Subscription } from 'rxjs';
 import { SeverityEnum } from '../../domain/enums/severity-enum';
@@ -46,6 +56,8 @@ import {
         MatInputModule,
         MatButtonModule,
         MatTooltipModule,
+        MatCardModule,
+        MatIconModule,
         FontAwesomeModule,
     ],
     templateUrl: './incident-list-component.html',
@@ -76,8 +88,20 @@ export class IncidentListComponent implements OnInit, OnDestroy {
     pageIndex = 0;
     pageSize = 10;
     readonly pageSizeOptions = [5, 10, 20];
-    sortActive = 'createdAt';
+    sortActive = 'startedAt';
     sortDirection: 'asc' | 'desc' = 'desc';
+
+    readonly sortOptions = [
+        { value: 'id:asc', label: 'ID - Crescente' },
+        { value: 'id:desc', label: 'ID - Decrescente' },
+        { value: 'title:asc', label: 'Título - Crescente' },
+        { value: 'title:desc', label: 'Título - Decrescente' },
+        { value: 'service:asc', label: 'Serviço - Crescente' },
+        { value: 'service:desc', label: 'Serviço - Decrescente' },
+        { value: 'startedAt:asc', label: 'Início - Crescente' },
+        { value: 'startedAt:desc', label: 'Início - Decrescente' },
+    ];
+    selectedSort = 'startedAt:desc';
 
     private requestSub?: Subscription;
 
@@ -92,17 +116,30 @@ export class IncidentListComponent implements OnInit, OnDestroy {
         private router: Router,
         private faLibrary: FaIconLibrary
     ) {
-        // register pencil icon
+        // register icons
         try {
-            this.faLibrary.addIcons(faPencil, faPlus);
+            this.faLibrary.addIcons(
+                faPencil, 
+                faPlus, 
+                faBriefcase, 
+                faClock, 
+                faCalendarCheck, 
+                faStopwatch, 
+                faStar
+            );
         } catch (e) {
             // ignore if library not available
         }
     }
 
-    // expose the icon to the template to use <fa-icon [icon]="pencil"></fa-icon>
+    // expose the icons to the template
     public pencil = faPencil;
     public plus = faPlus;
+    public briefcaseIcon = faBriefcase;
+    public clockIcon = faClock;
+    public calendarIcon = faCalendarCheck;
+    public stopwatchIcon = faStopwatch;
+    public starIcon = faStar;
 
     ngOnInit(): void {
         this.loadIncidents();
@@ -158,14 +195,11 @@ export class IncidentListComponent implements OnInit, OnDestroy {
         this.resetToFirstPageAndReload();
     }
 
-    onSortChange(sort: Sort): void {
-        if (!sort.direction) {
-            this.sortActive = 'createdAt';
-            this.sortDirection = 'desc';
-        } else {
-            this.sortActive = sort.active;
-            this.sortDirection = sort.direction as 'asc' | 'desc';
-        }
+    onSortChange(value: string): void {
+        const [field, direction] = value.split(':');
+        this.sortActive = field;
+        this.sortDirection = direction as 'asc' | 'desc';
+        this.selectedSort = value;
         this.resetToFirstPageAndReload();
     }
 
@@ -177,6 +211,9 @@ export class IncidentListComponent implements OnInit, OnDestroy {
 
     resetFilters(): void {
         this.filters = { service: '', severity: '', status: '' };
+        this.selectedSort = 'startedAt:desc';
+        this.sortActive = 'startedAt';
+        this.sortDirection = 'desc';
         this.resetToFirstPageAndReload();
     }
 

@@ -25,6 +25,7 @@
     (closedStart)="onEventDrawerClosed()"
   >
     <app-event-dialog-component
+      *ngIf="isEventDrawerOpen"
       [eventData]="drawerEventData"
       [isEdit]="isEventDrawerEdit"
       [incidentStartedAt]="incidentStartedAt"

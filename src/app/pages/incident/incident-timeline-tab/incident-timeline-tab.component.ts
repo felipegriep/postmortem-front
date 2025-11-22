@@ -77,11 +77,25 @@ export class IncidentTimelineTabComponent implements OnInit {
     }
 
     openEventDrawer(event?: IncidentEventResponseInterface): void {
-        this.isEventDrawerEdit = !!event;
-        this.editingEventId = event?.id;
-        this.drawerEventData = event ? { ...event } : undefined;
-        this.isEventDrawerOpen = true;
-        this.eventDrawer?.open();
+        // Fecha o drawer primeiro para destruir o componente
+        this.isEventDrawerOpen = false;
+        this.drawerEventData = undefined;
+        this.isEventDrawerEdit = false;
+        this.editingEventId = undefined;
+        
+        // Aguarda o próximo ciclo para garantir que o componente foi destruído
+        setTimeout(() => {
+            // Se for edição, define os dados
+            if (event) {
+                this.isEventDrawerEdit = true;
+                this.editingEventId = event.id;
+                this.drawerEventData = { ...event };
+            }
+            
+            this.isEventDrawerOpen = true;
+            this.cdr.markForCheck();
+            this.eventDrawer?.open();
+        }, 0);
     }
 
     closeEventDrawer(): void {
